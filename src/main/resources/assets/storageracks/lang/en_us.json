@@ -52,5 +52,9 @@
   "block.storageracks.warped_gold_rack": "Warped Gold Rack",
   "block.storageracks.warped_iron_rack": "Warped Iron Rack",
   "block.storageracks.warped_stone_rack": "Warped Stone Rack",
-  "block.storageracks.warped_wood_rack": "Warped Wood Rack"
+  "block.storageracks.warped_wood_rack": "Warped Wood Rack",
+  "block.storageracks.stone_controller": "Stone Controller",
+  "block.storageracks.iron_controller": "Iron Controller",
+  "block.storageracks.emerald_controller": "Emerald Controller",
+  "block.storageracks.diamond_controller": "Diamond Controller"
 }

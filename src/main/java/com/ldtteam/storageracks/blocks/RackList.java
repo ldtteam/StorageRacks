@@ -126,6 +126,36 @@ public class RackList implements IBlockList<RackBlock>
                         .define('P', Items.PAPER)
                         .unlockedBy("has_" + ModBlocks.stoneController.getRegistryName().getPath(), provider.getCriterion(ModBlocks.stoneController))
                         .save(consumer, new ResourceLocation(Constants.MOD_ID, ModBlocks.stoneController.getRegistryName().getPath())));
+
+        provider.add(
+          consumer -> new ShapedRecipeBuilder(ModBlocks.ironController, 1)
+                        .pattern("SSS")
+                        .pattern("SPS")
+                        .pattern("SSS")
+                        .define('S', Items.IRON_INGOT)
+                        .define('P', Items.PAPER)
+                        .unlockedBy("has_" + ModBlocks.ironController.getRegistryName().getPath(), provider.getCriterion(ModBlocks.ironController))
+                        .save(consumer, new ResourceLocation(Constants.MOD_ID, ModBlocks.ironController.getRegistryName().getPath())));
+
+        provider.add(
+          consumer -> new ShapedRecipeBuilder(ModBlocks.emeraldController, 1)
+                        .pattern("SSS")
+                        .pattern("SPS")
+                        .pattern("SSS")
+                        .define('S', Items.EMERALD)
+                        .define('P', Items.PAPER)
+                        .unlockedBy("has_" + ModBlocks.emeraldController.getRegistryName().getPath(), provider.getCriterion(ModBlocks.emeraldController))
+                        .save(consumer, new ResourceLocation(Constants.MOD_ID, ModBlocks.emeraldController.getRegistryName().getPath())));
+
+        provider.add(
+          consumer -> new ShapedRecipeBuilder(ModBlocks.diamondController, 1)
+                        .pattern("SSS")
+                        .pattern("SPS")
+                        .pattern("SSS")
+                        .define('S', Items.DIAMOND)
+                        .define('P', Items.PAPER)
+                        .unlockedBy("has_" + ModBlocks.diamondController.getRegistryName().getPath(), provider.getCriterion(ModBlocks.diamondController))
+                        .save(consumer, new ResourceLocation(Constants.MOD_ID, ModBlocks.diamondController.getRegistryName().getPath())));
     }
 
     @Override

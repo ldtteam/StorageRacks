@@ -456,7 +456,7 @@ public class TileEntityRack extends AbstractTileEntityRack
         final BlockPos relativePos = getBlockPos().subtract(newPos);
         if (parent == null)
         {
-            tryReCalculateGraph();
+            //tryReCalculateGraph();
             parent = relativePos;
             controller = ((TileEntityRack)level.getBlockEntity(newPos)).controller;
         }
@@ -467,7 +467,7 @@ public class TileEntityRack extends AbstractTileEntityRack
         final BlockPos relativePos = getBlockPos().subtract(newPos);
         if (relativePos.equals(parent))
         {
-            tryReCalculateGraph();
+           // tryReCalculateGraph();
         }
     }
 }

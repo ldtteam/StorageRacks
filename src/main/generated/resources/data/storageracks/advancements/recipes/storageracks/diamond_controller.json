@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "storageracks:diamond_controller"
+    ]
+  },
+  "criteria": {
+    "has_diamond_controller": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "storageracks:diamond_controller"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "storageracks:diamond_controller"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_diamond_controller",
+      "has_the_recipe"
+    ]
+  ]
+}

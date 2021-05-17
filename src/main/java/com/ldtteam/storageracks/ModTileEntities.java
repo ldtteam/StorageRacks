@@ -28,7 +28,7 @@ public class ModTileEntities
         RACK.setRegistryName(Constants.MOD_ID, "rack");
         event.getRegistry().register(RACK);
 
-        CONTROLLER = TileEntityType.Builder.of(TileEntityController::new, ModBlocks.controller).build(Util.fetchChoiceType(TypeReferences.BLOCK_ENTITY, "controller"));
+        CONTROLLER = TileEntityType.Builder.of(TileEntityController::new, ModBlocks.stoneController, ModBlocks.ironController, ModBlocks.emeraldController, ModBlocks.diamondController).build(Util.fetchChoiceType(TypeReferences.BLOCK_ENTITY, "controller"));
         CONTROLLER.setRegistryName(Constants.MOD_ID, "controller");
         event.getRegistry().register(CONTROLLER);
     }
