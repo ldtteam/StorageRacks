@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:dark_oak_slab"
+    },
+    "C": {
+      "item": "minecraft:emerald"
+    },
+    "X": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "storageracks:dark_oak_emerald_rack",
+    "count": 4
+  }
+}

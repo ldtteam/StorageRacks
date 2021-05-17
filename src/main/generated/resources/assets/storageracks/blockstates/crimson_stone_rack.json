@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "variant=empty": {
+      "model": "storageracks:block/racks/crimson_stone_rackempty"
+    },
+    "variant=full": {
+      "model": "storageracks:block/racks/crimson_stone_rackfull"
+    }
+  }
+}

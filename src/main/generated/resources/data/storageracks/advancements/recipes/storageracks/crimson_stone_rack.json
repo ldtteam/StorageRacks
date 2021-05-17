@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "storageracks:crimson_stone_rack"
+    ]
+  },
+  "criteria": {
+    "has_crimson_stone_rack": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "storageracks:crimson_stone_rack"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "storageracks:crimson_stone_rack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_crimson_stone_rack",
+      "has_the_recipe"
+    ]
+  ]
+}

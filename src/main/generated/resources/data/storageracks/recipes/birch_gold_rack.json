@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:birch_slab"
+    },
+    "C": {
+      "item": "minecraft:gold_ingot"
+    },
+    "X": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "storageracks:birch_gold_rack",
+    "count": 4
+  }
+}

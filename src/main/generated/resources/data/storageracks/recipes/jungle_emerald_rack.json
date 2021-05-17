@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:jungle_slab"
+    },
+    "C": {
+      "item": "minecraft:emerald"
+    },
+    "X": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "storageracks:jungle_emerald_rack",
+    "count": 4
+  }
+}

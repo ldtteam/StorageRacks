@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "variant=empty": {
+      "model": "storageracks:block/racks/birch_iron_rackempty"
+    },
+    "variant=full": {
+      "model": "storageracks:block/racks/birch_iron_rackfull"
+    }
+  }
+}

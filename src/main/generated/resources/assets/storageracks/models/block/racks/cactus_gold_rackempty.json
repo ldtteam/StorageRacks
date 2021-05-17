@@ -1,0 +1,8 @@
+{
+  "parent": "storageracks:block/emptyrack",
+  "textures": {
+    "0": "structurize:blocks/cactus/blockcactusplank",
+    "1": "minecraft:block/gold_block",
+    "particle": "minecraft:block/gold_block"
+  }
+}

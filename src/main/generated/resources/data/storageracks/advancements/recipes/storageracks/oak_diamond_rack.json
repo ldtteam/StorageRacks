@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "storageracks:oak_diamond_rack"
+    ]
+  },
+  "criteria": {
+    "has_oak_diamond_rack": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "storageracks:oak_diamond_rack"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "storageracks:oak_diamond_rack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_oak_diamond_rack",
+      "has_the_recipe"
+    ]
+  ]
+}

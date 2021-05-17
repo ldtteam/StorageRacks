@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "variant=empty": {
+      "model": "storageracks:block/racks/cactus_gold_rackempty"
+    },
+    "variant=full": {
+      "model": "storageracks:block/racks/cactus_gold_rackfull"
+    }
+  }
+}

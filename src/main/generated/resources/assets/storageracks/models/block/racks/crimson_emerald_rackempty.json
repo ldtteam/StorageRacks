@@ -1,0 +1,8 @@
+{
+  "parent": "storageracks:block/emptyrack",
+  "textures": {
+    "0": "minecraft:block/crimson_planks",
+    "1": "minecraft:block/emerald_block",
+    "particle": "minecraft:block/emerald_block"
+  }
+}

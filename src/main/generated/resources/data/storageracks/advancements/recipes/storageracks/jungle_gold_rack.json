@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "storageracks:jungle_gold_rack"
+    ]
+  },
+  "criteria": {
+    "has_jungle_gold_rack": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "storageracks:jungle_gold_rack"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "storageracks:jungle_gold_rack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_jungle_gold_rack",
+      "has_the_recipe"
+    ]
+  ]
+}

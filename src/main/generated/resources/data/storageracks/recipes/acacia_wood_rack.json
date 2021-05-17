@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:acacia_slab"
+    },
+    "C": {
+      "item": "minecraft:oak_planks"
+    },
+    "X": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "storageracks:acacia_wood_rack",
+    "count": 4
+  }
+}

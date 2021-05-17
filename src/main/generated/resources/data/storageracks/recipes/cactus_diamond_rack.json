@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
+  "key": {
+    "F": {
+      "item": "structurize:cactus_slab"
+    },
+    "C": {
+      "item": "minecraft:diamond"
+    },
+    "X": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "storageracks:cactus_diamond_rack",
+    "count": 4
+  }
+}

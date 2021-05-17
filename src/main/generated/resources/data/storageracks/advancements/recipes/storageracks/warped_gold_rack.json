@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "storageracks:warped_gold_rack"
+    ]
+  },
+  "criteria": {
+    "has_warped_gold_rack": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "storageracks:warped_gold_rack"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "storageracks:warped_gold_rack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_warped_gold_rack",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "storageracks:spruce_iron_rack"
+    ]
+  },
+  "criteria": {
+    "has_spruce_iron_rack": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "storageracks:spruce_iron_rack"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "storageracks:spruce_iron_rack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_spruce_iron_rack",
+      "has_the_recipe"
+    ]
+  ]
+}

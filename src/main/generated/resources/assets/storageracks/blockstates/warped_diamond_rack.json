@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "variant=empty": {
+      "model": "storageracks:block/racks/warped_diamond_rackempty"
+    },
+    "variant=full": {
+      "model": "storageracks:block/racks/warped_diamond_rackfull"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "storageracks:acacia_iron_rack"
+    ]
+  },
+  "criteria": {
+    "has_acacia_iron_rack": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "storageracks:acacia_iron_rack"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "storageracks:acacia_iron_rack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_acacia_iron_rack",
+      "has_the_recipe"
+    ]
+  ]
+}

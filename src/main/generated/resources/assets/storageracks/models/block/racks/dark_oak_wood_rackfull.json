@@ -1,0 +1,8 @@
+{
+  "parent": "storageracks:block/fullrack",
+  "textures": {
+    "0": "minecraft:block/dark_oak_planks",
+    "1": "minecraft:block/oak_planks",
+    "particle": "minecraft:block/oak_planks"
+  }
+}

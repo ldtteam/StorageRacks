@@ -1,0 +1,8 @@
+{
+  "parent": "storageracks:block/controller",
+  "textures": {
+    "0": "structurize:blocks/timber_frame_paper",
+    "1": "minecraft:block/iron_block",
+    "particle": "minecraft:block/iron_block"
+  }
+}
