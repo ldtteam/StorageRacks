@@ -2,7 +2,7 @@
   "parent": "storageracks:block/controller",
   "textures": {
     "0": "storageracks:gui/paper",
-    "1": "minecraft:block/iron_block",
-    "particle": "minecraft:block/iron_block"
+    "1": "minecraft:block/gold_block",
+    "particle": "minecraft:block/gold_block"
   }
 }

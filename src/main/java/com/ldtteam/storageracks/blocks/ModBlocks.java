@@ -29,6 +29,7 @@ public final class ModBlocks
 
     public static ControllerBlock stoneController;
     public static ControllerBlock ironController;
+    public static ControllerBlock goldController;
     public static ControllerBlock emeraldController;
     public static ControllerBlock diamondController;
 
@@ -80,17 +81,20 @@ public final class ModBlocks
             registry.register(rack);
         }
 
-        stoneController = new ControllerBlock("stone", Items.IRON_INGOT, 1);
-        ironController = new ControllerBlock("iron", Items.EMERALD, 2);
-        emeraldController = new ControllerBlock("emerald", Items.DIAMOND, 3);
-        diamondController = new ControllerBlock("diamond", null, 4);
+        stoneController = new ControllerBlock("stone", Items.IRON_BLOCK, 1);
+        ironController = new ControllerBlock("iron", Items.GOLD_BLOCK, 2);
+        goldController = new ControllerBlock("gold", Items.EMERALD_BLOCK, 3);
+        emeraldController = new ControllerBlock("emerald", Items.DIAMOND_BLOCK, 4);
+        diamondController = new ControllerBlock("diamond", null, 5);
 
         stoneController.setNext(ironController);
-        ironController.setNext(emeraldController);
+        ironController.setNext(goldController);
+        goldController.setNext(emeraldController);
         emeraldController.setNext(diamondController);
 
         registry.register(stoneController);
         registry.register(ironController);
+        registry.register(goldController);
         registry.register(emeraldController);
         registry.register(diamondController);
     }
@@ -111,9 +115,9 @@ public final class ModBlocks
 
         registry.register((new BlockItem(stoneController, properties)).setRegistryName(stoneController.getRegistryName()));
         registry.register((new BlockItem(ironController, properties)).setRegistryName(ironController.getRegistryName()));
+        registry.register((new BlockItem(goldController, properties)).setRegistryName(goldController.getRegistryName()));
         registry.register((new BlockItem(emeraldController, properties)).setRegistryName(emeraldController.getRegistryName()));
         registry.register((new BlockItem(diamondController, properties)).setRegistryName(diamondController.getRegistryName()));
-
     }
 
     /**

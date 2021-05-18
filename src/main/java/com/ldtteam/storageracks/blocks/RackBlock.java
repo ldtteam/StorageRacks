@@ -228,7 +228,7 @@ public class RackBlock extends UpgradeableBlock
             event.getEntity().sendMessage(new TranslationTextComponent("gui.storageracks.notconnected"), event.getEntity().getUUID());
             event.setCanceled(true);
         }
-        else if (event.getPlacedBlock().getBlock() instanceof RackBlock)
+        else
         {
             final ControllerBlock controller = (ControllerBlock) event.getEntity().level.getBlockState(result).getBlock();
             if (posSet.size() > controller.getTier() * 20)
