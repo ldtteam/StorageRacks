@@ -449,14 +449,14 @@ public class TileEntityRack extends AbstractTileEntityRack
      * Return false if not successful.
      * @return false if so.
      */
-    public void neighborChange(final PlayerEntity player)
+    public void neighborChange()
     {
         final Set<BlockPos> visitedPositions = new HashSet<>();
         final BlockPos controller = visitPositions(level, visitedPositions, this.getBlockPos());
         if (controller != BlockPos.ZERO && controller != null)
         {
             this.controller = getBlockPos().subtract(controller);
-            ((TileEntityController) level.getBlockEntity(controller)).addAll(visitedPositions, player);
+            ((TileEntityController) level.getBlockEntity(controller)).addAll(visitedPositions);
             for (final BlockPos pos : visitedPositions)
             {
                 if (!pos.equals(controller))

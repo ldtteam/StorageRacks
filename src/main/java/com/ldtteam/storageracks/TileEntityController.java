@@ -6,7 +6,6 @@ import com.ldtteam.storageracks.utils.ItemStackUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
 import com.ldtteam.structurize.api.util.BlockPosUtil;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -16,8 +15,6 @@ import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -254,11 +251,10 @@ public class TileEntityController extends TileEntity
         return emptiestChest;
     }
 
-    public void addAll(final Set<BlockPos> visitedPositions, final PlayerEntity player)
+    public void addAll(final Set<BlockPos> visitedPositions)
     {
         if (visitedPositions.size() > tier * 20)
         {
-            player.sendMessage(new TranslationTextComponent("gui.storageracks.limitreached"), player.getUUID());
             return;
         }
         racks.clear();

@@ -6,7 +6,6 @@ import com.ldtteam.storageracks.utils.InventoryUtils;
 import com.ldtteam.structurize.blocks.types.WoodType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -187,12 +186,12 @@ public class RackBlock extends UpgradeableBlock
     }
 
     @Override
-    public void setPlacedBy(final World world, final BlockPos pos, final BlockState state, @Nullable final LivingEntity placer, final ItemStack stack)
+    public void onPlace(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean bool)
     {
-        super.setPlacedBy(world, pos, state, placer, stack);
-        if (!world.isClientSide && state.getBlock() instanceof RackBlock && placer instanceof PlayerEntity)
+        super.onPlace(state, world, pos, newState, bool);
+        if (!world.isClientSide && state.getBlock() instanceof RackBlock)
         {
-            ((TileEntityRack) world.getBlockEntity(pos)).neighborChange((PlayerEntity) placer);
+            ((TileEntityRack) world.getBlockEntity(pos)).neighborChange();
         }
     }
 
@@ -207,7 +206,7 @@ public class RackBlock extends UpgradeableBlock
                 final TileEntity te = world.getBlockEntity(pos.relative(direction));
                 if (te instanceof TileEntityRack)
                 {
-                    ((TileEntityRack) te).neighborChange(player);
+                    ((TileEntityRack) te).neighborChange();
                 }
             }
         }

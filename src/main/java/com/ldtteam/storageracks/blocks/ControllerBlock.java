@@ -173,7 +173,7 @@ public class ControllerBlock extends UpgradeableBlock
                 final TileEntity te = world.getBlockEntity(pos.relative(direction));
                 if (te instanceof TileEntityRack)
                 {
-                    ((TileEntityRack) te).neighborChange((PlayerEntity) placer);
+                    ((TileEntityRack) te).neighborChange();
                     return;
                 }
             }
@@ -191,7 +191,7 @@ public class ControllerBlock extends UpgradeableBlock
                 final TileEntity te = world.getBlockEntity(pos.relative(direction));
                 if (te instanceof TileEntityRack)
                 {
-                    ((TileEntityRack) te).neighborChange(player);
+                    ((TileEntityRack) te).neighborChange();
                 }
             }
         }
