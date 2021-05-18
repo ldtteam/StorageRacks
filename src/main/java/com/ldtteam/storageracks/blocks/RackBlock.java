@@ -225,7 +225,14 @@ public class RackBlock extends UpgradeableBlock
         final BlockPos result = TileEntityRack.visitPositions((World) event.getWorld(), posSet, event.getPos());
         if (result == null || result.equals(BlockPos.ZERO))
         {
-            event.getEntity().sendMessage(new TranslationTextComponent("gui.storageracks.notconnected"), event.getEntity().getUUID());
+            if (event.getPlacedBlock().getBlock() instanceof ControllerBlock)
+            {
+                event.getEntity().sendMessage(new TranslationTextComponent("gui.storageracks.doublecontroller"), event.getEntity().getUUID());
+            }
+            else
+            {
+                event.getEntity().sendMessage(new TranslationTextComponent("gui.storageracks.notconnected"), event.getEntity().getUUID());
+            }
             event.setCanceled(true);
         }
         else

@@ -58,8 +58,9 @@
   "block.storageracks.gold_controller": "Gold Controller",
   "block.storageracks.emerald_controller": "Emerald Controller",
   "block.storageracks.diamond_controller": "Diamond Controller",
-  "gui.storageracks.notconnected": "Invalid Rack Placement. Racks must be placed directly connected to a Controller or Rack but without connection to multiple Controllers.",
-  "gui.storageracks.limitreached": "Max Rack limit reached for this Controller, upgrade Controller to connect more Racks",
+  "gui.storageracks.notconnected": "Invalid Placement. Racks must be placed directly connected to a Controller or Rack but without connection to multiple Controllers.",
+  "gui.storageracks.limitreached": "Max Rack limit reached for this Controller. Upgrade the Controller to connect more Racks!",
+  "gui.storageracks.doublecontroller": "There can only be 1 Controller per Network!",
   "gui.storageracks.allinventory": "Storage",
   "gui.storageracks.locating": "Locating...",
   "block.storageracks.controllertoolip": "Supports up to %d Racks"

@@ -4,6 +4,7 @@ import com.ldtteam.blockout.Pane;
 import com.ldtteam.blockout.controls.*;
 import com.ldtteam.blockout.views.ScrollingList;
 import com.ldtteam.storageracks.utils.Constants;
+import com.ldtteam.structurize.util.LanguageHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.Item;
@@ -241,7 +242,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
             {
                 final ItemStorage resource = allItems.get(index);
                 final Text resourceLabel = rowPane.findPaneOfTypeByID("ressourceStackName", Text.class);
-                final String name = resource.getItemStack().getDisplayName().getString();
+                final String name = LanguageHandler.format(resource.getItemStack().getDescriptionId());
                 resourceLabel.setText(name.substring(0, Math.min(17, name.length())));
                 final Text qtys = rowPane.findPaneOfTypeByID("quantities", Text.class);
                 if (!Screen.hasShiftDown())
