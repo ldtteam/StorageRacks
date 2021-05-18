@@ -30,8 +30,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = '1.0'
-group = 'com.yourname.modid' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'modid'
+group = 'com.ldtteam.storageracks' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'storageracks'
 ext.configFile = file "build.properties"
 configFile.withReader {
     def prop = new Properties()
@@ -79,7 +79,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                storagerack {
                     source sourceSets.main
                 }
             }
@@ -101,7 +101,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                storagerack {
                     source sourceSets.main
                 }
             }
@@ -126,7 +126,7 @@ minecraft {
             args '--mod', 'storageracks', '--all', '--output', file('src/main/generated/resources'), '--input', file('src/main/resources'), '--existing', file('src/main/resources'), '--existing-mod', 'structurize'
 
             mods {
-                examplemod {
+                storagerack {
                     source sourceSets.main
                 }
             }
@@ -148,6 +148,9 @@ dependencies {
     implementation fg.deobf("com.ldtteam:structurize:${config.structurize_version}")
 
     implementation "com.ldtteam:datagenerators:${config.datagenerators_version}"
+
+    implementation fg.deobf("mezz.jei:jei-1.16.4:${config.jei_version}")
+
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
@@ -173,12 +176,12 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "examplemod",
-            "Specification-Vendor": "examplemodsareus",
+            "Specification-Title": "storagerack",
+            "Specification-Vendor": "storageracksareus",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"examplemodsareus",
+            "Implementation-Vendor" :"storageracksareus",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

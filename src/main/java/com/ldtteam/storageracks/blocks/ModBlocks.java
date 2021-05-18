@@ -80,10 +80,10 @@ public final class ModBlocks
             registry.register(rack);
         }
 
-        stoneController = new ControllerBlock("stone", Items.IRON_INGOT);
-        ironController = new ControllerBlock("iron", Items.EMERALD);
-        emeraldController = new ControllerBlock("emerald", Items.DIAMOND);
-        diamondController = new ControllerBlock("diamond", null);
+        stoneController = new ControllerBlock("stone", Items.IRON_INGOT, 1);
+        ironController = new ControllerBlock("iron", Items.EMERALD, 2);
+        emeraldController = new ControllerBlock("emerald", Items.DIAMOND, 3);
+        diamondController = new ControllerBlock("diamond", null, 4);
 
         stoneController.setNext(ironController);
         ironController.setNext(emeraldController);

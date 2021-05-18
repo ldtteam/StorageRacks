@@ -14,12 +14,14 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -30,7 +32,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static com.ldtteam.storageracks.utils.Constants.*;
@@ -63,11 +67,6 @@ public class TileEntityRack extends AbstractTileEntityRack
     private BlockPos controller;
 
     /**
-     * Offset to the parent rack.
-     */
-    private BlockPos parent;
-
-    /**
      * Last optional we created.
      */
     private LazyOptional<IItemHandler> lastOptional;
@@ -87,11 +86,6 @@ public class TileEntityRack extends AbstractTileEntityRack
         if (controller != null)
         {
             controller = controller.rotate(rotationIn);
-        }
-
-        if (parent != null)
-        {
-            parent = parent.rotate(rotationIn);
         }
     }
 
@@ -173,8 +167,8 @@ public class TileEntityRack extends AbstractTileEntityRack
         }
 
         inventory = tempInventory;
-        final BlockState state = level.getBlockState(getBlockPos());
-        level.sendBlockUpdated(getBlockPos(), state, state, 0x03);
+        //final BlockState state = level.getBlockState(getBlockPos());
+        //level.sendBlockUpdated(getBlockPos(), state, state, 0x03);
         invalidateCap();
     }
 
@@ -451,23 +445,80 @@ public class TileEntityRack extends AbstractTileEntityRack
         return size;
     }
 
-    public void newNeighborRack(final BlockPos newPos)
+    /**
+     * Return false if not successful.
+     * @return false if so.
+     */
+    public void neighborChange(final PlayerEntity player)
     {
-        final BlockPos relativePos = getBlockPos().subtract(newPos);
-        if (parent == null)
+        final Set<BlockPos> visitedPositions = new HashSet<>();
+        final BlockPos controller = visitPositions(level, visitedPositions, this.getBlockPos());
+        if (controller != BlockPos.ZERO && controller != null)
         {
-            //tryReCalculateGraph();
-            parent = relativePos;
-            controller = ((TileEntityRack)level.getBlockEntity(newPos)).controller;
+            this.controller = getBlockPos().subtract(controller);
+            ((TileEntityController) level.getBlockEntity(controller)).addAll(visitedPositions, player);
+            for (final BlockPos pos : visitedPositions)
+            {
+                if (!pos.equals(controller))
+                {
+                    ((TileEntityRack) level.getBlockEntity(pos)).controller = pos.subtract(controller);
+                }
+            }
+        }
+        else if (controller == null)
+        {
+            BlockPos oldController = null;
+            for (final BlockPos pos : visitedPositions)
+            {
+                final TileEntityRack rack = ((TileEntityRack) level.getBlockEntity(pos));
+                if (rack.controller != null)
+                {
+                    oldController = rack.getBlockPos().subtract(rack.controller);
+                    rack.controller = null;
+                }
+            }
+
+            if (oldController != null)
+            {
+                final TileEntityController te = ((TileEntityController) level.getBlockEntity(oldController));
+                if (te != null)
+                {
+                    te.removeAll(visitedPositions);
+                }
+            }
         }
     }
 
-    public void potentialRackRemoval(final BlockPos newPos)
+    public static BlockPos visitPositions(final World level, final Set<BlockPos> visitedPositions, final BlockPos current)
     {
-        final BlockPos relativePos = getBlockPos().subtract(newPos);
-        if (relativePos.equals(parent))
+        BlockPos controller = null;
+        if (level.getBlockEntity(current) instanceof TileEntityController)
         {
-           // tryReCalculateGraph();
+            controller = current;
         }
+
+        visitedPositions.add(current);
+
+        for (final Direction dir : Direction.values())
+        {
+            final BlockPos next = current.relative(dir);
+            if (!visitedPositions.contains(next))
+            {
+                final TileEntity te = level.getBlockEntity(next);
+                if (te instanceof TileEntityRack || te instanceof TileEntityController)
+                {
+                    final BlockPos cont = visitPositions(level, visitedPositions, next);
+                    if (cont != null)
+                    {
+                        if (cont.equals(BlockPos.ZERO) || (controller != null && !cont.equals(controller)))
+                        {
+                            return BlockPos.ZERO;
+                        }
+                        controller = cont;
+                    }
+                }
+            }
+        }
+        return controller;
     }
 }

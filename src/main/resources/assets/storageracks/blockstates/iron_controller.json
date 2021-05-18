@@ -2,19 +2,19 @@
   "variants": {
     "facing=east": {
       "model": "storageracks:block/iron_controller",
-      "y": 0
+      "y": 90
     },
     "facing=south": {
       "model": "storageracks:block/iron_controller",
-      "y": 90
+      "y": 0
     },
     "facing=west": {
       "model": "storageracks:block/iron_controller",
-      "y": 180
+      "y": 270
     },
     "facing=north": {
       "model": "storageracks:block/iron_controller",
-      "y": 270
+      "y": 180
     }
   }
 }

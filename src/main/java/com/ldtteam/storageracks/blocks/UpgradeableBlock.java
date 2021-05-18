@@ -44,6 +44,11 @@ public class UpgradeableBlock extends Block
         this.next = next;
     }
 
+    public Item getUpgradeMaterial()
+    {
+        return upgradeMaterial;
+    }
+
     /**
      * Check if this is an upgrade attempt.
      *
@@ -53,7 +58,7 @@ public class UpgradeableBlock extends Block
     public void checkUpgrade(final BlockPos pos, final PlayerEntity player)
     {
         final BlockState state = player.level.getBlockState(pos);
-        final UpgradeableBlock block = (RackBlock) state.getBlock();
+        final UpgradeableBlock block = (UpgradeableBlock) state.getBlock();
 
         if (player.getMainHandItem().getItem() == block.upgradeMaterial)
         {

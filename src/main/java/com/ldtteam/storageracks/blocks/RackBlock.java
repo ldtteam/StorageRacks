@@ -4,17 +4,14 @@ import com.ldtteam.storageracks.TileEntityRack;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import com.ldtteam.structurize.blocks.types.WoodType;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.loot.LootContext;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -24,19 +21,24 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.HashSet;
 
 /**
  * Block for the shelves of the warehouse.
  */
+@Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RackBlock extends UpgradeableBlock
 {
     /**
@@ -184,27 +186,57 @@ public class RackBlock extends UpgradeableBlock
         return this.frameType;
     }
 
-    @NotNull
     @Override
-    public BlockState updateShape(
-      @NotNull final BlockState it,
-      final Direction facing,
-      final BlockState newState,
-      final IWorld world,
-      final BlockPos itPos,
-      final BlockPos newPos)
+    public void setPlacedBy(final World world, final BlockPos pos, final BlockState state, @Nullable final LivingEntity placer, final ItemStack stack)
     {
-        if (it.getBlock() instanceof RackBlock)
+        super.setPlacedBy(world, pos, state, placer, stack);
+        if (!world.isClientSide && state.getBlock() instanceof RackBlock && placer instanceof PlayerEntity)
         {
-            if (newState.getBlock() instanceof RackBlock)
+            ((TileEntityRack) world.getBlockEntity(pos)).neighborChange((PlayerEntity) placer);
+        }
+    }
+
+    @Override
+    public boolean removedByPlayer(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final boolean willHarvest, final FluidState fluid)
+    {
+        final boolean rem = super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
+        if (!world.isClientSide && state.getBlock() instanceof RackBlock)
+        {
+            for (final Direction direction : Direction.values())
             {
-                ((TileEntityRack) world.getBlockEntity(itPos)).newNeighborRack(newPos);
-            }
-            else
-            {
-                ((TileEntityRack) world.getBlockEntity(itPos)).potentialRackRemoval(newPos);
+                final TileEntity te = world.getBlockEntity(pos.relative(direction));
+                if (te instanceof TileEntityRack)
+                {
+                    ((TileEntityRack) te).neighborChange(player);
+                }
             }
         }
-        return super.updateShape(it, facing, newState, world, itPos, newPos);
+        return rem;
+    }
+
+    @SubscribeEvent
+    public static void on(final BlockEvent.EntityPlaceEvent event)
+    {
+        if (!(event.getPlacedBlock().getBlock() instanceof RackBlock || event.getPlacedBlock().getBlock() instanceof ControllerBlock) || !(event.getEntity() instanceof PlayerEntity))
+        {
+            return;
+        }
+
+        final HashSet<BlockPos> posSet = new HashSet<>();
+        final BlockPos result = TileEntityRack.visitPositions((World) event.getWorld(), posSet, event.getPos());
+        if (result == null || result.equals(BlockPos.ZERO))
+        {
+            event.getEntity().sendMessage(new TranslationTextComponent("gui.storageracks.notconnected"), event.getEntity().getUUID());
+            event.setCanceled(true);
+        }
+        else if (event.getPlacedBlock().getBlock() instanceof RackBlock)
+        {
+            final ControllerBlock controller = (ControllerBlock) event.getEntity().level.getBlockState(result).getBlock();
+            if (posSet.size() > controller.getTier() * 20)
+            {
+                event.getEntity().sendMessage(new TranslationTextComponent("gui.storageracks.limitreached"), event.getEntity().getUUID());
+                event.setCanceled(true);
+            }
+        }
     }
 }

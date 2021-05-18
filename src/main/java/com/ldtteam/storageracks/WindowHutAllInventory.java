@@ -26,8 +26,7 @@ import static com.ldtteam.storageracks.utils.WindowConstants.*;
  */
 public class WindowHutAllInventory extends AbstractWindowSkeleton
 {
-    private static final NavigableMap<Long, String> suffixes = new TreeMap<> ();
-
+    private static final NavigableMap<Long, String> suffixes = new TreeMap<>();
     static
     {
         suffixes.put(1_000L, "k");
@@ -51,12 +50,12 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
     /**
      * The filter for the resource list.
      */
-    private       String        filter         = "";
+    private String filter = "";
 
     /**
      * The sortDescriptor so how we want to sort
      */
-    private       int           sortDescriptor = 0;
+    private int sortDescriptor = 0;
 
     /**
      * The owner controller.
@@ -90,7 +89,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
                 if (((TileEntityRack) rack).hasItemStack(storage.getItemStack(), 1))
                 {
                     HighlightManager.HIGHLIGHT_MAP.put("inventoryHighlight", new Tuple<>(blockPos, Minecraft.getInstance().level.getGameTime() + 120 * 20));
-                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("com.minecolonies.coremod.locating"), Minecraft.getInstance().player.getUUID());
+                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("gui.storageracks.locating"), Minecraft.getInstance().player.getUUID());
                     close();
                     return;
                 }
@@ -99,13 +98,8 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
     }
 
     /**
-     * Increments the sortDescriptor and sets the GUI Button accordingly Valid Stages
-     * 0 - 4 NO_SORT
-     * 0   No Sorting, like wysiwyg ASC_SORT
-     * 1   Name Ascending DESC_SORT
-     * 2   Name Descending COUNT_ASC_SORT
-     * 3   Itemcount Ascending COUNT_DESC_SORT
-     * 4   Itemcount Descending
+     * Increments the sortDescriptor and sets the GUI Button accordingly Valid Stages 0 - 4 NO_SORT 0   No Sorting, like wysiwyg ASC_SORT 1   Name Ascending DESC_SORT 2   Name
+     * Descending COUNT_ASC_SORT 3   Itemcount Ascending COUNT_DESC_SORT 4   Itemcount Descending
      **/
     private void setSortFlag()
     {
@@ -250,7 +244,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
                 final String name = resource.getItemStack().getDisplayName().getString();
                 resourceLabel.setText(name.substring(0, Math.min(17, name.length())));
                 final Text qtys = rowPane.findPaneOfTypeByID("quantities", Text.class);
-                if(!Screen.hasShiftDown())
+                if (!Screen.hasShiftDown())
                 {
                     qtys.setText(format(resource.getAmount()));
                 }
@@ -268,15 +262,25 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
 
     /**
      * Formats a long value into a abbreviated string, ie: 1000->1k, 1200->1.2k, 13000->13k
+     *
      * @param value to format
      * @return string version of the value
      */
     public static String format(long value)
     {
         //Long.MIN_VALUE == -Long.MIN_VALUE so we need an adjustment here
-        if (value == Long.MIN_VALUE) return format(Long.MIN_VALUE + 1);
-        if (value < 0) return "-" + format(-value);
-        if (value < 1000) return Long.toString(value); //deal with easy case
+        if (value == Long.MIN_VALUE)
+        {
+            return format(Long.MIN_VALUE + 1);
+        }
+        if (value < 0)
+        {
+            return "-" + format(-value);
+        }
+        if (value < 1000)
+        {
+            return Long.toString(value); //deal with easy case
+        }
 
         Map.Entry<Long, String> e = suffixes.floorEntry(value);
         Long divideBy = e.getKey();

@@ -1,6 +1,6 @@
 <window pause="true" lightbox="true" size="190 244">
     <image source="storageracks:textures/gui/builder_paper.png" size="190 244"/>
-    <label id="desc" size="130 11" pos="30 14" color="black" textalign="MIDDLE" label="$(com.storageracks.coremod.gui.allinventory)"/>
+    <label id="desc" size="130 11" pos="30 14" color="black" textalign="MIDDLE" label="$(gui.storageracks.allinventory)"/>
     <input id="names" size="132 18" pos="15 30" maxlength="25"/>
     <buttonimage id="sortStorageFilter" size="14 15" pos="158 31" textcolor="black"
                  source="storageracks:textures/gui/builder_button_mini.png"
