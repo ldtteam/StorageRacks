@@ -10,7 +10,7 @@
       "item": "minecraft:diamond"
     },
     "P": {
-      "item": "minecraft:emerald_controller"
+      "item": "storageracks:emerald_controller"
     }
   },
   "result": {

@@ -10,7 +10,7 @@
       "item": "minecraft:emerald"
     },
     "P": {
-      "item": "minecraft:gold_controller"
+      "item": "storageracks:gold_controller"
     }
   },
   "result": {

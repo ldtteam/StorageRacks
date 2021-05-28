@@ -10,7 +10,7 @@
       "item": "minecraft:iron_ingot"
     },
     "P": {
-      "item": "minecraft:stone_controller"
+      "item": "storageracks:stone_controller"
     }
   },
   "result": {
