@@ -57,7 +57,7 @@ allow an easy overview and locate ability to find anything a player may need.
     versionRange="[1.16.4,1.17)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.minecolonies]]
+[[dependencies.storagerack]]
     modId="structurize"
     mandatory=true
     versionRange="[0.13.160-ALPHA,)"
