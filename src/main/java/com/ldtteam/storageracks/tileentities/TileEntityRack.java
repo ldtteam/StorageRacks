@@ -1,7 +1,9 @@
-package com.ldtteam.storageracks;
+package com.ldtteam.storageracks.tileentities;
 
+import com.ldtteam.storageracks.ItemStorage;
 import com.ldtteam.storageracks.blocks.RackBlock;
 import com.ldtteam.storageracks.blocks.RackType;
+import com.ldtteam.storageracks.inv.ContainerRack;
 import com.ldtteam.storageracks.utils.ItemStackUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
 import com.ldtteam.structurize.api.util.BlockPosUtil;
@@ -16,11 +18,10 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -99,7 +100,6 @@ public class TileEntityRack extends AbstractTileEntityRack
     public boolean hasItemStack(final ItemStack stack, final int count)
     {
         final ItemStorage checkItem = new ItemStorage(stack);
-
         return content.getOrDefault(checkItem, 0) >= count;
     }
 
@@ -134,14 +134,10 @@ public class TileEntityRack extends AbstractTileEntityRack
 
         for (final ItemStorage storage : content.keySet())
         {
-            for (final ResourceLocation tag : stack.getItem().getTags())
-            {
-                if (StorageRacks.config.getServer().enabledModTags.get().contains(tag.toString())
-                      && storage.getItemStack().getItem().getTags().contains(tag))
-                {
-                    return true;
-                }
-            }
+           if (checkItem.getPrimaryCreativeTabIndex() == storage.getPrimaryCreativeTabIndex())
+           {
+               return true;
+           }
         }
 
         return false;
@@ -410,7 +406,7 @@ public class TileEntityRack extends AbstractTileEntityRack
     @Override
     public ITextComponent getDisplayName()
     {
-        return new StringTextComponent("Rack");
+        return new TranslationTextComponent("container.title.rack");
     }
 
     @Override

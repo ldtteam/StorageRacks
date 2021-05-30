@@ -1,4 +1,4 @@
-package com.ldtteam.storageracks;
+package com.ldtteam.storageracks.inv;
 
 import net.minecraft.util.INameable;
 import org.jetbrains.annotations.Nullable;

@@ -58,24 +58,6 @@ public final class ItemStackUtils
     }
 
     /**
-     * Method to check if two ItemStacks can be merged together.
-     *
-     * @param existingStack The existing stack.
-     * @param mergingStack  The merging stack
-     * @return True when they can be merged, false when not.
-     */
-    @NotNull
-    public static Boolean areItemStacksMergable(final ItemStack existingStack, final ItemStack mergingStack)
-    {
-        if (!compareItemStacksIgnoreStackSize(existingStack, mergingStack))
-        {
-            return false;
-        }
-
-        return existingStack.getMaxStackSize() >= (getSize(existingStack) + getSize(mergingStack));
-    }
-
-    /**
      * Method to compare to stacks, ignoring their stacksize.
      *
      * @param itemStack1 The left stack to compare.
@@ -238,17 +220,6 @@ public final class ItemStackUtils
     }
 
     /**
-     * set the size of the stack. This is for compatibility between 1.10 and 1.11
-     *
-     * @param stack to set the size to
-     * @param size  of the stack
-     */
-    public static void setSize(@NotNull final ItemStack stack, final int size)
-    {
-        stack.setCount(size);
-    }
-
-    /**
      * Increase or decrease the stack size.
      *
      * @param stack  to set the size to
@@ -257,18 +228,6 @@ public final class ItemStackUtils
     public static void changeSize(@NotNull final ItemStack stack, final int amount)
     {
         stack.setCount(stack.getCount() + amount);
-    }
-
-    /**
-     * Update method to allow for easy reading the ItemStack data from NBT.
-     *
-     * @param compound The compound to read from.
-     * @return The ItemStack stored in the NBT Data.
-     */
-    @NotNull
-    public static ItemStack deserializeFromNBT(@NotNull final CompoundNBT compound)
-    {
-        return ItemStack.of(compound);
     }
 }
 

@@ -1,8 +1,8 @@
 package com.ldtteam.storageracks.blocks;
 
-import com.ldtteam.storageracks.TileEntityController;
-import com.ldtteam.storageracks.TileEntityRack;
-import com.ldtteam.storageracks.WindowHutAllInventory;
+import com.ldtteam.storageracks.tileentities.TileEntityController;
+import com.ldtteam.storageracks.tileentities.TileEntityRack;
+import com.ldtteam.storageracks.gui.WindowHutAllInventory;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import net.minecraft.block.Block;

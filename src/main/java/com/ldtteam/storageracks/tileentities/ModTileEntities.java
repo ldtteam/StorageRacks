@@ -1,4 +1,4 @@
-package com.ldtteam.storageracks;
+package com.ldtteam.storageracks.tileentities;
 
 import com.ldtteam.storageracks.blocks.ModBlocks;
 import com.ldtteam.storageracks.blocks.RackBlock;

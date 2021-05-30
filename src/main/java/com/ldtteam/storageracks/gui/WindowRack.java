@@ -1,5 +1,6 @@
-package com.ldtteam.storageracks;
+package com.ldtteam.storageracks.gui;
 
+import com.ldtteam.storageracks.inv.ContainerRack;
 import com.ldtteam.storageracks.utils.Constants;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;

@@ -1,4 +1,4 @@
-package com.ldtteam.storageracks;
+package com.ldtteam.storageracks.inv;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

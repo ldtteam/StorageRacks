@@ -1,5 +1,6 @@
-package com.ldtteam.storageracks;
+package com.ldtteam.storageracks.inv;
 
+import com.ldtteam.storageracks.tileentities.AbstractTileEntityRack;
 import com.ldtteam.storageracks.utils.ItemStackUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -131,7 +132,7 @@ public class ContainerRack extends Container
 
         if (!ItemStack.isSame(currentStack, afterStack))
         {
-            this.updateRacks(afterStack);
+            this.updateRacks();
         }
 
         return result;
@@ -176,7 +177,7 @@ public class ContainerRack extends Container
 
         if (playerIn instanceof ServerPlayerEntity)
         {
-            this.updateRacks(stackCopy);
+            this.updateRacks();
         }
 
         return stackCopy;
@@ -185,20 +186,18 @@ public class ContainerRack extends Container
     @Override
     protected boolean moveItemStackTo(final ItemStack stack, final int startIndex, final int endIndex, final boolean reverseDirection)
     {
-        final ItemStack before = stack.copy();
         final boolean merge =  super.moveItemStackTo(stack, startIndex, endIndex, reverseDirection);
         if (merge)
         {
-            this.updateRacks(before);
+            this.updateRacks();
         }
         return merge;
     }
 
     /**
      * Update the racks (combined inv and warehouse).
-     * @param stack the stack to set.
      */
-    private void updateRacks(final ItemStack stack)
+    private void updateRacks()
     {
         rack.updateItemStorage();
     }

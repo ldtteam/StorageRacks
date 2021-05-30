@@ -30,11 +30,6 @@ public abstract class AbstractWindowSkeleton extends Window implements ButtonHan
     protected       SwitchView switchView;
 
     /**
-     * This window's resource location
-     */
-    private String resource;
-
-    /**
      * This window's parent
      */
     @Nullable
@@ -58,7 +53,6 @@ public abstract class AbstractWindowSkeleton extends Window implements ButtonHan
     public AbstractWindowSkeleton(final String resource, @Nullable final Window parent)
     {
         super(resource);
-        this.resource = resource;
         this.parent = parent;
 
         buttons = new HashMap<>();
@@ -115,16 +109,6 @@ public abstract class AbstractWindowSkeleton extends Window implements ButtonHan
         {
             buttons.get(button.getID()).accept(button);
         }
-    }
-
-    /**
-     * Button clicked without an action. Method does nothing.
-     *
-     * @param ignored Parameter is ignored. Since some actions require a button, we must accept a button parameter.
-     */
-    public final void doNothing(final Button ignored)
-    {
-        //do nothing with that event
     }
 
     /**

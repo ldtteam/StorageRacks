@@ -1,4 +1,4 @@
-package com.ldtteam.storageracks;
+package com.ldtteam.storageracks.tileentities;
 
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;

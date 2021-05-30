@@ -1,19 +1,29 @@
-package com.ldtteam.storageracks;
+package com.ldtteam.storageracks.gui;
 
+import com.ldtteam.blockout.Color;
 import com.ldtteam.blockout.Pane;
+import com.ldtteam.blockout.PaneBuilders;
 import com.ldtteam.blockout.controls.*;
 import com.ldtteam.blockout.views.ScrollingList;
+import com.ldtteam.storageracks.*;
+import com.ldtteam.storageracks.network.*;
+import com.ldtteam.storageracks.tileentities.TileEntityController;
+import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.utils.Constants;
+import com.ldtteam.storageracks.utils.InventoryUtils;
 import com.ldtteam.structurize.util.LanguageHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -37,6 +47,9 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         suffixes.put(1_000_000_000_000_000L, "P");
         suffixes.put(1_000_000_000_000_000_000L, "E");
     }
+
+    public static final int RED   = Color.rgbaToInt(240, 150, 135, 255);
+    public static final int GREEN = Color.rgbaToInt(85, 255, 255, 255);
 
     /**
      * List of all item stacks in the warehouse.
@@ -74,6 +87,77 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         this.stackList = findPaneOfTypeByID(LIST_ALLINVENTORY, ScrollingList.class);
         updateResources();
         registerButton(LOCATE, this::locate);
+        registerButton(SORT, this::sort);
+        registerButton(INSERT, this::insert);
+
+        if (controller.isSortUnlocked())
+        {
+            findPaneOfTypeByID(SORT, ButtonImage.class).setText(new TranslationTextComponent("gui.storageracks.sort"));
+        }
+        else
+        {
+            findPaneOfTypeByID(SORT, ButtonImage.class).setText(new TranslationTextComponent("gui.storageracks.sort.unlock"));
+            final ItemIcon icon = findPaneOfTypeByID("sortcost", ItemIcon.class);
+            setupIcon(icon, Items.REDSTONE_BLOCK);
+        }
+
+        if (controller.isInsertUnlocked())
+        {
+            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(new TranslationTextComponent("gui.storageracks.insert"));
+        }
+        else
+        {
+            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(new TranslationTextComponent("gui.storageracks.insert.unlock"));
+            final ItemIcon icon = findPaneOfTypeByID("insertcost", ItemIcon.class);
+            setupIcon(icon, Items.HOPPER);
+        }
+    }
+
+    private void setupIcon(final ItemIcon icon, final Item item)
+    {
+        icon.setVisible(true);
+        icon.setItem(new ItemStack(item, 1));
+        if (InventoryUtils.findFirstSlotInItemHandlerWith(new InvWrapper(Minecraft.getInstance().player.inventory), item) >= 0)
+        {
+            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(new TranslationTextComponent("gui.storage.racks.available")).color(GREEN).build();
+        }
+        else
+        {
+            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(new TranslationTextComponent("gui.storage.racks.missing")).color(RED).build();
+        }
+    }
+
+    /**
+     * If not yet unlocked, try to spend the player res and unlock. Else Open the insert window.
+     */
+    private void insert()
+    {
+        if (controller.isInsertUnlocked())
+        {
+            Network.getNetwork().sendToServer(new OpenInventoryMessage(this.controller.getBlockPos()));
+        }
+        else
+        {
+            Network.getNetwork().sendToServer(new UnlockInsertMessage(this.controller.getBlockPos()));
+            close();
+        }
+    }
+
+    /**
+     * If not yet unlocked, try to spend the player res and unlock. Else Sends a message to the server side to sort all the inventories.
+     */
+    private void sort()
+    {
+        if (controller.isSortUnlocked())
+        {
+            Network.getNetwork().sendToServer(new SortControllerMessage(this.controller.getBlockPos()));
+        }
+        else
+        {
+            Network.getNetwork().sendToServer(new UnlockSortMessage(this.controller.getBlockPos()));
+        }
+
+        close();
     }
 
     private void locate(final Button button)
@@ -112,19 +196,19 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         switch (sortDescriptor)
         {
             case NO_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText("v^");
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("v^"));
                 break;
             case ASC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText("A^");
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("A^"));
                 break;
             case DESC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText("Av");
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("Av"));
                 break;
             case COUNT_ASC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText("1^");
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("1^"));
                 break;
             case COUNT_DESC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText("1v");
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("1v"));
                 break;
             default:
                 break;
@@ -288,7 +372,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         String suffix = e.getValue();
 
         long truncated = value / (divideBy / 10); //the number part of the output times 10
-        boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / 10);
+        boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / 10d);
         return hasDecimal ? (truncated / 10d) + suffix : (truncated / 10) + suffix;
     }
 
