@@ -63,7 +63,7 @@ public class UnlockSortMessage implements IMessage
 
         if (!playerEntity.isCreative())
         {
-            final int slot = InventoryUtils.findFirstSlotInItemHandlerWith(new InvWrapper(playerEntity.inventory), Items.HOPPER);
+            final int slot = InventoryUtils.findFirstSlotInItemHandlerWith(new InvWrapper(playerEntity.inventory), Items.REDSTONE_BLOCK);
             if (slot < 0)
             {
                 SoundUtils.playErrorSound(playerEntity, pos);
