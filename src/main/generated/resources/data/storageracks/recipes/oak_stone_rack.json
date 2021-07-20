@@ -10,10 +10,10 @@
       "item": "minecraft:oak_slab"
     },
     "C": {
-      "item": "minecraft:stone"
+      "tag": "forge:stone"
     },
     "X": {
-      "item": "minecraft:stick"
+      "tag": "forge:rods/wooden"
     }
   },
   "result": {

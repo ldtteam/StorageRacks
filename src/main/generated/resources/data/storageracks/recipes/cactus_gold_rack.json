@@ -13,7 +13,7 @@
       "item": "minecraft:gold_ingot"
     },
     "X": {
-      "item": "minecraft:stick"
+      "tag": "forge:rods/wooden"
     }
   },
   "result": {

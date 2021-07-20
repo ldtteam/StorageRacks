@@ -10,10 +10,10 @@
       "item": "minecraft:jungle_slab"
     },
     "C": {
-      "item": "minecraft:emerald"
+      "item": "minecraft:diamond"
     },
     "X": {
-      "item": "minecraft:stick"
+      "tag": "forge:rods/wooden"
     }
   },
   "result": {
