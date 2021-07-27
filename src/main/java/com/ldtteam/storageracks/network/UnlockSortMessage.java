@@ -3,13 +3,13 @@ package com.ldtteam.storageracks.network;
 import com.ldtteam.storageracks.tileentities.TileEntityController;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import com.ldtteam.storageracks.utils.SoundUtils;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Items;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 /**
@@ -40,13 +40,13 @@ public class UnlockSortMessage implements IMessage
     }
 
     @Override
-    public void toBytes(final PacketBuffer buf)
+    public void toBytes(final FriendlyByteBuf buf)
     {
         buf.writeBlockPos(pos);
     }
 
     @Override
-    public void fromBytes(final PacketBuffer buf)
+    public void fromBytes(final FriendlyByteBuf buf)
     {
         this.pos = buf.readBlockPos();
     }
@@ -54,8 +54,8 @@ public class UnlockSortMessage implements IMessage
     @Override
     public void onExecute(final NetworkEvent.Context ctxIn, final boolean isLogicalServer)
     {
-        final ServerPlayerEntity playerEntity = ctxIn.getSender();
-        final TileEntity te = playerEntity.getCommandSenderWorld().getBlockEntity(pos);
+        final ServerPlayer playerEntity = ctxIn.getSender();
+        final BlockEntity te = playerEntity.getCommandSenderWorld().getBlockEntity(pos);
         if (!(te instanceof TileEntityController))
         {
             return;
@@ -63,18 +63,18 @@ public class UnlockSortMessage implements IMessage
 
         if (!playerEntity.isCreative())
         {
-            final int slot = InventoryUtils.findFirstSlotInItemHandlerWith(new InvWrapper(playerEntity.inventory), Items.REDSTONE_BLOCK);
+            final int slot = InventoryUtils.findFirstSlotInItemHandlerWith(new InvWrapper(playerEntity.getInventory()), Items.REDSTONE_BLOCK);
             if (slot < 0)
             {
                 SoundUtils.playErrorSound(playerEntity, pos);
-                playerEntity.sendMessage(new TranslationTextComponent("com.storageracks.sort.unlock.failed"), playerEntity.getUUID());
+                playerEntity.sendMessage(new TranslatableComponent("com.storageracks.sort.unlock.failed"), playerEntity.getUUID());
                 return;
             }
-            playerEntity.inventory.getItem(slot).shrink(1);
+            playerEntity.getInventory().getItem(slot).shrink(1);
         }
 
         SoundUtils.playSuccessSound(playerEntity, pos);
-        playerEntity.sendMessage(new TranslationTextComponent("com.storageracks.sort.unlock.succeeded"), playerEntity.getUUID());
+        playerEntity.sendMessage(new TranslatableComponent("com.storageracks.sort.unlock.succeeded"), playerEntity.getUUID());
         ((TileEntityController) te).unlockSort();
     }
 }

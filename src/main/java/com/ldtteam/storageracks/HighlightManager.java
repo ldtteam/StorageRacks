@@ -1,12 +1,12 @@
 package com.ldtteam.storageracks;
 
-import com.ldtteam.structurize.util.RenderUtils;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.ldtteam.storageracks.utils.RenderUtils;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderTypeBuffers;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -32,9 +32,9 @@ public class HighlightManager
     /**
      * Render buffers.
      */
-    public static final  RenderTypeBuffers        renderBuffers            = new RenderTypeBuffers();
-    private static final IRenderTypeBuffer.Impl   renderBuffer             = renderBuffers.bufferSource();
-    private static final Supplier<IVertexBuilder> linesWithoutCullAndDepth = () -> renderBuffer.getBuffer(RenderUtils.LINES_GLINT);
+    public static final  RenderBuffers        renderBuffers            = new RenderBuffers();
+    private static final MultiBufferSource.BufferSource   renderBuffer             = renderBuffers.bufferSource();
+    private static final Supplier<VertexConsumer> linesWithoutCullAndDepth = () -> renderBuffer.getBuffer(RenderUtils.LINES_GLINT);
 
     /**
      * Used to catch the renderWorldLastEvent in order to draw the debug nodes for pathfinding.

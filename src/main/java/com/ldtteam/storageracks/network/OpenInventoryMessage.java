@@ -1,12 +1,12 @@
 package com.ldtteam.storageracks.network;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 /**
  * Message sent to open an inventory.
@@ -36,13 +36,13 @@ public class OpenInventoryMessage implements IMessage
     }
 
     @Override
-    public void toBytes(final PacketBuffer buf)
+    public void toBytes(final FriendlyByteBuf buf)
     {
         buf.writeBlockPos(pos);
     }
 
     @Override
-    public void fromBytes(final PacketBuffer buf)
+    public void fromBytes(final FriendlyByteBuf buf)
     {
         this.pos = buf.readBlockPos();
     }
@@ -50,12 +50,12 @@ public class OpenInventoryMessage implements IMessage
     @Override
     public void onExecute(final NetworkEvent.Context ctxIn, final boolean isLogicalServer)
     {
-        final ServerPlayerEntity player = ctxIn.getSender();
+        final ServerPlayer player = ctxIn.getSender();
         if (player == null)
         {
             return;
         }
-        final TileEntity tileEntity = player.level.getBlockEntity(pos);
-        NetworkHooks.openGui(player, (INamedContainerProvider) tileEntity, packetBuffer -> packetBuffer.writeBlockPos(pos));
+        final BlockEntity tileEntity = player.level.getBlockEntity(pos);
+        NetworkHooks.openGui(player, (MenuProvider) tileEntity, packetBuffer -> packetBuffer.writeBlockPos(pos));
     }
 }

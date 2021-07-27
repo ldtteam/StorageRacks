@@ -1,12 +1,13 @@
 package com.ldtteam.storageracks.utils;
 
-import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Predicate;
+
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Utility methods for the inventories.
@@ -160,8 +161,8 @@ public final class ItemStackUtils
             // Then sort on NBT
             if (itemStack1.hasTag() && itemStack2.hasTag())
             {
-                CompoundNBT nbt1 = itemStack1.getTag();
-                CompoundNBT nbt2 = itemStack2.getTag();
+                CompoundTag nbt1 = itemStack1.getTag();
+                CompoundTag nbt2 = itemStack2.getTag();
 
                 for(String key :nbt1.getAllKeys())
                 {

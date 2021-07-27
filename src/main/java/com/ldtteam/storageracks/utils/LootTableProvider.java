@@ -15,13 +15,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DirectoryCache;
-import net.minecraft.data.IDataProvider;
+import net.minecraft.data.HashCache;
+import net.minecraft.data.DataProvider;
 import org.jetbrains.annotations.NotNull;
 
-public class LootTableProvider implements IDataProvider
+public class LootTableProvider implements DataProvider
 {
     private static final String DATAPACK_DIR = "data/" + Constants.MOD_ID + "/";
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
@@ -35,7 +35,7 @@ public class LootTableProvider implements IDataProvider
     }
 
     @Override
-    public void run(@NotNull DirectoryCache cache) throws IOException
+    public void run(@NotNull HashCache cache) throws IOException
     {
         for (RackBlock block : ModBlocks.racks)
         {
@@ -48,7 +48,7 @@ public class LootTableProvider implements IDataProvider
         saveBlock(ModBlocks.diamondController, cache);
     }
 
-    private void saveBlock(Block block, final DirectoryCache cache) throws IOException
+    private void saveBlock(Block block, final HashCache cache) throws IOException
     {
         if (block.getRegistryName() != null)
         {
@@ -66,7 +66,7 @@ public class LootTableProvider implements IDataProvider
             lootTableJson.setPools(Collections.singletonList(poolJson));
 
             final Path savePath = generator.getOutputFolder().resolve(LOOT_TABLES_DIR).resolve(block.getRegistryName().getPath() + ".json");
-            IDataProvider.save(GSON, cache, lootTableJson.serialize(), savePath);
+            DataProvider.save(GSON, cache, lootTableJson.serialize(), savePath);
         }
     }
 

@@ -5,33 +5,33 @@ import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.gui.WindowHutAllInventory;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalBlock;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,12 +51,12 @@ public class ControllerBlock extends UpgradeableBlock
     /**
      * The direction the block is facing.
      */
-    public static final DirectionProperty FACING = HorizontalBlock.FACING;
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     /**
      * Smaller shape.
      */
-    private static final VoxelShape SHAPE = VoxelShapes.box(0.1, 0.1, 0.1, 0.9, 0.9, 0.9);
+    private static final VoxelShape SHAPE = Shapes.box(0.1, 0.1, 0.1, 0.9, 0.9, 0.9);
 
     /**
      * The controller tier.
@@ -78,9 +78,9 @@ public class ControllerBlock extends UpgradeableBlock
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(final BlockItemUseContext context)
+    public BlockState getStateForPlacement(final BlockPlaceContext context)
     {
-        @NotNull final Direction facing = (context.getPlayer() == null) ? Direction.NORTH : Direction.fromYRot(context.getPlayer().yRot);
+        @NotNull final Direction facing = (context.getPlayer() == null) ? Direction.NORTH : Direction.fromYRot(context.getPlayer().yRotO);
         return this.defaultBlockState().setValue(FACING, facing);
     }
 
@@ -92,35 +92,35 @@ public class ControllerBlock extends UpgradeableBlock
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
         builder.add(FACING);
     }
 
     @Override
-    public boolean propagatesSkylightDown(final BlockState state, @NotNull final IBlockReader reader, @NotNull final BlockPos pos)
+    public boolean propagatesSkylightDown(final BlockState state, @NotNull final BlockGetter reader, @NotNull final BlockPos pos)
     {
         return true;
     }
 
     @Override
-    public void appendHoverText(final ItemStack stack, @Nullable final IBlockReader world, final List<ITextComponent> tooltip, final ITooltipFlag flag)
+    public void appendHoverText(final ItemStack stack, @Nullable final BlockGetter world, final List<Component> tooltip, final TooltipFlag flag)
     {
         super.appendHoverText(stack, world, tooltip, flag);
-        tooltip.add(new TranslationTextComponent("block.storageracks.controllertoolip", tier*20));
+        tooltip.add(new TranslatableComponent("block.storageracks.controllertoolip", tier*20));
     }
 
     @NotNull
     @Override
-    public VoxelShape getShape(final BlockState state, final IBlockReader worldIn, final BlockPos pos, final ISelectionContext context)
+    public VoxelShape getShape(final BlockState state, final BlockGetter worldIn, final BlockPos pos, final CollisionContext context)
     {
         return SHAPE;
     }
 
     @Override
-    public void spawnAfterBreak(final BlockState state, final ServerWorld worldIn, final BlockPos pos, final ItemStack stack)
+    public void spawnAfterBreak(final BlockState state, final ServerLevel worldIn, final BlockPos pos, final ItemStack stack)
     {
-        final TileEntity tileentity = worldIn.getBlockEntity(pos);
+        final BlockEntity tileentity = worldIn.getBlockEntity(pos);
         if (tileentity instanceof TileEntityRack)
         {
             final IItemHandler handler = ((TileEntityRack) tileentity).getInventory();
@@ -142,13 +142,13 @@ public class ControllerBlock extends UpgradeableBlock
      */
     @NotNull
     @Override
-    public ActionResultType use(
+    public InteractionResult use(
       final BlockState state,
-      final World world,
+      final Level world,
       final BlockPos pos,
-      final PlayerEntity player,
-      final Hand hand,
-      final BlockRayTraceResult ray)
+      final Player player,
+      final InteractionHand hand,
+      final BlockHitResult ray)
     {
        /*
         If the world is client, open the gui of the building
@@ -157,32 +157,26 @@ public class ControllerBlock extends UpgradeableBlock
         {
             new WindowHutAllInventory((TileEntityController) world.getBlockEntity(pos)).open();
         }
-        return ActionResultType.SUCCESS;
-    }
-
-    @Override
-    public boolean hasTileEntity(final BlockState state)
-    {
-        return true;
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(final BlockState state, final IBlockReader world)
+    public BlockEntity newBlockEntity(@NotNull final BlockPos blockPos, @NotNull final BlockState blockState)
     {
-        return new TileEntityController();
+        return new TileEntityController(blockPos, blockState);
     }
 
     @Override
-    public void setPlacedBy(final World world, final BlockPos pos, final BlockState state, @Nullable final LivingEntity placer, final ItemStack stack)
+    public void setPlacedBy(final Level world, final BlockPos pos, final BlockState state, @Nullable final LivingEntity placer, final ItemStack stack)
     {
         super.setPlacedBy(world, pos, state, placer, stack);
-        if (!world.isClientSide && state.getBlock() instanceof ControllerBlock && placer instanceof PlayerEntity)
+        if (!world.isClientSide && state.getBlock() instanceof ControllerBlock && placer instanceof Player)
         {
             ((TileEntityController) world.getBlockEntity(pos)).setTier(tier);
             for (final Direction direction : Direction.values())
             {
-                final TileEntity te = world.getBlockEntity(pos.relative(direction));
+                final BlockEntity te = world.getBlockEntity(pos.relative(direction));
                 if (te instanceof TileEntityRack)
                 {
                     ((TileEntityRack) te).neighborChange();
@@ -193,14 +187,14 @@ public class ControllerBlock extends UpgradeableBlock
     }
 
     @Override
-    public boolean removedByPlayer(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final boolean willHarvest, final FluidState fluid)
+    public boolean removedByPlayer(final BlockState state, final Level world, final BlockPos pos, final Player player, final boolean willHarvest, final FluidState fluid)
     {
         final boolean rem = super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
         if (!world.isClientSide && state.getBlock() instanceof ControllerBlock)
         {
             for (final Direction direction : Direction.values())
             {
-                final TileEntity te = world.getBlockEntity(pos.relative(direction));
+                final BlockEntity te = world.getBlockEntity(pos.relative(direction));
                 if (te instanceof TileEntityRack)
                 {
                     ((TileEntityRack) te).neighborChange();

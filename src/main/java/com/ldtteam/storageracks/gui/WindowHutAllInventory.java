@@ -1,28 +1,27 @@
 package com.ldtteam.storageracks.gui;
 
-import com.ldtteam.blockout.Color;
-import com.ldtteam.blockout.Pane;
-import com.ldtteam.blockout.PaneBuilders;
-import com.ldtteam.blockout.controls.*;
-import com.ldtteam.blockout.views.ScrollingList;
+import com.ldtteam.blockui.Color;
+import com.ldtteam.blockui.Pane;
+import com.ldtteam.blockui.PaneBuilders;
+import com.ldtteam.blockui.controls.*;
+import com.ldtteam.blockui.views.ScrollingList;
 import com.ldtteam.storageracks.*;
 import com.ldtteam.storageracks.network.*;
 import com.ldtteam.storageracks.tileentities.TileEntityController;
 import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
-import com.ldtteam.structurize.util.LanguageHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 
@@ -92,22 +91,22 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
 
         if (controller.isSortUnlocked())
         {
-            findPaneOfTypeByID(SORT, ButtonImage.class).setText(new TranslationTextComponent("gui.storageracks.sort"));
+            findPaneOfTypeByID(SORT, ButtonImage.class).setText(new TranslatableComponent("gui.storageracks.sort"));
         }
         else
         {
-            findPaneOfTypeByID(SORT, ButtonImage.class).setText(new TranslationTextComponent("gui.storageracks.sort.unlock"));
+            findPaneOfTypeByID(SORT, ButtonImage.class).setText(new TranslatableComponent("gui.storageracks.sort.unlock"));
             final ItemIcon icon = findPaneOfTypeByID("sortcost", ItemIcon.class);
             setupIcon(icon, Items.REDSTONE_BLOCK);
         }
 
         if (controller.isInsertUnlocked())
         {
-            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(new TranslationTextComponent("gui.storageracks.insert"));
+            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(new TranslatableComponent("gui.storageracks.insert"));
         }
         else
         {
-            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(new TranslationTextComponent("gui.storageracks.insert.unlock"));
+            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(new TranslatableComponent("gui.storageracks.insert.unlock"));
             final ItemIcon icon = findPaneOfTypeByID("insertcost", ItemIcon.class);
             setupIcon(icon, Items.HOPPER);
         }
@@ -117,13 +116,13 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
     {
         icon.setVisible(true);
         icon.setItem(new ItemStack(item, 1));
-        if (InventoryUtils.findFirstSlotInItemHandlerWith(new InvWrapper(Minecraft.getInstance().player.inventory), item) >= 0)
+        if (InventoryUtils.findFirstSlotInItemHandlerWith(new InvWrapper(Minecraft.getInstance().player.getInventory()), item) >= 0)
         {
-            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(new TranslationTextComponent("gui.storage.racks.available")).color(GREEN).build();
+            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(new TranslatableComponent("gui.storage.racks.available")).color(GREEN).build();
         }
         else
         {
-            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(new TranslationTextComponent("gui.storage.racks.missing")).color(RED).build();
+            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(new TranslatableComponent("gui.storage.racks.missing")).color(RED).build();
         }
     }
 
@@ -168,13 +167,13 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
 
         for (BlockPos blockPos : containerList)
         {
-            final TileEntity rack = Minecraft.getInstance().level.getBlockEntity(blockPos);
+            final BlockEntity rack = Minecraft.getInstance().level.getBlockEntity(blockPos);
             if (rack instanceof TileEntityRack)
             {
                 if (((TileEntityRack) rack).hasItemStack(storage.getItemStack(), 1))
                 {
                     HighlightManager.HIGHLIGHT_MAP.put("inventoryHighlight", new Tuple<>(blockPos, Minecraft.getInstance().level.getGameTime() + 120 * 20));
-                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("gui.storageracks.locating"), Minecraft.getInstance().player.getUUID());
+                    Minecraft.getInstance().player.sendMessage(new TranslatableComponent("gui.storageracks.locating"), Minecraft.getInstance().player.getUUID());
                     close();
                     return;
                 }
@@ -196,19 +195,19 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         switch (sortDescriptor)
         {
             case NO_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("v^"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("v^"));
                 break;
             case ASC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("A^"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("A^"));
                 break;
             case DESC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("Av"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("Av"));
                 break;
             case COUNT_ASC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("1^"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("1^"));
                 break;
             case COUNT_DESC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new StringTextComponent("1v"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("1v"));
                 break;
             default:
                 break;
@@ -225,11 +224,11 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         final Set<BlockPos> containerList = new HashSet<>(controller.racks);
 
         final Map<ItemStorage, Integer> storedItems = new HashMap<>();
-        final World level = Minecraft.getInstance().level;
+        final Level level = Minecraft.getInstance().level;
 
         for (final BlockPos blockPos : containerList)
         {
-            final TileEntity rack = level.getBlockEntity(blockPos);
+            final BlockEntity rack = level.getBlockEntity(blockPos);
             if (rack instanceof TileEntityRack)
             {
                 final Map<ItemStorage, Integer> rackStorage = ((TileEntityRack) rack).getAllContent();
@@ -326,7 +325,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
             {
                 final ItemStorage resource = allItems.get(index);
                 final Text resourceLabel = rowPane.findPaneOfTypeByID("ressourceStackName", Text.class);
-                final String name = LanguageHandler.format(resource.getItemStack().getDescriptionId());
+                final String name = new TranslatableComponent(resource.getItemStack().getDescriptionId()).getString();
                 resourceLabel.setText(name.substring(0, Math.min(17, name.length())));
                 final Text qtys = rowPane.findPaneOfTypeByID("quantities", Text.class);
                 if (!Screen.hasShiftDown())

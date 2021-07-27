@@ -1,10 +1,10 @@
 package com.ldtteam.storageracks.utils;
 
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
@@ -190,7 +190,7 @@ public class InventoryUtils
      * @param y       the y pos.
      * @param z       the z pos.
      */
-    public static void dropItemHandler(final IItemHandler handler, final World world, final int x, final int y, final int z)
+    public static void dropItemHandler(final IItemHandler handler, final Level world, final int x, final int y, final int z)
     {
         for (int i = 0; i < handler.getSlots(); ++i)
         {
@@ -212,7 +212,7 @@ public class InventoryUtils
      * @param z       the z pos.
      * @param stack   the stack to drop.
      */
-    public static void spawnItemStack(final World world, final double x, final double y, final double z, final ItemStack stack)
+    public static void spawnItemStack(final Level world, final double x, final double y, final double z, final ItemStack stack)
     {
         final Random random = new Random();
         final double spawnX = random.nextDouble() * SPAWN_MODIFIER + SPAWN_ADDITION;

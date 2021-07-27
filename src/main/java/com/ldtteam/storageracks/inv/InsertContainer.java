@@ -1,12 +1,12 @@
 package com.ldtteam.storageracks.inv;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -17,7 +17,7 @@ import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABI
 /**
  * The insert container.
  */
-public class InsertContainer extends Container
+public class InsertContainer extends AbstractContainerMenu
 {
     /**
      * The inventory.
@@ -32,7 +32,7 @@ public class InsertContainer extends Container
      * @param packetBuffer network buffer
      * @return new instance
      */
-    public static InsertContainer fromPacketBuffer(final int windowId, final PlayerInventory inv, final PacketBuffer packetBuffer)
+    public static InsertContainer fromPacketBuffer(final int windowId, final Inventory inv, final FriendlyByteBuf packetBuffer)
     {
         final BlockPos tePos = packetBuffer.readBlockPos();
         return new InsertContainer(windowId, inv, inv.player.level.getBlockEntity(tePos).getCapability(ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(0)));
@@ -44,7 +44,7 @@ public class InsertContainer extends Container
      * @param player the player.
      * @param handler the inv handler.
      */
-    public InsertContainer(final int id, @NotNull final PlayerInventory player, @NotNull final IItemHandler handler)
+    public InsertContainer(final int id, @NotNull final Inventory player, @NotNull final IItemHandler handler)
     {
         super(ModContainers.insertInv, id);
         this.inventory = handler;
@@ -69,14 +69,14 @@ public class InsertContainer extends Container
     }
 
     @Override
-    public boolean stillValid(@NotNull final PlayerEntity player)
+    public boolean stillValid(@NotNull final Player player)
     {
         return true;
     }
 
     @NotNull
     @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int inputSlot)
+    public ItemStack quickMoveStack(@NotNull Player player, int inputSlot)
     {
         ItemStack itemstack = ItemStack.EMPTY;
         final Slot slot = this.slots.get(inputSlot);

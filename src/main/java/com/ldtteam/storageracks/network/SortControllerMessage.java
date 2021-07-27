@@ -6,12 +6,12 @@ import com.ldtteam.storageracks.tileentities.TileEntityController;
 import com.ldtteam.storageracks.utils.SortingUtils;
 import com.ldtteam.storageracks.utils.SoundUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.Nullable;
@@ -45,13 +45,13 @@ public class SortControllerMessage implements IMessage
     }
 
     @Override
-    public void toBytes(final PacketBuffer packetBuffer)
+    public void toBytes(final FriendlyByteBuf packetBuffer)
     {
         packetBuffer.writeBlockPos(controllerPos);
     }
 
     @Override
-    public void fromBytes(final PacketBuffer buf)
+    public void fromBytes(final FriendlyByteBuf buf)
     {
         this.controllerPos = buf.readBlockPos();
     }
@@ -66,8 +66,8 @@ public class SortControllerMessage implements IMessage
     @Override
     public void onExecute(final NetworkEvent.Context context, final boolean b)
     {
-        final World world = context.getSender().getCommandSenderWorld();
-        final TileEntity tileEntity = world.getBlockEntity(controllerPos);
+        final Level world = context.getSender().getCommandSenderWorld();
+        final BlockEntity tileEntity = world.getBlockEntity(controllerPos);
         if (tileEntity instanceof TileEntityController && ((TileEntityController) tileEntity).isSortUnlocked())
         {
             final Set<IItemHandlerModifiable> handlers = new LinkedHashSet<>();
@@ -76,7 +76,7 @@ public class SortControllerMessage implements IMessage
             {
                 if (WorldUtil.isBlockLoaded(world, pos))
                 {
-                    final TileEntity te = world.getBlockEntity(pos);
+                    final BlockEntity te = world.getBlockEntity(pos);
                     if (te instanceof AbstractTileEntityRack)
                     {
                         handlers.add((IItemHandlerModifiable) te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).resolve().get());

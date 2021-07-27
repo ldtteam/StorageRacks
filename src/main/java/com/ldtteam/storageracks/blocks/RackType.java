@@ -1,11 +1,11 @@
 package com.ldtteam.storageracks.blocks;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 /**
  * Defines the types of Racks that the {@link RackBlock} supports.
  */
-public enum RackType implements IStringSerializable
+public enum RackType implements StringRepresentable
 {
     DEFAULT( "empty", "empty"),
     FULL("full", "full");

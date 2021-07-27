@@ -4,25 +4,25 @@ import com.ldtteam.storageracks.ItemStorage;
 import com.ldtteam.storageracks.blocks.RackBlock;
 import com.ldtteam.storageracks.blocks.RackType;
 import com.ldtteam.storageracks.inv.ContainerRack;
+import com.ldtteam.storageracks.utils.BlockPosUtil;
 import com.ldtteam.storageracks.utils.ItemStackUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
-import com.ldtteam.structurize.api.util.BlockPosUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -74,16 +74,20 @@ public class TileEntityRack extends AbstractTileEntityRack
 
     /**
      * New TileEntity.
+     * @param pos position.
+     * @param state initial state.
      */
-    public TileEntityRack()
+    public TileEntityRack(final BlockPos pos, final BlockState state)
     {
-        super(ModTileEntities.RACK);
+        super(ModTileEntities.RACK, pos, state);
     }
 
-    @Override
+    /**
+     * Selfmade rotate method, called from block.
+     * @param rotationIn the rotation.
+     */
     public void rotate(final Rotation rotationIn)
     {
-        super.rotate(rotationIn);
         if (controller != null)
         {
             controller = controller.rotate(rotationIn);
@@ -163,8 +167,6 @@ public class TileEntityRack extends AbstractTileEntityRack
         }
 
         inventory = tempInventory;
-        //final BlockState state = level.getBlockState(getBlockPos());
-        //level.sendBlockUpdated(getBlockPos(), state, state, 0x03);
         invalidateCap();
     }
 
@@ -254,19 +256,19 @@ public class TileEntityRack extends AbstractTileEntityRack
 
 
     @Override
-    public void load(final BlockState state, final CompoundNBT compound)
+    public void load(@NotNull final CompoundTag compound)
     {
-        super.load(state, compound);
+        super.load(compound);
 
         int oldSize = compound.getInt(TAG_SIZE);
-        checkForUpgrade(state, oldSize);
+        checkForUpgrade(getBlockState(), oldSize);
 
         inventory = createInventory(DEFAULT_SIZE + size * SLOT_PER_LINE);
 
-        final ListNBT inventoryTagList = compound.getList(TAG_INVENTORY, TAG_COMPOUND);
+        final ListTag inventoryTagList = compound.getList(TAG_INVENTORY, TAG_COMPOUND);
         for (int i = 0; i < inventoryTagList.size(); i++)
         {
-            final CompoundNBT inventoryCompound = inventoryTagList.getCompound(i);
+            final CompoundTag inventoryCompound = inventoryTagList.getCompound(i);
             if (!inventoryCompound.contains(TAG_EMPTY))
             {
                 final ItemStack stack = ItemStack.of(inventoryCompound);
@@ -313,15 +315,15 @@ public class TileEntityRack extends AbstractTileEntityRack
 
     @NotNull
     @Override
-    public CompoundNBT save(final CompoundNBT compound)
+    public CompoundTag save(@NotNull final CompoundTag compound)
     {
         super.save(compound);
         compound.putInt(TAG_SIZE, size);
 
-        @NotNull final ListNBT inventoryTagList = new ListNBT();
+        @NotNull final ListTag inventoryTagList = new ListTag();
         for (int slot = 0; slot < inventory.getSlots(); slot++)
         {
-            @NotNull final CompoundNBT inventoryCompound = new CompoundNBT();
+            @NotNull final CompoundTag inventoryCompound = new CompoundTag();
             final ItemStack stack = inventory.getStackInSlot(slot);
             if (stack.isEmpty())
             {
@@ -339,29 +341,29 @@ public class TileEntityRack extends AbstractTileEntityRack
     }
 
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket()
+    public ClientboundBlockEntityDataPacket getUpdatePacket()
     {
-        final CompoundNBT compound = new CompoundNBT();
-        return new SUpdateTileEntityPacket(this.getBlockPos(), 0, this.save(compound));
+        final CompoundTag compound = new CompoundTag();
+        return new ClientboundBlockEntityDataPacket(this.getBlockPos(), 0, this.save(compound));
     }
 
     @NotNull
     @Override
-    public CompoundNBT getUpdateTag()
+    public CompoundTag getUpdateTag()
     {
-        return this.save(new CompoundNBT());
+        return this.save(new CompoundTag());
     }
 
     @Override
-    public void onDataPacket(final NetworkManager net, final SUpdateTileEntityPacket packet)
+    public void onDataPacket(final Connection net, final ClientboundBlockEntityDataPacket packet)
     {
-        this.load(getBlockState(), packet.getTag());
+        this.load(packet.getTag());
     }
 
     @Override
-    public void handleUpdateTag(final BlockState state, final CompoundNBT tag)
+    public void handleUpdateTag(final CompoundTag tag)
     {
-        this.load(state, tag);
+        this.load(tag);
     }
 
     @Nonnull
@@ -397,29 +399,22 @@ public class TileEntityRack extends AbstractTileEntityRack
 
     @Nullable
     @Override
-    public Container createMenu(final int id, @NotNull final PlayerInventory inv, @NotNull final PlayerEntity player)
+    public AbstractContainerMenu createMenu(final int id, @NotNull final Inventory inv, @NotNull final Player player)
     {
         return new ContainerRack(id, inv, getBlockPos());
     }
 
     @NotNull
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
-        return new TranslationTextComponent("container.title.rack");
+        return new TranslatableComponent("container.title.rack");
     }
 
     @Override
     public void setRemoved()
     {
         super.setRemoved();
-        invalidateCap();
-    }
-
-    @Override
-    public void clearCache()
-    {
-        super.clearCache();
         invalidateCap();
     }
 
@@ -485,7 +480,14 @@ public class TileEntityRack extends AbstractTileEntityRack
         }
     }
 
-    public static BlockPos visitPositions(final World level, final Set<BlockPos> visitedPositions, final BlockPos current)
+    @Override
+    public void setBlockState(@NotNull final BlockState state)
+    {
+        super.setBlockState(state);
+        invalidateCap();
+    }
+
+    public static BlockPos visitPositions(final Level level, final Set<BlockPos> visitedPositions, final BlockPos current)
     {
         BlockPos controller = null;
         if (level.getBlockEntity(current) instanceof TileEntityController)
@@ -500,7 +502,7 @@ public class TileEntityRack extends AbstractTileEntityRack
             final BlockPos next = current.relative(dir);
             if (!visitedPositions.contains(next))
             {
-                final TileEntity te = level.getBlockEntity(next);
+                final BlockEntity te = level.getBlockEntity(next);
                 if (te instanceof TileEntityRack || te instanceof TileEntityController)
                 {
                     final BlockPos cont = visitPositions(level, visitedPositions, next);

@@ -1,8 +1,8 @@
 package com.ldtteam.storageracks;
 
 import com.ldtteam.storageracks.utils.ItemStackUtils;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

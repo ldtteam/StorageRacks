@@ -2,16 +2,15 @@ package com.ldtteam.storageracks.network;
 
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.Log;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
-import net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 
 import java.util.function.Supplier;
 
@@ -21,11 +20,11 @@ import java.util.function.Supplier;
 public class NetworkChannel
 {
     private static final String LATEST_PROTO_VER = "1.0";
-    private static final String ACCEPTED_PROTO_VERS = LATEST_PROTO_VER;
+    private static final String        ACCEPTED_PROTO_VERS = LATEST_PROTO_VER;
     /**
      * Forge network channel
      */
-    private final SimpleChannel rawChannel;
+    private final        SimpleChannel rawChannel;
 
     /**
      * Creates a new instance of network channel.
@@ -65,7 +64,7 @@ public class NetworkChannel
             msg.fromBytes(buf);
             return msg;
         }, (msg, ctxIn) -> {
-            final Context ctx = ctxIn.get();
+            final NetworkEvent.Context ctx = ctxIn.get();
             final LogicalSide packetOrigin = ctx.getDirection().getOriginationSide();
             ctx.setPacketHandled(true);
             if (msg.getExecutionSide() != null && packetOrigin.equals(msg.getExecutionSide()))
@@ -94,7 +93,7 @@ public class NetworkChannel
      * @param msg    message to send
      * @param player target player
      */
-    public void sendToPlayer(final IMessage msg, final ServerPlayerEntity player)
+    public void sendToPlayer(final IMessage msg, final ServerPlayer player)
     {
         rawChannel.send(PacketDistributor.PLAYER.with(() -> player), msg);
     }
@@ -105,9 +104,9 @@ public class NetworkChannel
      * @param msg message to send
      * @param ctx network context
      */
-    public void sendToOrigin(final IMessage msg, final Context ctx)
+    public void sendToOrigin(final IMessage msg, final NetworkEvent.Context ctx)
     {
-        final ServerPlayerEntity player = ctx.getSender();
+        final ServerPlayer player = ctx.getSender();
         if (player != null) // side check
         {
             sendToPlayer(msg, player);
@@ -123,9 +122,9 @@ public class NetworkChannel
      *
      * @param msg message to send
      * @param pos target position and radius
-     * @see TargetPoint
+     * @see net.minecraftforge.fmllegacy.network.PacketDistributor.TargetPoint
      */
-    public void sendToPosition(final IMessage msg, final TargetPoint pos)
+    public void sendToPosition(final IMessage msg, final PacketDistributor.TargetPoint pos)
     {
         rawChannel.send(PacketDistributor.NEAR.with(() -> pos), msg);
     }
@@ -180,7 +179,7 @@ public class NetworkChannel
      * @param msg   message to send
      * @param chunk target chunk to look at
      */
-    public void sendToTrackingChunk(final IMessage msg, final Chunk chunk)
+    public void sendToTrackingChunk(final IMessage msg, final LevelChunk chunk)
     {
         rawChannel.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), msg);
     }

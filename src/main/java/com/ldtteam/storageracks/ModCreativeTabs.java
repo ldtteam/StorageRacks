@@ -2,16 +2,18 @@ package com.ldtteam.storageracks;
 
 import com.ldtteam.storageracks.blocks.ModBlocks;
 import com.ldtteam.storageracks.utils.Constants;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Class used to handle the creativeTab of storageracks.
  */
 public final class ModCreativeTabs
 {
-    public static final ItemGroup STORAGERACKS = new ItemGroup(Constants.MOD_ID)
+    public static final CreativeModeTab STORAGERACKS = new CreativeModeTab(Constants.MOD_ID)
     {
+        @NotNull
         @Override
         public ItemStack makeIcon()
         {

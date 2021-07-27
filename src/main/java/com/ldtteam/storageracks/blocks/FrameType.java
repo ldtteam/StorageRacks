@@ -1,17 +1,17 @@
 package com.ldtteam.storageracks.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.util.IStringSerializable;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.util.StringRepresentable;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * The different frame types.
  */
-public enum FrameType implements IStringSerializable
+public enum FrameType implements StringRepresentable
 {
     WOOD("wood", Blocks.OAK_PLANKS, Items.STONE),
     STONE("stone", Blocks.STONE, Items.IRON_INGOT),
@@ -23,7 +23,7 @@ public enum FrameType implements IStringSerializable
     private final String                name;
     private final Block                 material;
     private final RegistryObject<Block> registeredMaterial;
-    private final Item cost;
+    private final Item                  cost;
 
     FrameType(final String nameIn, final Block material, final Item cost)
     {

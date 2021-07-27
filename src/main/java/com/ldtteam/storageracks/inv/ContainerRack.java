@@ -2,15 +2,15 @@ package com.ldtteam.storageracks.inv;
 
 import com.ldtteam.storageracks.tileentities.AbstractTileEntityRack;
 import com.ldtteam.storageracks.utils.ItemStackUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ import static com.ldtteam.storageracks.utils.InventoryConstants.*;
 /**
  * The container class for the rack.
  */
-public class ContainerRack extends Container
+public class ContainerRack extends AbstractContainerMenu
 {
     /**
      * The inventory.
@@ -45,7 +45,7 @@ public class ContainerRack extends Container
      * @param packetBuffer network buffer
      * @return new instance
      */
-    public static ContainerRack fromPacketBuffer(final int windowId, final PlayerInventory inv, final PacketBuffer packetBuffer)
+    public static ContainerRack fromPacketBuffer(final int windowId, final Inventory inv, final FriendlyByteBuf packetBuffer)
     {
         final BlockPos tePos = packetBuffer.readBlockPos();
         return new ContainerRack(windowId, inv, tePos);
@@ -58,7 +58,7 @@ public class ContainerRack extends Container
      * @param inv      the inventory.
      * @param rack     te world pos.
      */
-    public ContainerRack(final int windowId, final PlayerInventory inv, final BlockPos rack)
+    public ContainerRack(final int windowId, final Inventory inv, final BlockPos rack)
     {
         super(ModContainers.rackInv, windowId);
 
@@ -117,30 +117,28 @@ public class ContainerRack extends Container
         }
     }
 
-    @NotNull
     @Override
-    public ItemStack clicked(int slotId, int dragType, @NotNull ClickType clickTypeIn, PlayerEntity player)
+    public void clicked(final int slotId, final int dragType, @NotNull final ClickType clickType, final Player player)
     {
         if (player.level.isClientSide || slotId >= inventory.getSlots() || slotId < 0)
         {
-            return super.clicked(slotId, dragType, clickTypeIn, player);
+            super.clicked(slotId, dragType, clickType, player);
+            return;
         }
 
         final ItemStack currentStack = inventory.getStackInSlot(slotId).copy();
-        final ItemStack result = super.clicked(slotId, dragType, clickTypeIn, player);
+        super.clicked(slotId, dragType, clickType, player);
         final ItemStack afterStack = inventory.getStackInSlot(slotId).copy();
 
         if (!ItemStack.isSame(currentStack, afterStack))
         {
             this.updateRacks();
         }
-
-        return result;
     }
 
     @NotNull
     @Override
-    public ItemStack quickMoveStack(final PlayerEntity playerIn, final int index)
+    public ItemStack quickMoveStack(final Player playerIn, final int index)
     {
         final Slot slot = this.slots.get(index);
 
@@ -175,7 +173,7 @@ public class ContainerRack extends Container
             slot.setChanged();
         }
 
-        if (playerIn instanceof ServerPlayerEntity)
+        if (playerIn instanceof ServerPlayer)
         {
             this.updateRacks();
         }
@@ -203,7 +201,7 @@ public class ContainerRack extends Container
     }
 
     @Override
-    public boolean stillValid(@NotNull final PlayerEntity player)
+    public boolean stillValid(@NotNull final Player player)
     {
         return true;
     }

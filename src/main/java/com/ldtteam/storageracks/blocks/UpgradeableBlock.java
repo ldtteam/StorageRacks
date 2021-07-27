@@ -1,17 +1,18 @@
 package com.ldtteam.storageracks.blocks;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-public class UpgradeableBlock extends Block
+public abstract class UpgradeableBlock extends Block implements EntityBlock
 {
     /**
      * The hardness this block has.
@@ -35,7 +36,7 @@ public class UpgradeableBlock extends Block
 
     public UpgradeableBlock(final Item upgradeMaterial)
     {
-        super(AbstractBlock.Properties.of(Material.STONE).noOcclusion().strength(BLOCK_HARDNESS, RESISTANCE));
+        super(BlockBehaviour.Properties.of(Material.STONE).noOcclusion().strength(BLOCK_HARDNESS, RESISTANCE));
         this.upgradeMaterial = upgradeMaterial;
     }
 
@@ -55,27 +56,27 @@ public class UpgradeableBlock extends Block
      * @param pos    the pos of the rack.
      * @param player the player pos.
      */
-    public void checkUpgrade(final BlockPos pos, final PlayerEntity player)
+    public void checkUpgrade(final BlockPos pos, final Player player)
     {
         final BlockState state = player.level.getBlockState(pos);
         final UpgradeableBlock block = (UpgradeableBlock) state.getBlock();
 
         if (player.getMainHandItem().getItem() == block.upgradeMaterial)
         {
-            player.inventory.removeItem(player.inventory.selected, 1);
+            player.getInventory().removeItem(player.getInventory().selected, 1);
             upgrade(pos, state, block.next, player.level);
         }
     }
 
-    private void upgrade(final BlockPos pos, final BlockState current, final Block next, final World world)
+    private void upgrade(final BlockPos pos, final BlockState current, final Block next, final Level world)
     {
         final BlockState newState = next.defaultBlockState();
 
-        final TileEntity te = world.getBlockEntity(pos);
-        final CompoundNBT save = te.save(new CompoundNBT());
-        te.load(current, new CompoundNBT());
+        final BlockEntity te = world.getBlockEntity(pos);
+        final CompoundTag save = te.save(new CompoundTag());
+        te.load(new CompoundTag());
 
         world.setBlock(pos, newState, 0x03);
-        world.getBlockEntity(pos).load(newState, save);
+        world.getBlockEntity(pos).load(save);
     }
 }

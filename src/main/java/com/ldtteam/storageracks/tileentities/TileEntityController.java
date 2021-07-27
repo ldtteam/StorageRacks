@@ -2,24 +2,24 @@ package com.ldtteam.storageracks.tileentities;
 
 import com.ldtteam.storageracks.blocks.ControllerBlock;
 import com.ldtteam.storageracks.inv.InsertContainer;
+import com.ldtteam.storageracks.utils.BlockPosUtil;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
-import com.ldtteam.structurize.api.util.BlockPosUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -39,7 +39,7 @@ import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABI
 /**
  * Class which handles the tileEntity of our colony warehouse.
  */
-public class TileEntityController extends TileEntity implements INamedContainerProvider
+public class TileEntityController extends BlockEntity implements MenuProvider
 {
     /**
      * List of racks.
@@ -160,22 +160,24 @@ public class TileEntityController extends TileEntity implements INamedContainerP
 
     /**
      * Create a new controller.
+     * @param pos position.
+     * @param state initial state.
      */
-    public TileEntityController()
+    public TileEntityController(final BlockPos pos, final BlockState state)
     {
-        super(ModTileEntities.CONTROLLER);
+        super(ModTileEntities.CONTROLLER, pos, state);
     }
 
     @Override
-    public void load(final BlockState state, final CompoundNBT compound)
+    public void load(final CompoundTag compound)
     {
-        super.load(state, compound);
+        super.load(compound);
         racks.clear();
-        setTier(((ControllerBlock) state.getBlock()).getTier());
-        final ListNBT racksNBT = compound.getList(TAG_INVENTORY, TAG_COMPOUND);
+        setTier(((ControllerBlock) getBlockState().getBlock()).getTier());
+        final ListTag racksNBT = compound.getList(TAG_INVENTORY, TAG_COMPOUND);
         for (int i = 0; i < racksNBT.size(); i++)
         {
-            final CompoundNBT posCompound = racksNBT.getCompound(i);
+            final CompoundTag posCompound = racksNBT.getCompound(i);
             racks.add(BlockPosUtil.readFromNBT(posCompound, TAG_POS));
         }
         this.unlockedSort = compound.getBoolean(TAG_SORT);
@@ -184,13 +186,13 @@ public class TileEntityController extends TileEntity implements INamedContainerP
 
     @NotNull
     @Override
-    public CompoundNBT save(final CompoundNBT compound)
+    public CompoundTag save(final CompoundTag compound)
     {
         super.save(compound);
-        @NotNull final ListNBT racksNBT = new ListNBT();
+        @NotNull final ListTag racksNBT = new ListTag();
         for (final BlockPos pos : racks)
         {
-            final CompoundNBT newCompound = new CompoundNBT();
+            final CompoundTag newCompound = new CompoundTag();
             BlockPosUtil.writeToNBT(newCompound, TAG_POS, pos);
             racksNBT.add(newCompound);
         }
@@ -207,29 +209,29 @@ public class TileEntityController extends TileEntity implements INamedContainerP
     }
 
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket()
+    public ClientboundBlockEntityDataPacket getUpdatePacket()
     {
-        final CompoundNBT compound = new CompoundNBT();
-        return new SUpdateTileEntityPacket(this.getBlockPos(), 0, this.save(compound));
+        final CompoundTag compound = new CompoundTag();
+        return new ClientboundBlockEntityDataPacket(this.getBlockPos(), 0, this.save(compound));
     }
 
     @NotNull
     @Override
-    public CompoundNBT getUpdateTag()
+    public CompoundTag getUpdateTag()
     {
-        return this.save(new CompoundNBT());
+        return this.save(new CompoundTag());
     }
 
     @Override
-    public void onDataPacket(final NetworkManager net, final SUpdateTileEntityPacket packet)
+    public void onDataPacket(final Connection net, final ClientboundBlockEntityDataPacket packet)
     {
-        this.load(getBlockState(), packet.getTag());
+        this.load(packet.getTag());
     }
 
     @Override
-    public void handleUpdateTag(final BlockState state, final CompoundNBT tag)
+    public void handleUpdateTag(final CompoundTag tag)
     {
-        this.load(state, tag);
+        this.load(tag);
     }
 
     /**
@@ -289,7 +291,7 @@ public class TileEntityController extends TileEntity implements INamedContainerP
         {
             if (WorldUtil.isBlockLoaded(level, pos))
             {
-                final TileEntity entity = getLevel().getBlockEntity(pos);
+                final BlockEntity entity = getLevel().getBlockEntity(pos);
                 if (entity instanceof AbstractTileEntityRack)
                 {
                     if (((AbstractTileEntityRack) entity).getFreeSlots() > 0 && ((AbstractTileEntityRack) entity).hasItemStack(stack, 1))
@@ -314,7 +316,7 @@ public class TileEntityController extends TileEntity implements INamedContainerP
         {
             if (WorldUtil.isBlockLoaded(level, pos))
             {
-                final TileEntity entity = getLevel().getBlockEntity(pos);
+                final BlockEntity entity = getLevel().getBlockEntity(pos);
                 if (entity instanceof AbstractTileEntityRack)
                 {
                     if (((AbstractTileEntityRack) entity).getFreeSlots() > 0 && ((AbstractTileEntityRack) entity).hasSimilarStack(stack))
@@ -339,7 +341,7 @@ public class TileEntityController extends TileEntity implements INamedContainerP
         TileEntityRack emptiestChest = null;
         for (@NotNull final BlockPos pos : racks)
         {
-            final TileEntity entity = getLevel().getBlockEntity(pos);
+            final BlockEntity entity = getLevel().getBlockEntity(pos);
             if (entity instanceof TileEntityRack)
             {
                 if (((AbstractTileEntityRack) entity).isEmpty())
@@ -397,14 +399,14 @@ public class TileEntityController extends TileEntity implements INamedContainerP
 
     @NotNull
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
-        return new TranslationTextComponent("container.title.insertion");
+        return new TranslatableComponent("container.title.insertion");
     }
 
     @Nullable
     @Override
-    public Container createMenu(final int id, @NotNull final PlayerInventory inv, @NotNull final PlayerEntity player)
+    public AbstractContainerMenu createMenu(final int id, @NotNull final Inventory inv, @NotNull final Player player)
     {
         return new InsertContainer(id, inv, getCapability(ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(0)));
     }

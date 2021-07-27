@@ -3,16 +3,14 @@ package com.ldtteam.storageracks.blocks;
 import com.ldtteam.storageracks.ModCreativeTabs;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.LootTableProvider;
-import com.ldtteam.structurize.api.generation.*;
-import com.ldtteam.structurize.blocks.types.WoodType;
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.ArrayList;
@@ -100,7 +98,7 @@ public final class ModBlocks
     }
 
     /**
-     * Initializes the registry with the relevant {@link net.minecraft.item.BlockItem} produced by the relevant blocks.
+     * Initializes the registry with the relevant item produced by the relevant blocks.
      *
      * @param registry The item registry to add the items too.
      */
@@ -118,25 +116,5 @@ public final class ModBlocks
         registry.register((new BlockItem(goldController, properties)).setRegistryName(goldController.getRegistryName()));
         registry.register((new BlockItem(emeraldController, properties)).setRegistryName(emeraldController.getRegistryName()));
         registry.register((new BlockItem(diamondController, properties)).setRegistryName(diamondController.getRegistryName()));
-    }
-
-    /**
-     * This method is for adding datagenerators. this does not run during normal client operations, only during building.
-     *
-     * @param event event sent when you run the "runData" gradle task
-     */
-    @SubscribeEvent
-    public static void dataGeneratorSetup(final GatherDataEvent event)
-    {
-        // Initialise All Singletons
-        event.getGenerator().addProvider(new ModLanguageProvider(event.getGenerator(), Constants.MOD_ID, "default"));
-        event.getGenerator().addProvider(new ModRecipeProvider(event.getGenerator()));
-        event.getGenerator().addProvider(new ModBlockStateProvider(event.getGenerator(), Constants.MOD_ID, event.getExistingFileHelper()));
-        event.getGenerator().addProvider(new ModItemModelProvider(event.getGenerator(), Constants.MOD_ID, event.getExistingFileHelper()));
-
-        new RackList().provide(event);
-
-        // Default
-        event.getGenerator().addProvider(new LootTableProvider(event.getGenerator()));
     }
 }

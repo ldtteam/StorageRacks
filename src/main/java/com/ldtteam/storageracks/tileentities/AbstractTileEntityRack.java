@@ -1,10 +1,12 @@
 package com.ldtteam.storageracks.tileentities;
 
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +16,7 @@ import java.util.function.Predicate;
 
 import static com.ldtteam.storageracks.utils.Constants.DEFAULT_SIZE;
 
-public abstract class AbstractTileEntityRack extends TileEntity implements INamedContainerProvider
+public abstract class AbstractTileEntityRack extends BlockEntity implements MenuProvider, ICapabilityProvider
 {
     /**
      * Pos of the owning building.
@@ -26,9 +28,9 @@ public abstract class AbstractTileEntityRack extends TileEntity implements IName
      */
     protected ItemStackHandler inventory;
 
-    public AbstractTileEntityRack(final TileEntityType<?> tileEntityTypeIn)
+    public AbstractTileEntityRack(final BlockEntityType<?> tileEntityTypeIn, final BlockPos pos, final BlockState state)
     {
-        super(tileEntityTypeIn);
+        super(tileEntityTypeIn, pos, state);
         inventory = createInventory(DEFAULT_SIZE);
     }
 

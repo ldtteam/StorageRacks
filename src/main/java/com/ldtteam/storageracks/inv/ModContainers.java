@@ -3,8 +3,8 @@ package com.ldtteam.storageracks.inv;
 import com.ldtteam.storageracks.gui.WindowInsert;
 import com.ldtteam.storageracks.gui.WindowRack;
 import com.ldtteam.storageracks.utils.Constants;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,16 +17,16 @@ import net.minecraftforge.registries.ObjectHolder;
 public class ModContainers
 {
     @ObjectHolder("rack_inv")
-    public static ContainerType<ContainerRack> rackInv;
+    public static MenuType<ContainerRack> rackInv;
 
     @ObjectHolder("insert_inv")
-    public static ContainerType<InsertContainer> insertInv;
+    public static MenuType<InsertContainer> insertInv;
 
     @SubscribeEvent
-    public static void registerContainers(final RegistryEvent.Register<ContainerType<?>> event)
+    public static void registerContainers(final RegistryEvent.Register<MenuType<?>> event)
     {
-        ModContainers.rackInv = (ContainerType<ContainerRack>) IForgeContainerType.create(ContainerRack::fromPacketBuffer).setRegistryName("rack_inv");
-        ModContainers.insertInv = (ContainerType<InsertContainer>) IForgeContainerType.create(InsertContainer::fromPacketBuffer).setRegistryName("insert_inv");
+        ModContainers.rackInv = (MenuType<ContainerRack>) IForgeContainerType.create(ContainerRack::fromPacketBuffer).setRegistryName("rack_inv");
+        ModContainers.insertInv = (MenuType<InsertContainer>) IForgeContainerType.create(InsertContainer::fromPacketBuffer).setRegistryName("insert_inv");
 
         event.getRegistry().registerAll(ModContainers.rackInv, ModContainers.insertInv);
     }
@@ -34,7 +34,7 @@ public class ModContainers
     @SubscribeEvent
     public static void doClientStuff(final FMLClientSetupEvent event)
     {
-        ScreenManager.register(ModContainers.rackInv, WindowRack::new);
-        ScreenManager.register(ModContainers.insertInv, WindowInsert::new);
+        MenuScreens.register(ModContainers.rackInv, WindowRack::new);
+        MenuScreens.register(ModContainers.insertInv, WindowInsert::new);
     }
 }
