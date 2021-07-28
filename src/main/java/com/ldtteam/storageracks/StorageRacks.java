@@ -11,7 +11,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("storageracks")
+@Mod("assets/storageracks")
 public class StorageRacks
 {
     /**

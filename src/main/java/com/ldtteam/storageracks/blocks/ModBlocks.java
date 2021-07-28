@@ -2,7 +2,6 @@ package com.ldtteam.storageracks.blocks;
 
 import com.ldtteam.storageracks.ModCreativeTabs;
 import com.ldtteam.storageracks.utils.Constants;
-import com.ldtteam.storageracks.utils.LootTableProvider;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -10,7 +9,6 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.ArrayList;

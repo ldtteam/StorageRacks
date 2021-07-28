@@ -5,7 +5,7 @@ public class Constants
     /**
      * The mod id.
      */
-    public static final String MOD_ID = "storageracks";
+    public static final String MOD_ID = "assets/storageracks";
 
     /**
      * Default size of the inventory.
