@@ -9,9 +9,9 @@ import org.jetbrains.annotations.Nullable;
 public interface IWorldNameableModifiable extends Nameable
 {
     /**
-     * Method to set the name of this {@link INameable}.
+     * Method to set the name of this.
      *
-     * @param name The new name of this {@link INameable}, or null to reset it to its default.
+     * @param name The new name of this, or null to reset it to its default.
      */
     void setName(@Nullable String name);
 }
