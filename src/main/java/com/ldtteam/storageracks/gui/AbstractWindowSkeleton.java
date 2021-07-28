@@ -1,4 +1,4 @@
-package com.ldtteam.storageracks;
+package com.ldtteam.storageracks.gui;
 
 import com.ldtteam.blockui.controls.Button;
 import com.ldtteam.blockui.controls.ButtonHandler;

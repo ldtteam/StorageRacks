@@ -438,7 +438,6 @@ public class TileEntityRack extends AbstractTileEntityRack
 
     /**
      * Return false if not successful.
-     * @return false if so.
      */
     public void neighborChange()
     {
