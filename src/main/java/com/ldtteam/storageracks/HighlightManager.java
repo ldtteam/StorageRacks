@@ -32,7 +32,7 @@ public class HighlightManager
     /**
      * Render buffers.
      */
-    public static final  RenderBuffers        renderBuffers            = new RenderBuffers();
+    public static final  RenderBuffers        renderBuffers            = Minecraft.getInstance().renderBuffers();
     private static final MultiBufferSource.BufferSource   renderBuffer             = renderBuffers.bufferSource();
     private static final Supplier<VertexConsumer> linesWithoutCullAndDepth = () -> renderBuffer.getBuffer(RenderUtils.LINES_GLINT);
 
@@ -58,7 +58,7 @@ public class HighlightManager
                     RenderUtils.renderBox(entry.getValue().getA(), entry.getValue().getA(), 0, 1, 0, 1.0F, 0.002D, event.getMatrixStack(), linesWithoutCullAndDepth.get());
                 }
             }
+            renderBuffer.endBatch(RenderUtils.LINES_GLINT);
         }
-        renderBuffer.endBatch();
     }
 }
