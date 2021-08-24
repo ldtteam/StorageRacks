@@ -24,6 +24,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.items.wrapper.InvWrapper;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -271,6 +272,10 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
             allItems.addAll(filterItems.stream().filter(filterPredicate).collect(Collectors.toList()));
         }
 
+        if (!filter.isEmpty())
+        {
+            allItems.sort(Comparator.comparingInt(s1 -> StringUtils.getLevenshteinDistance(s1.getItemStack().getHoverName().getString(), filter)));
+        }
         final Comparator<ItemStorage> compareByName = Comparator.comparing((ItemStorage o) -> o.getItemStack().getDisplayName().getString());
         final Comparator<ItemStorage> compareByCount = Comparator.comparingInt(ItemStorage::getAmount);
         switch (sortDescriptor)
