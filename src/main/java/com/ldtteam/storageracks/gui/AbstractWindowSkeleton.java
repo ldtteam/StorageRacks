@@ -3,8 +3,8 @@ package com.ldtteam.storageracks.gui;
 import com.ldtteam.blockui.controls.Button;
 import com.ldtteam.blockui.controls.ButtonHandler;
 import com.ldtteam.blockui.controls.Text;
+import com.ldtteam.blockui.views.BOWindow;
 import com.ldtteam.blockui.views.SwitchView;
-import com.ldtteam.blockui.views.Window;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +16,7 @@ import static com.ldtteam.storageracks.utils.WindowConstants.*;
 /**
  * Manage windows and their events.
  */
-public abstract class AbstractWindowSkeleton extends Window implements ButtonHandler
+public abstract class AbstractWindowSkeleton extends BOWindow implements ButtonHandler
 {
     @NotNull
     private final HashMap<String, Consumer<Button>> buttons;
@@ -33,7 +33,7 @@ public abstract class AbstractWindowSkeleton extends Window implements ButtonHan
      * This window's parent
      */
     @Nullable
-    private Window parent;
+    private BOWindow parent;
 
     /**
      * Constructor with no parent window
@@ -50,7 +50,7 @@ public abstract class AbstractWindowSkeleton extends Window implements ButtonHan
      *
      * @param resource Resource location string.
      */
-    public AbstractWindowSkeleton(final String resource, @Nullable final Window parent)
+    public AbstractWindowSkeleton(final String resource, @Nullable final BOWindow parent)
     {
         super(resource);
         this.parent = parent;
