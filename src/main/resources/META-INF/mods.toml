@@ -54,12 +54,12 @@ allow an easy overview and locate ability to find anything a player may need.
     modId="minecraft"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.16.4,1.17)"
+    versionRange="[1.17,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.storagerack]]
-    modId="structurize"
+    modId="blockui"
     mandatory=true
-    versionRange="[0.13.160-ALPHA,)"
+    versionRange="[0.0.20-ALPHA,)"
     ordering="AFTER"
     side="BOTH"
