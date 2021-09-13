@@ -166,18 +166,26 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         final int row = stackList.getListElementIndexByPane(button);
         final ItemStorage storage = allItems.get(row);
         final Set<BlockPos> containerList = new HashSet<>(controller.racks);
+        HighlightManager.clearCategory("inventoryHighlight");
+
+        Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("gui.storageracks.locating"), Minecraft.getInstance().player.getUUID());
+        close();
 
         for (BlockPos blockPos : containerList)
         {
             final TileEntity rack = Minecraft.getInstance().level.getBlockEntity(blockPos);
             if (rack instanceof TileEntityRack)
             {
-                if (((TileEntityRack) rack).hasItemStack(storage.getItemStack(), 1))
+                int count = ((TileEntityRack) rack).getCount(storage.getItemStack());
+                if (count > 0)
                 {
-                    HighlightManager.HIGHLIGHT_MAP.put("inventoryHighlight", new Tuple<>(blockPos, Minecraft.getInstance().level.getGameTime() + 120 * 20));
-                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("gui.storageracks.locating"), Minecraft.getInstance().player.getUUID());
-                    close();
-                    return;
+                    // Varies the color between yellow(low count) to green(64+)
+                    final int color = 0x00FF00 + 0xFF0000 * Math.max(0, 1 - count / 64);
+                    HighlightManager.addRenderBox("inventoryHighlight",
+                      new HighlightManager.TimedBoxRenderData().setPos(blockPos)
+                        .setRemovalTimePoint(Minecraft.getInstance().level.getGameTime() + 60 * 20)
+                        .addText("" + count)
+                        .setColor(color));
                 }
             }
         }
