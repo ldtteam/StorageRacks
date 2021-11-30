@@ -7,6 +7,7 @@ import com.ldtteam.storageracks.inv.ContainerRack;
 import com.ldtteam.storageracks.utils.BlockPosUtil;
 import com.ldtteam.storageracks.utils.ItemStackUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
@@ -40,7 +41,6 @@ import java.util.function.Predicate;
 
 import static com.ldtteam.storageracks.utils.Constants.*;
 import static com.ldtteam.storageracks.utils.NbtTagConstants.*;
-import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
 
 /**
  * Tile entity for the warehouse shelves.
@@ -265,7 +265,7 @@ public class TileEntityRack extends AbstractTileEntityRack
 
         inventory = createInventory(DEFAULT_SIZE + size * SLOT_PER_LINE);
 
-        final ListTag inventoryTagList = compound.getList(TAG_INVENTORY, TAG_COMPOUND);
+        final ListTag inventoryTagList = compound.getList(TAG_INVENTORY, Tag.TAG_COMPOUND);
         for (int i = 0; i < inventoryTagList.size(); i++)
         {
             final CompoundTag inventoryCompound = inventoryTagList.getCompound(i);
@@ -343,8 +343,7 @@ public class TileEntityRack extends AbstractTileEntityRack
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket()
     {
-        final CompoundTag compound = new CompoundTag();
-        return new ClientboundBlockEntityDataPacket(this.getBlockPos(), 0, this.save(compound));
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @NotNull

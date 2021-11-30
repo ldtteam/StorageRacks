@@ -5,6 +5,7 @@ import com.ldtteam.storageracks.inv.InsertContainer;
 import com.ldtteam.storageracks.utils.BlockPosUtil;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,7 +34,6 @@ import java.util.Set;
 
 import static com.ldtteam.storageracks.utils.NbtTagConstants.*;
 import static com.ldtteam.storageracks.utils.NbtTagConstants.TAG_POS;
-import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
 /**
@@ -174,7 +174,7 @@ public class TileEntityController extends BlockEntity implements MenuProvider
         super.load(compound);
         racks.clear();
         setTier(((ControllerBlock) getBlockState().getBlock()).getTier());
-        final ListTag racksNBT = compound.getList(TAG_INVENTORY, TAG_COMPOUND);
+        final ListTag racksNBT = compound.getList(TAG_INVENTORY, Tag.TAG_COMPOUND);
         for (int i = 0; i < racksNBT.size(); i++)
         {
             final CompoundTag posCompound = racksNBT.getCompound(i);
@@ -211,8 +211,7 @@ public class TileEntityController extends BlockEntity implements MenuProvider
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket()
     {
-        final CompoundTag compound = new CompoundTag();
-        return new ClientboundBlockEntityDataPacket(this.getBlockPos(), 0, this.save(compound));
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @NotNull

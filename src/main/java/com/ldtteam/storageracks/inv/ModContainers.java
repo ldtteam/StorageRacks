@@ -5,7 +5,7 @@ import com.ldtteam.storageracks.gui.WindowRack;
 import com.ldtteam.storageracks.utils.Constants;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -25,8 +25,8 @@ public class ModContainers
     @SubscribeEvent
     public static void registerContainers(final RegistryEvent.Register<MenuType<?>> event)
     {
-        ModContainers.rackInv = (MenuType<ContainerRack>) IForgeContainerType.create(ContainerRack::fromPacketBuffer).setRegistryName("rack_inv");
-        ModContainers.insertInv = (MenuType<InsertContainer>) IForgeContainerType.create(InsertContainer::fromPacketBuffer).setRegistryName("insert_inv");
+        ModContainers.rackInv = (MenuType<ContainerRack>) IForgeMenuType.create(ContainerRack::fromPacketBuffer).setRegistryName("rack_inv");
+        ModContainers.insertInv = (MenuType<InsertContainer>) IForgeMenuType.create(InsertContainer::fromPacketBuffer).setRegistryName("insert_inv");
 
         event.getRegistry().registerAll(ModContainers.rackInv, ModContainers.insertInv);
     }

@@ -187,9 +187,9 @@ public class ControllerBlock extends UpgradeableBlock
     }
 
     @Override
-    public boolean removedByPlayer(final BlockState state, final Level world, final BlockPos pos, final Player player, final boolean willHarvest, final FluidState fluid)
+    public boolean onDestroyedByPlayer(final BlockState state, final Level world, final BlockPos pos, final Player player, final boolean willHarvest, final FluidState fluid)
     {
-        final boolean rem = super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
+        final boolean rem = super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
         if (!world.isClientSide && state.getBlock() instanceof ControllerBlock)
         {
             for (final Direction direction : Direction.values())

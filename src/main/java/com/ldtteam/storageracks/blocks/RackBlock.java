@@ -23,15 +23,14 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Block for the shelves of the warehouse.
@@ -195,9 +194,9 @@ public class RackBlock extends UpgradeableBlock
     }
 
     @Override
-    public boolean removedByPlayer(final BlockState state, final Level world, final BlockPos pos, final Player player, final boolean willHarvest, final FluidState fluid)
+    public boolean onDestroyedByPlayer(final BlockState state, final Level world, final BlockPos pos, final Player player, final boolean willHarvest, final FluidState fluid)
     {
-        final boolean rem = super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
+        final boolean rem = super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
         if (!world.isClientSide && state.getBlock() instanceof RackBlock)
         {
             for (final Direction direction : Direction.values())

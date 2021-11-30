@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,7 @@ public class HighlightManager
      * @param event the catched event.
      */
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void renderWorldLastEvent(@NotNull final RenderWorldLastEvent event)
+    public static void renderWorldLastEvent(@NotNull final RenderLevelLastEvent event)
     {
         if (!HIGHLIGHT_MAP.isEmpty())
         {
@@ -65,13 +65,13 @@ public class HighlightManager
                           boxRenderData.getBlue(),
                           1.0F,
                           0.002D,
-                          event.getMatrixStack(),
+                          event.getPoseStack(),
                           linesWithoutCullAndDepth.get());
 
                         if (!boxRenderData.text.isEmpty())
                         {
                             MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-                            RenderUtils.renderDebugText(boxRenderData.pos, boxRenderData.text, event.getMatrixStack(), true, 3, buffer);
+                            RenderUtils.renderDebugText(boxRenderData.pos, boxRenderData.text, event.getPoseStack(), true, 3, buffer);
                             RenderSystem.disableDepthTest();
                             buffer.endBatch();
                             RenderSystem.enableDepthTest();

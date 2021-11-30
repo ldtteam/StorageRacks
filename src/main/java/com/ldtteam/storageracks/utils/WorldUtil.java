@@ -2,7 +2,6 @@ package com.ldtteam.storageracks.utils;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.*;
 import net.minecraft.world.level.chunk.ChunkStatus;
 
 import net.minecraft.world.level.Level;
@@ -48,7 +47,7 @@ public class WorldUtil
     {
         if (WorldUtil.isBlockLoaded(world, pos))
         {
-            world.getChunk(pos.getX() >> 4, pos.getZ() >> 4).markUnsaved();
+            world.getChunk(pos.getX() >> 4, pos.getZ() >> 4).setUnsaved(true);
             final BlockState state = world.getBlockState(pos);
             world.sendBlockUpdated(pos, state, state, 3);
         }
