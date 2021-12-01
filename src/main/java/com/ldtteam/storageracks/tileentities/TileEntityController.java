@@ -184,11 +184,10 @@ public class TileEntityController extends BlockEntity implements MenuProvider
         this.unlockedInsert = compound.getBoolean(TAG_INSERT);
     }
 
-    @NotNull
     @Override
-    public CompoundTag save(final CompoundTag compound)
+    public void saveAdditional(final @NotNull CompoundTag compound)
     {
-        super.save(compound);
+        super.saveAdditional(compound);
         @NotNull final ListTag racksNBT = new ListTag();
         for (final BlockPos pos : racks)
         {
@@ -199,7 +198,6 @@ public class TileEntityController extends BlockEntity implements MenuProvider
         compound.put(TAG_INVENTORY, racksNBT);
         compound.putBoolean(TAG_SORT, unlockedSort);
         compound.putBoolean(TAG_INSERT, unlockedInsert);
-        return compound;
     }
 
     @Override
@@ -218,7 +216,9 @@ public class TileEntityController extends BlockEntity implements MenuProvider
     @Override
     public CompoundTag getUpdateTag()
     {
-        return this.save(new CompoundTag());
+        final CompoundTag tag = new CompoundTag();
+        this.saveAdditional(tag);
+        return tag;
     }
 
     @Override

@@ -73,7 +73,7 @@ public abstract class UpgradeableBlock extends Block implements EntityBlock
         final BlockState newState = next.defaultBlockState();
 
         final BlockEntity te = world.getBlockEntity(pos);
-        final CompoundTag save = te.save(new CompoundTag());
+        final CompoundTag save = te.saveWithFullMetadata();
         te.load(new CompoundTag());
 
         world.setBlock(pos, newState, 0x03);

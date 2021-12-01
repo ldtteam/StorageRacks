@@ -313,11 +313,10 @@ public class TileEntityRack extends AbstractTileEntityRack
         }
     }
 
-    @NotNull
     @Override
-    public CompoundTag save(@NotNull final CompoundTag compound)
+    public void saveAdditional(@NotNull final CompoundTag compound)
     {
-        super.save(compound);
+        super.saveAdditional(compound);
         compound.putInt(TAG_SIZE, size);
 
         @NotNull final ListTag inventoryTagList = new ListTag();
@@ -337,7 +336,6 @@ public class TileEntityRack extends AbstractTileEntityRack
         }
         compound.put(TAG_INVENTORY, inventoryTagList);
         BlockPosUtil.writeToNBT(compound, TAG_POS, controllerPos);
-        return compound;
     }
 
     @Override
@@ -350,7 +348,9 @@ public class TileEntityRack extends AbstractTileEntityRack
     @Override
     public CompoundTag getUpdateTag()
     {
-        return this.save(new CompoundTag());
+        final CompoundTag tag = new CompoundTag();
+        this.saveAdditional(tag);
+        return tag;
     }
 
     @Override
