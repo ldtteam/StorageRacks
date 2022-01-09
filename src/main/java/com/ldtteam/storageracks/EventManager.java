@@ -59,7 +59,7 @@ public class EventManager
         else
         {
             final ControllerBlock controller = (ControllerBlock) event.getEntity().level.getBlockState(result).getBlock();
-            if (posSet.size() > controller.getTier() * 20)
+            if (posSet.size() - 1 > controller.getTier() * 20)
             {
                 event.getEntity().sendMessage(new TranslationTextComponent("gui.storageracks.limitreached"), event.getEntity().getUUID());
                 event.setCanceled(true);
