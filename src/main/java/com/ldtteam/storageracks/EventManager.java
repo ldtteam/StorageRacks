@@ -4,9 +4,9 @@ import com.ldtteam.storageracks.blocks.ControllerBlock;
 import com.ldtteam.storageracks.blocks.RackBlock;
 import com.ldtteam.storageracks.blocks.UpgradeableBlock;
 import com.ldtteam.storageracks.tileentities.TileEntityRack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -48,11 +48,11 @@ public class EventManager
         {
             if (event.getPlacedBlock().getBlock() instanceof ControllerBlock)
             {
-                event.getEntity().sendMessage(new TranslatableComponent("gui.storageracks.doublecontroller"), event.getEntity().getUUID());
+                ((Player) event.getEntity()).displayClientMessage(Component.translatable("gui.storageracks.doublecontroller"), false);
             }
             else
             {
-                event.getEntity().sendMessage(new TranslatableComponent("gui.storageracks.notconnected"), event.getEntity().getUUID());
+                ((Player) event.getEntity()).displayClientMessage(Component.translatable("gui.storageracks.notconnected"), false);
             }
             event.setCanceled(true);
         }
@@ -61,7 +61,7 @@ public class EventManager
             final ControllerBlock controller = (ControllerBlock) event.getEntity().level.getBlockState(result).getBlock();
             if (posSet.size() - 1 > controller.getTier() * 20)
             {
-                event.getEntity().sendMessage(new TranslatableComponent("gui.storageracks.limitreached"), event.getEntity().getUUID());
+                ((Player) event.getEntity()).displayClientMessage(Component.translatable("gui.storageracks.limitreached"), false);
                 event.setCanceled(true);
             }
         }

@@ -29,26 +29,22 @@ public abstract class UpgradeableBlock extends Block implements EntityBlock
      */
     private final Item upgradeMaterial;
 
-    /**
-     * Next block in upgrade order.
-     */
-    private Block next;
-
     public UpgradeableBlock(final Item upgradeMaterial)
     {
         super(BlockBehaviour.Properties.of(Material.STONE).noOcclusion().strength(BLOCK_HARDNESS, RESISTANCE));
         this.upgradeMaterial = upgradeMaterial;
     }
 
-    public void setNext(final Block next)
-    {
-        this.next = next;
-    }
-
     public Item getUpgradeMaterial()
     {
         return upgradeMaterial;
     }
+
+    /**
+     * Calculates the next block in upgrade line.
+     * @return the next block in line.
+     */
+    public abstract Block getNext();
 
     /**
      * Check if this is an upgrade attempt.
@@ -64,7 +60,7 @@ public abstract class UpgradeableBlock extends Block implements EntityBlock
         if (player.getMainHandItem().getItem() == block.upgradeMaterial)
         {
             player.getInventory().removeItem(player.getInventory().selected, 1);
-            upgrade(pos, state, block.next, player.level);
+            upgrade(pos, state, getNext(), player.level);
         }
     }
 

@@ -7,7 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -134,7 +134,7 @@ public class RenderUtils
 
             for (int i = 0; i < cap; i += mergeEveryXListElements)
             {
-                final TextComponent renderText = new TextComponent(mergeEveryXListElements == 1 ? text.get(i)
+                final Component renderText = Component.literal(mergeEveryXListElements == 1 ? text.get(i)
                                                                      : text.subList(i, Math.min(i + mergeEveryXListElements, cap)).toString());
                 final float textCenterShift = (float) (-fontrenderer.width(renderText) / 2);
 

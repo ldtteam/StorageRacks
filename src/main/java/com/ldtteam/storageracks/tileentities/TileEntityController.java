@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -165,7 +164,7 @@ public class TileEntityController extends BlockEntity implements MenuProvider
      */
     public TileEntityController(final BlockPos pos, final BlockState state)
     {
-        super(ModTileEntities.CONTROLLER, pos, state);
+        super(ModTileEntities.CONTROLLER.get(), pos, state);
     }
 
     @Override
@@ -400,7 +399,7 @@ public class TileEntityController extends BlockEntity implements MenuProvider
     @Override
     public Component getDisplayName()
     {
-        return new TranslatableComponent("container.title.insertion");
+        return Component.translatable("container.title.insertion");
     }
 
     @Nullable

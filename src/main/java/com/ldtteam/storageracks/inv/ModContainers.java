@@ -6,35 +6,25 @@ import com.ldtteam.storageracks.utils.Constants;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
-@ObjectHolder(Constants.MOD_ID)
 @Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModContainers
 {
-    @ObjectHolder("rack_inv")
-    public static MenuType<ContainerRack> rackInv;
+    public final static DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Constants.MOD_ID);
 
-    @ObjectHolder("insert_inv")
-    public static MenuType<InsertContainer> insertInv;
-
-    @SubscribeEvent
-    public static void registerContainers(final RegistryEvent.Register<MenuType<?>> event)
-    {
-        ModContainers.rackInv = (MenuType<ContainerRack>) IForgeMenuType.create(ContainerRack::fromPacketBuffer).setRegistryName("rack_inv");
-        ModContainers.insertInv = (MenuType<InsertContainer>) IForgeMenuType.create(InsertContainer::fromPacketBuffer).setRegistryName("insert_inv");
-
-        event.getRegistry().registerAll(ModContainers.rackInv, ModContainers.insertInv);
-    }
+    public static RegistryObject<MenuType<ContainerRack>>   rackInv   = CONTAINERS.register("rack_inv", () -> IForgeMenuType.create(ContainerRack::fromPacketBuffer));
+    public static RegistryObject<MenuType<InsertContainer>> insertInv = CONTAINERS.register("insert_inv", () -> IForgeMenuType.create(InsertContainer::fromPacketBuffer));
 
     @SubscribeEvent
     public static void doClientStuff(final FMLClientSetupEvent event)
     {
-        MenuScreens.register(ModContainers.rackInv, WindowRack::new);
-        MenuScreens.register(ModContainers.insertInv, WindowInsert::new);
+        MenuScreens.register(ModContainers.rackInv.get(), WindowRack::new);
+        MenuScreens.register(ModContainers.insertInv.get(), WindowInsert::new);
     }
 }

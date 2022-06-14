@@ -3,6 +3,8 @@ package com.ldtteam.storageracks.blocks;
 import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.core.Direction;
@@ -43,11 +46,6 @@ public class RackBlock extends UpgradeableBlock
     public static final EnumProperty<RackType> VARIANT = EnumProperty.create("variant", RackType.class);
 
     /**
-     * This blocks name.
-     */
-    private static final String BLOCK_NAME = "rack";
-
-    /**
      * Smaller shape.
      */
     private static final VoxelShape SHAPE = Shapes.box(0.1, 0.1, 0.1, 0.9, 0.9, 0.9);
@@ -55,8 +53,8 @@ public class RackBlock extends UpgradeableBlock
     /**
      * The two types.
      */
-    private final FrameType frameType;
-    private final WoodType woodType;
+    public final  FrameType frameType;
+    private final WoodType  woodType;
 
     public RackBlock(final WoodType wood, final FrameType frame, final Item upgradeMaterial)
     {
@@ -64,10 +62,17 @@ public class RackBlock extends UpgradeableBlock
         this.registerDefaultState(this.defaultBlockState().setValue(VARIANT, RackType.DEFAULT));
         this.woodType = wood;
         this.frameType = frame;
-
-        setRegistryName(Constants.MOD_ID.toLowerCase() + ":" + wood.getSerializedName() + "_" + frame.getSerializedName() + "_" + BLOCK_NAME);
     }
 
+    @Override
+    public Block getNext()
+    {
+        if (frameType.ordinal() >= FrameType.values().length)
+        {
+            return null;
+        }
+        return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Constants.MOD_ID, woodType.getSerializedName() + "_" + FrameType.values()[frameType.ordinal() + 1].getSerializedName() + "_rack"));
+    }
 
     @Override
     public boolean propagatesSkylightDown(final BlockState state, @NotNull final BlockGetter reader, @NotNull final BlockPos pos)
@@ -83,7 +88,7 @@ public class RackBlock extends UpgradeableBlock
     }
 
     @Override
-    public void spawnAfterBreak(final BlockState state, final ServerLevel worldIn, final BlockPos pos, final ItemStack stack)
+    public void spawnAfterBreak(final BlockState state, final ServerLevel worldIn, final BlockPos pos, final ItemStack stack, final boolean check)
     {
         final BlockEntity tileentity = worldIn.getBlockEntity(pos);
         if (tileentity instanceof TileEntityRack)
@@ -91,7 +96,7 @@ public class RackBlock extends UpgradeableBlock
             final IItemHandler handler = ((TileEntityRack) tileentity).getInventory();
             InventoryUtils.dropItemHandler(handler, worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
-        super.spawnAfterBreak(state, worldIn, pos, stack);
+        super.spawnAfterBreak(state, worldIn, pos, stack, check);
     }
 
     @NotNull

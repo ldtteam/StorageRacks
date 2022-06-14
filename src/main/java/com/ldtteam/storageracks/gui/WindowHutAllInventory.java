@@ -13,14 +13,13 @@ import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.Tuple;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import org.apache.commons.lang3.StringUtils;
@@ -92,22 +91,22 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
 
         if (controller.isSortUnlocked())
         {
-            findPaneOfTypeByID(SORT, ButtonImage.class).setText(new TranslatableComponent("gui.storageracks.sort"));
+            findPaneOfTypeByID(SORT, ButtonImage.class).setText(Component.translatable("gui.storageracks.sort"));
         }
         else
         {
-            findPaneOfTypeByID(SORT, ButtonImage.class).setText(new TranslatableComponent("gui.storageracks.sort.unlock"));
+            findPaneOfTypeByID(SORT, ButtonImage.class).setText(Component.translatable("gui.storageracks.sort.unlock"));
             final ItemIcon icon = findPaneOfTypeByID("sortcost", ItemIcon.class);
             setupIcon(icon, Items.REDSTONE_BLOCK);
         }
 
         if (controller.isInsertUnlocked())
         {
-            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(new TranslatableComponent("gui.storageracks.insert"));
+            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(Component.translatable("gui.storageracks.insert"));
         }
         else
         {
-            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(new TranslatableComponent("gui.storageracks.insert.unlock"));
+            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(Component.translatable("gui.storageracks.insert.unlock"));
             final ItemIcon icon = findPaneOfTypeByID("insertcost", ItemIcon.class);
             setupIcon(icon, Items.HOPPER);
         }
@@ -119,11 +118,11 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         icon.setItem(new ItemStack(item, 1));
         if (InventoryUtils.findFirstSlotInItemHandlerWith(new InvWrapper(Minecraft.getInstance().player.getInventory()), item) >= 0)
         {
-            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(new TranslatableComponent("gui.storage.racks.available")).color(GREEN).build();
+            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(Component.translatable("gui.storage.racks.available")).color(GREEN).build();
         }
         else
         {
-            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(new TranslatableComponent("gui.storage.racks.missing")).color(RED).build();
+            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(Component.translatable("gui.storage.racks.missing")).color(RED).build();
         }
     }
 
@@ -167,7 +166,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         final Set<BlockPos> containerList = new HashSet<>(controller.racks);
         HighlightManager.clearCategory("inventoryHighlight");
 
-        Minecraft.getInstance().player.sendMessage(new TranslatableComponent("gui.storageracks.locating"), Minecraft.getInstance().player.getUUID());
+        Minecraft.getInstance().player.displayClientMessage(Component.translatable("gui.storageracks.locating"), false);
         close();
 
         for (BlockPos blockPos : containerList)
@@ -204,19 +203,19 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         switch (sortDescriptor)
         {
             case NO_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("v^"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("v^"));
                 break;
             case ASC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("A^"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("A^"));
                 break;
             case DESC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("Av"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("Av"));
                 break;
             case COUNT_ASC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("1^"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("1^"));
                 break;
             case COUNT_DESC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(new TextComponent("1v"));
+                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("1v"));
                 break;
             default:
                 break;
@@ -338,16 +337,16 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
             {
                 final ItemStorage resource = allItems.get(index);
                 final Text resourceLabel = rowPane.findPaneOfTypeByID("ressourceStackName", Text.class);
-                final String name = new TranslatableComponent(resource.getItemStack().getDescriptionId()).getString();
-                resourceLabel.setText(name.substring(0, Math.min(17, name.length())));
+                final String name = Component.translatable(resource.getItemStack().getDescriptionId()).getString();
+                resourceLabel.setText(Component.translatable(name.substring(0, Math.min(17, name.length()))));
                 final Text qtys = rowPane.findPaneOfTypeByID("quantities", Text.class);
                 if (!Screen.hasShiftDown())
                 {
-                    qtys.setText(format(resource.getAmount()));
+                    qtys.setText(Component.translatable(format(resource.getAmount())));
                 }
                 else
                 {
-                    qtys.setText(Integer.toString(resource.getAmount()));
+                    qtys.setText(Component.translatable(Integer.toString(resource.getAmount())));
                 }
                 final Item imagesrc = resource.getItemStack().getItem();
                 final ItemStack image = new ItemStack(imagesrc, 1);

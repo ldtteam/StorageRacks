@@ -22,7 +22,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -79,7 +78,7 @@ public class TileEntityRack extends AbstractTileEntityRack
      */
     public TileEntityRack(final BlockPos pos, final BlockState state)
     {
-        super(ModTileEntities.RACK, pos, state);
+        super(ModTileEntities.RACK.get(), pos, state);
     }
 
     /**
@@ -286,23 +285,24 @@ public class TileEntityRack extends AbstractTileEntityRack
 
     public void checkForUpgrade(final BlockState state, final int oldSize)
     {
-        if (state.getBlock().getRegistryName().getPath().contains("stone"))
+        final RackBlock block = (RackBlock) state.getBlock();
+        if (block.frameType.getSerializedName().contains("stone"))
         {
             size = 1;
         }
-        else if (state.getBlock().getRegistryName().getPath().contains("iron"))
+        else if (block.frameType.getSerializedName().contains("iron"))
         {
             size = 2;
         }
-        else if (state.getBlock().getRegistryName().getPath().contains("gold"))
+        else if (block.frameType.getSerializedName().contains("gold"))
         {
             size = 3;
         }
-        else if (state.getBlock().getRegistryName().getPath().contains("emerald"))
+        else if (block.frameType.getSerializedName().contains("emerald"))
         {
             size = 4;
         }
-        else if (state.getBlock().getRegistryName().getPath().contains("diamond"))
+        else if (block.frameType.getSerializedName().contains("diamond"))
         {
             size = 5;
         }
@@ -407,7 +407,7 @@ public class TileEntityRack extends AbstractTileEntityRack
     @Override
     public Component getDisplayName()
     {
-        return new TranslatableComponent("container.title.rack");
+        return Component.translatable("container.title.rack");
     }
 
     @Override

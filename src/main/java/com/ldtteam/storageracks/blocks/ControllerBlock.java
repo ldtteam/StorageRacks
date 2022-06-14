@@ -5,6 +5,7 @@ import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.gui.WindowHutAllInventory;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -28,11 +29,11 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,11 +44,6 @@ import java.util.List;
  */
 public class ControllerBlock extends UpgradeableBlock
 {
-    /**
-     * This blocks name.
-     */
-    private static final String BLOCK_NAME = "controller";
-
     /**
      * The direction the block is facing.
      */
@@ -72,8 +68,17 @@ public class ControllerBlock extends UpgradeableBlock
     {
         super(upgradeCost);
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
-        setRegistryName(Constants.MOD_ID.toLowerCase() + ":" + material + "_" + BLOCK_NAME);
         this.tier = tier;
+    }
+
+    @Override
+    public Block getNext()
+    {
+        if (tier >= FrameType.values().length)
+        {
+            return null;
+        }
+        return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Constants.MOD_ID,  FrameType.values()[tier + 1].getSerializedName() + "_controller"));
     }
 
     @Nullable
@@ -107,7 +112,7 @@ public class ControllerBlock extends UpgradeableBlock
     public void appendHoverText(final ItemStack stack, @Nullable final BlockGetter world, final List<Component> tooltip, final TooltipFlag flag)
     {
         super.appendHoverText(stack, world, tooltip, flag);
-        tooltip.add(new TranslatableComponent("block.storageracks.controllertoolip", tier*20));
+        tooltip.add(Component.translatable("block.storageracks.controllertoolip", tier*20));
     }
 
     @NotNull
@@ -118,7 +123,7 @@ public class ControllerBlock extends UpgradeableBlock
     }
 
     @Override
-    public void spawnAfterBreak(final BlockState state, final ServerLevel worldIn, final BlockPos pos, final ItemStack stack)
+    public void spawnAfterBreak(final BlockState state, final ServerLevel worldIn, final BlockPos pos, final ItemStack stack, final boolean check)
     {
         final BlockEntity tileentity = worldIn.getBlockEntity(pos);
         if (tileentity instanceof TileEntityRack)
@@ -126,7 +131,7 @@ public class ControllerBlock extends UpgradeableBlock
             final IItemHandler handler = ((TileEntityRack) tileentity).getInventory();
             InventoryUtils.dropItemHandler(handler, worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
-        super.spawnAfterBreak(state, worldIn, pos, stack);
+        super.spawnAfterBreak(state, worldIn, pos, stack, check);
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.ldtteam.storageracks.configuration;
 
 import com.ldtteam.storageracks.utils.Constants;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.ForgeConfigSpec.*;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public abstract class AbstractConfiguration
 
     protected void createCategory(final Builder builder, final String key)
     {
-        builder.comment(new TranslatableComponent(commentTKey(key)).getString()).push(key);
+        builder.comment(Component.translatable(commentTKey(key)).getString()).push(key);
     }
 
     protected void swapToCategory(final Builder builder, final String key)
@@ -42,12 +42,12 @@ public abstract class AbstractConfiguration
 
     private static Builder buildBase(final Builder builder, final String key, final String defaultDesc)
     {
-        return builder.comment(new TranslatableComponent(commentTKey(key)).getString() + " " + defaultDesc).translation(nameTKey(key));
+        return builder.comment(Component.translatable(commentTKey(key)).getString() + " " + defaultDesc).translation(nameTKey(key));
     }
 
     protected static IntValue defineInteger(final Builder builder, final String key, final int defaultValue, final int min, final int max)
     {
-        return buildBase(builder, key, new TranslatableComponent(INT_DEFAULT_KEY, defaultValue, min, max).getString()).defineInRange(key, defaultValue, min, max);
+        return buildBase(builder, key, Component.translatable(INT_DEFAULT_KEY, defaultValue, min, max).getString()).defineInRange(key, defaultValue, min, max);
     }
 
     protected static LongValue defineLong(final Builder builder, final String key, final long defaultValue)
@@ -57,7 +57,7 @@ public abstract class AbstractConfiguration
 
     protected static LongValue defineLong(final Builder builder, final String key, final long defaultValue, final long min, final long max)
     {
-        return buildBase(builder, key, new TranslatableComponent(LONG_DEFAULT_KEY, defaultValue, min, max).getString()).defineInRange(key, defaultValue, min, max);
+        return buildBase(builder, key, Component.translatable(LONG_DEFAULT_KEY, defaultValue, min, max).getString()).defineInRange(key, defaultValue, min, max);
     }
 
     protected static DoubleValue defineDouble(final Builder builder, final String key, final double defaultValue)
@@ -67,7 +67,7 @@ public abstract class AbstractConfiguration
 
     protected static DoubleValue defineDouble(final Builder builder, final String key, final double defaultValue, final double min, final double max)
     {
-        return buildBase(builder, key, new TranslatableComponent(DOUBLE_DEFAULT_KEY, defaultValue, min, max).getString()).defineInRange(key, defaultValue, min, max);
+        return buildBase(builder, key, Component.translatable(DOUBLE_DEFAULT_KEY, defaultValue, min, max).getString()).defineInRange(key, defaultValue, min, max);
     }
 
     protected static <T> ConfigValue<List<? extends T>> defineList(

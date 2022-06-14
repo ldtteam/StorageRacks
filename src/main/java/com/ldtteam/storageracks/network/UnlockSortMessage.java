@@ -3,12 +3,12 @@ package com.ldtteam.storageracks.network;
 import com.ldtteam.storageracks.tileentities.TileEntityController;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import com.ldtteam.storageracks.utils.SoundUtils;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -67,14 +67,14 @@ public class UnlockSortMessage implements IMessage
             if (slot < 0)
             {
                 SoundUtils.playErrorSound(playerEntity, pos);
-                playerEntity.sendMessage(new TranslatableComponent("com.storageracks.sort.unlock.failed"), playerEntity.getUUID());
+                playerEntity.displayClientMessage(Component.translatable("com.storageracks.sort.unlock.failed"), false);
                 return;
             }
             playerEntity.getInventory().getItem(slot).shrink(1);
         }
 
         SoundUtils.playSuccessSound(playerEntity, pos);
-        playerEntity.sendMessage(new TranslatableComponent("com.storageracks.sort.unlock.succeeded"), playerEntity.getUUID());
+        playerEntity.displayClientMessage(Component.translatable("com.storageracks.sort.unlock.succeeded"), false);
         ((TileEntityController) te).unlockSort();
     }
 }

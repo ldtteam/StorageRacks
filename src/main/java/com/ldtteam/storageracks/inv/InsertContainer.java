@@ -46,7 +46,7 @@ public class InsertContainer extends AbstractContainerMenu
      */
     public InsertContainer(final int id, @NotNull final Inventory player, @NotNull final IItemHandler handler)
     {
-        super(ModContainers.insertInv, id);
+        super(ModContainers.insertInv.get(), id);
         this.inventory = handler;
 
         for (int j = 0; j < handler.getSlots(); ++j)

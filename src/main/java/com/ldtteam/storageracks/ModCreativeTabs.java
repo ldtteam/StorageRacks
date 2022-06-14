@@ -17,7 +17,7 @@ public final class ModCreativeTabs
         @Override
         public ItemStack makeIcon()
         {
-            return new ItemStack(ModBlocks.racks.get(0));
+            return new ItemStack(ModBlocks.racks.get(0).get());
         }
 
         @Override

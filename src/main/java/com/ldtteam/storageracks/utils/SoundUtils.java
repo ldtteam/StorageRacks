@@ -43,7 +43,8 @@ public final class SoundUtils
               position.getY(),
               position.getZ(),
               (float) VOLUME * 2,
-              (float) 1.0));
+              (float) 1.0,
+              player.getRandom().nextLong()));
         }
     }
 
@@ -62,7 +63,8 @@ public final class SoundUtils
               position.getY(),
               position.getZ(),
               (float) VOLUME * 2,
-              (float) 0.3));
+              (float) 0.3,
+              player.getRandom().nextLong()));
         }
     }
 }
