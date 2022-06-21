@@ -19,4 +19,11 @@ apply from: 'https://raw.githubusercontent.com/ldtteam/OperaPublicaCreator/main/
 
 dependencies {
     implementation fg.deobf("com.ldtteam:blockui:${project.minecraftVersion}-${project.blockUI_version}")
+
+    datagenLibrary ("com.ldtteam:datagenerators:${project.dataGeneratorsVersion}") {
+        transitive = false
+    }
+    library ("com.ldtteam:datagenerators:${project.dataGeneratorsVersion}") {
+        transitive = false
+    }
 }

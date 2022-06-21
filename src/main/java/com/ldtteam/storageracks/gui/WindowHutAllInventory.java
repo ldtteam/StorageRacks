@@ -275,12 +275,13 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         }
         else
         {
-            allItems.addAll(filterItems.stream().filter(filterPredicate).collect(Collectors.toList()));
+            allItems.addAll(filterItems.stream().filter(filterPredicate).toList());
         }
 
         if (!filter.isEmpty())
         {
-            allItems.sort(Comparator.comparingInt(s1 -> StringUtils.getLevenshteinDistance(s1.getItemStack().getHoverName().getString(), filter)));
+            //todo we need a method to take the list and make a string out of it
+            allItems.sort(Comparator.comparingInt(s1 -> StringUtils.getLevenshteinDistance(s1.getItemStack().getTooltipLines(Minecraft.getInstance().player, TooltipFlag.Default.NORMAL).toString(), filter)));
         }
         final Comparator<ItemStorage> compareByName = Comparator.comparing((ItemStorage o) -> o.getItemStack().getDisplayName().getString());
         final Comparator<ItemStorage> compareByCount = Comparator.comparingInt(ItemStorage::getAmount);

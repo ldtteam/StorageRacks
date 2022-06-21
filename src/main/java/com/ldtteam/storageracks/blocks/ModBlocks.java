@@ -6,7 +6,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -44,6 +43,7 @@ public final class ModBlocks
     }
 
     public static List<RegistryObject<RackBlock>> racks = new ArrayList<>();
+    public static List<RegistryObject<CornerBlock>> corners = new ArrayList<>();
 
     public static RegistryObject<ControllerBlock> stoneController;
     public static RegistryObject<ControllerBlock> ironController;
@@ -64,9 +64,19 @@ public final class ModBlocks
             final List<RegistryObject<RackBlock>> list = new ArrayList<>();
             for (final FrameType frame : FrameType.values())
             {
-                list.add(register(woodType.getSerializedName() + "_" + frame.getSerializedName() + "_rack", () -> new RackBlock(woodType, frame, frame.getCost()), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS))));
+                list.add(register(woodType.getSerializedName() + "_" + frame.getSerializedName() + "_rack", () -> new RackBlock(woodType, frame, frame.getUpgradeCost()), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS))));
             }
             racks.addAll(list);
+        }
+
+        for (final WoodType woodType : WoodType.values())
+        {
+            final List<RegistryObject<CornerBlock>> list = new ArrayList<>();
+            for (final FrameType frame : FrameType.values())
+            {
+                list.add(register(woodType.getSerializedName() + "_" + frame.getSerializedName() + "_corner", () -> new CornerBlock(woodType, frame), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS))));
+            }
+            corners.addAll(list);
         }
     }
 

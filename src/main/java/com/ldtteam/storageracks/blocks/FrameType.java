@@ -13,24 +13,26 @@ import org.jetbrains.annotations.NotNull;
  */
 public enum FrameType implements StringRepresentable
 {
-    WOOD("wood", Blocks.OAK_PLANKS, Items.STONE),
-    STONE("stone", Blocks.STONE, Items.IRON_INGOT),
-    IRON("iron", Blocks.IRON_BLOCK, Items.GOLD_INGOT),
-    GOLD("gold", Blocks.GOLD_BLOCK, Items.EMERALD),
-    EMERALD("emerald", Blocks.EMERALD_BLOCK, Items.DIAMOND),
-    DIAMOND("diamond", Blocks.DIAMOND_BLOCK, null);
+    WOOD("wood", Blocks.OAK_PLANKS, Items.STONE, Items.OAK_PLANKS),
+    STONE("stone", Blocks.STONE, Items.IRON_INGOT, Items.STONE),
+    IRON("iron", Blocks.IRON_BLOCK, Items.GOLD_INGOT, Items.IRON_INGOT),
+    GOLD("gold", Blocks.GOLD_BLOCK, Items.EMERALD, Items.GOLD_INGOT),
+    EMERALD("emerald", Blocks.EMERALD_BLOCK, Items.DIAMOND, Items.EMERALD),
+    DIAMOND("diamond", Blocks.DIAMOND_BLOCK, null, Items.DIAMOND);
 
     private final String                name;
     private final Block                 material;
     private final RegistryObject<Block> registeredMaterial;
-    private final Item                  cost;
+    private final Item upgradeCost;
+    private final Item creationCost;
 
-    FrameType(final String nameIn, final Block material, final Item cost)
+    FrameType(final String nameIn, final Block material, final Item cost, final Item creation)
     {
         this.name = nameIn;
         this.material = material;
         this.registeredMaterial = null;
-        this.cost = cost;
+        this.upgradeCost = cost;
+        this.creationCost = creation;
     }
 
     @NotNull
@@ -45,8 +47,13 @@ public enum FrameType implements StringRepresentable
         return material == null && registeredMaterial != null ? registeredMaterial.get() : material;
     }
 
-    public Item getCost()
+    public Item getUpgradeCost()
     {
-        return cost;
+        return upgradeCost;
+    }
+
+    public Item getCreationCost()
+    {
+        return creationCost;
     }
 }

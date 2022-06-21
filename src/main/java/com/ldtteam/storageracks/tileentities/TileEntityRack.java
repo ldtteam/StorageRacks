@@ -1,6 +1,7 @@
 package com.ldtteam.storageracks.tileentities;
 
 import com.ldtteam.storageracks.ItemStorage;
+import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.RackBlock;
 import com.ldtteam.storageracks.blocks.RackType;
 import com.ldtteam.storageracks.inv.ContainerRack;
@@ -442,6 +443,8 @@ public class TileEntityRack extends AbstractTileEntityRack
     {
         final Set<BlockPos> visitedPositions = new HashSet<>();
         final BlockPos controller = visitPositions(level, visitedPositions, this.getBlockPos());
+        visitedPositions.removeIf(pos -> level.getBlockState(pos).getBlock() instanceof CornerBlock);
+
         if (controller != BlockPos.ZERO && controller != null)
         {
             this.controller = getBlockPos().subtract(controller);
@@ -501,7 +504,7 @@ public class TileEntityRack extends AbstractTileEntityRack
             if (!visitedPositions.contains(next))
             {
                 final BlockEntity te = level.getBlockEntity(next);
-                if (te instanceof TileEntityRack || te instanceof TileEntityController)
+                if (te instanceof TileEntityRack || te instanceof TileEntityController || level.getBlockState(next).getBlock() instanceof CornerBlock)
                 {
                     final BlockPos cont = visitPositions(level, visitedPositions, next);
                     if (cont != null)

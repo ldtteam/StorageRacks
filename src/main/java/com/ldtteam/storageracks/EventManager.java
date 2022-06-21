@@ -1,6 +1,7 @@
 package com.ldtteam.storageracks;
 
 import com.ldtteam.storageracks.blocks.ControllerBlock;
+import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.RackBlock;
 import com.ldtteam.storageracks.blocks.UpgradeableBlock;
 import com.ldtteam.storageracks.tileentities.TileEntityRack;
@@ -44,6 +45,8 @@ public class EventManager
 
         final HashSet<BlockPos> posSet = new HashSet<>();
         final BlockPos result = TileEntityRack.visitPositions((Level) event.getWorld(), posSet, event.getPos());
+        posSet.removeIf(pos -> event.getWorld().getBlockState(pos).getBlock() instanceof CornerBlock);
+
         if (result == null || result.equals(BlockPos.ZERO))
         {
             if (event.getPlacedBlock().getBlock() instanceof ControllerBlock)
