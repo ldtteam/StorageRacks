@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static com.ldtteam.storageracks.utils.WindowConstants.*;
 
@@ -262,9 +261,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         });
         final Predicate<ItemStorage> filterPredicate = stack -> filter.isEmpty()
                                                                   || stack.getItemStack().getDescriptionId().toLowerCase(Locale.US).contains(filter.toLowerCase(Locale.US))
-                                                                  || stack.getItemStack()
-                                                                       .getDisplayName()
-                                                                       .getString()
+                                                                  || getString(stack.getItemStack())
                                                                        .toLowerCase(Locale.US)
                                                                        .contains(filter.toLowerCase(Locale.US));
 
@@ -280,8 +277,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
 
         if (!filter.isEmpty())
         {
-            //todo we need a method to take the list and make a string out of it
-            allItems.sort(Comparator.comparingInt(s1 -> StringUtils.getLevenshteinDistance(s1.getItemStack().getTooltipLines(Minecraft.getInstance().player, TooltipFlag.Default.NORMAL).toString(), filter)));
+            allItems.sort(Comparator.comparingInt(s1 -> StringUtils.getLevenshteinDistance(s1.getItemStack().getHoverName().getString(), filter)));
         }
         final Comparator<ItemStorage> compareByName = Comparator.comparing((ItemStorage o) -> o.getItemStack().getDisplayName().getString());
         final Comparator<ItemStorage> compareByCount = Comparator.comparingInt(ItemStorage::getAmount);
@@ -306,6 +302,21 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         }
 
         updateResourceList();
+    }
+
+    /**
+     * Get identifying string from itemstack.
+     * @param stack the stack to gen the string from.
+     * @return a single string.
+     */
+    private static String getString(final ItemStack stack)
+    {
+        final StringBuilder output = new StringBuilder();
+        for (final Component comp : stack.getTooltipLines(Minecraft.getInstance().player, TooltipFlag.Default.NORMAL))
+        {
+            output.append(comp.getString()).append(" ");
+        }
+        return output.toString();
     }
 
     /**

@@ -53,11 +53,11 @@ public final class ModBlocks
 
     static
     {
-        stoneController = register("stone_controller", () -> new ControllerBlock(FrameType.STONE.getSerializedName(), Items.IRON_BLOCK, 1), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
-        ironController = register("iron_controller", () -> new ControllerBlock(FrameType.IRON.getSerializedName(), Items.GOLD_BLOCK, 2), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
-        goldController = register("gold_controller", () -> new ControllerBlock(FrameType.GOLD.getSerializedName(), Items.EMERALD_BLOCK, 3), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
-        emeraldController = register("emerald_controller", () -> new ControllerBlock(FrameType.EMERALD.getSerializedName(), Items.DIAMOND_BLOCK, 4), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
-        diamondController = register("diamond_controller", () -> new ControllerBlock(FrameType.DIAMOND.getSerializedName(), null, 5), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
+        stoneController = register("stone_controller", () -> new ControllerBlock(Items.STONE_SLAB, Items.IRON_BLOCK, 1), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
+        ironController = register("iron_controller", () -> new ControllerBlock(Items.IRON_INGOT, Items.GOLD_BLOCK, 2), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
+        goldController = register("gold_controller", () -> new ControllerBlock(Items.GOLD_INGOT, Items.EMERALD_BLOCK, 3), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
+        emeraldController = register("emerald_controller", () -> new ControllerBlock(Items.EMERALD, Items.DIAMOND_BLOCK, 4), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
+        diamondController = register("diamond_controller", () -> new ControllerBlock(Items.DIAMOND, null, 5), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
 
         for (final WoodType woodType : WoodType.values())
         {

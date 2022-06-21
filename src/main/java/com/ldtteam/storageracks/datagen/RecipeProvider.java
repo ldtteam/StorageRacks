@@ -5,6 +5,7 @@ import com.ldtteam.datagenerators.recipes.RecipeIngredientKeyJson;
 import com.ldtteam.datagenerators.recipes.RecipeResultJson;
 import com.ldtteam.datagenerators.recipes.shaped.ShapedPatternJson;
 import com.ldtteam.datagenerators.recipes.shaped.ShapedRecipeJson;
+import com.ldtteam.storageracks.blocks.ControllerBlock;
 import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.ModBlocks;
 import com.ldtteam.storageracks.blocks.RackBlock;
@@ -12,7 +13,9 @@ import com.ldtteam.storageracks.utils.Constants;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -63,6 +66,27 @@ public class RecipeProvider implements DataProvider
 
             DataProvider.saveStable(cache, json.serialize(), blockstatePath);
         }
+
+        generateControllerRecipe(cache, ModBlocks.stoneController.get(), Items.PAPER);
+        generateControllerRecipe(cache, ModBlocks.ironController.get(), ModBlocks.stoneController.get().asItem());
+        generateControllerRecipe(cache, ModBlocks.goldController.get(), ModBlocks.ironController.get().asItem());
+        generateControllerRecipe(cache, ModBlocks.emeraldController.get(), ModBlocks.goldController.get().asItem());
+        generateControllerRecipe(cache, ModBlocks.diamondController.get(), ModBlocks.emeraldController.get().asItem());
+
+    }
+
+    private void generateControllerRecipe(final CachedOutput cache, final ControllerBlock state, final Item prev) throws IOException
+    {
+        final ShapedPatternJson pattern =  new ShapedPatternJson("SSS","SPS","SSS");
+        final Map<String, RecipeIngredientKeyJson> keys = new HashMap<>();
+        keys.put("S", new RecipeIngredientKeyJson(new RecipeIngredientJson(ForgeRegistries.ITEMS.getKey(state.getBuildMaterial()).toString(), false)));
+        keys.put("P", new RecipeIngredientKeyJson(new RecipeIngredientJson(ForgeRegistries.ITEMS.getKey(prev).toString(), false)));
+
+        final ShapedRecipeJson json = new ShapedRecipeJson("controllers", pattern, keys, new RecipeResultJson(1, ForgeRegistries.ITEMS.getKey(state.asItem()).toString()));
+        final Path recipeFolder = this.generator.getOutputFolder().resolve(Constants.RECIPES_DIR);
+        final Path blockstatePath = recipeFolder.resolve(ForgeRegistries.BLOCKS.getKey(state).getPath() + ".json");
+
+        DataProvider.saveStable(cache, json.serialize(), blockstatePath);
     }
 
     @NotNull

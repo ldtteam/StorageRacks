@@ -18,6 +18,8 @@ buildscript {
 apply from: 'https://raw.githubusercontent.com/ldtteam/OperaPublicaCreator/main/gradle/mod.gradle'
 
 dependencies {
+    implementation fg.deobf("mezz.jei:jei-1.19-forge:${project.jei_version}")
+
     implementation fg.deobf("com.ldtteam:blockui:${project.minecraftVersion}-${project.blockUI_version}")
 
     datagenLibrary ("com.ldtteam:datagenerators:${project.dataGeneratorsVersion}") {

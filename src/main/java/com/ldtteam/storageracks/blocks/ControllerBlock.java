@@ -60,15 +60,21 @@ public class ControllerBlock extends UpgradeableBlock
     private final int tier;
 
     /**
+     * Build material.
+     */
+    private final Item buildMaterial;
+
+    /**
      * Create a new controller.
      * @param material the base material.
      * @param upgradeCost the upgrade cost.
      */
-    public ControllerBlock(final String material, final Item upgradeCost, final int tier)
+    public ControllerBlock(final Item material, final Item upgradeCost, final int tier)
     {
         super(upgradeCost);
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
         this.tier = tier;
+        this.buildMaterial = material;
     }
 
     @Override
@@ -207,6 +213,11 @@ public class ControllerBlock extends UpgradeableBlock
             }
         }
         return rem;
+    }
+
+    public Item getBuildMaterial()
+    {
+        return this.buildMaterial;
     }
 
     public int getTier()
