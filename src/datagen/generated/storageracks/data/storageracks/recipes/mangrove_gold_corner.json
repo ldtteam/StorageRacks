@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "corners",
+  "key": {
+    "C": {
+      "item": "minecraft:gold_ingot"
+    },
+    "F": {
+      "item": "minecraft:mangrove_planks"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "FCF",
+    "FFF"
+  ],
+  "result": {
+    "count": 8,
+    "item": "storageracks:mangrove_gold_corner"
+  }
+}

@@ -18,6 +18,7 @@ public enum WoodType implements StringRepresentable
     ACACIA("acacia", Blocks.ACACIA_PLANKS),
     DARK_OAK("dark_oak", Blocks.DARK_OAK_PLANKS),
     WARPED("warped", Blocks.WARPED_PLANKS),
+    MANGROVE("mangrove", Blocks.MANGROVE_PLANKS),
     CRIMSON("crimson", Blocks.CRIMSON_PLANKS);
 
     private final String name;
