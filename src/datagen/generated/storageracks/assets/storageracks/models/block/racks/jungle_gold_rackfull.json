@@ -1,8 +1,0 @@
-{
-  "parent": "storageracks:block/fullrack",
-  "textures": {
-    "0": "minecraft:block/jungle_planks",
-    "1": "minecraft:block/gold_block",
-    "particle": "minecraft:block/gold_block"
-  }
-}

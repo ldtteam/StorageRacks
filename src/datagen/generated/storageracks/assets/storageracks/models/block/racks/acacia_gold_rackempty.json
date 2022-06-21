@@ -1,8 +1,0 @@
-{
-  "parent": "storageracks:block/emptyrack",
-  "textures": {
-    "0": "minecraft:block/acacia_planks",
-    "1": "minecraft:block/gold_block",
-    "particle": "minecraft:block/gold_block"
-  }
-}

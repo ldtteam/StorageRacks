@@ -1,10 +1,10 @@
 {
   "variants": {
     "variant=empty": {
-      "model": "storageracks:block/racks/crimson_diamond_rackempty"
+      "model": "storageracks:block/crimson_diamond_rackempty"
     },
     "variant=full": {
-      "model": "storageracks:block/racks/crimson_diamond_rackfull"
+      "model": "storageracks:block/crimson_diamond_rackfull"
     }
   }
 }

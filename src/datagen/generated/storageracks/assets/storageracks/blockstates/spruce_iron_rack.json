@@ -1,10 +1,10 @@
 {
   "variants": {
     "variant=empty": {
-      "model": "storageracks:block/racks/spruce_iron_rackempty"
+      "model": "storageracks:block/spruce_iron_rackempty"
     },
     "variant=full": {
-      "model": "storageracks:block/racks/spruce_iron_rackfull"
+      "model": "storageracks:block/spruce_iron_rackfull"
     }
   }
 }

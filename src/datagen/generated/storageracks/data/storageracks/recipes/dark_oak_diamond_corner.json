@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "corners",
+  "key": {
+    "C": {
+      "item": "minecraft:diamond"
+    },
+    "F": {
+      "item": "minecraft:dark_oak_planks"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "FCF",
+    "FFF"
+  ],
+  "result": {
+    "count": 8,
+    "item": "storageracks:dark_oak_diamond_corner"
+  }
+}

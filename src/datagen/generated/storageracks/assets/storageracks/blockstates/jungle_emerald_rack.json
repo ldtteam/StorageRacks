@@ -1,10 +1,10 @@
 {
   "variants": {
     "variant=empty": {
-      "model": "storageracks:block/racks/jungle_emerald_rackempty"
+      "model": "storageracks:block/jungle_emerald_rackempty"
     },
     "variant=full": {
-      "model": "storageracks:block/racks/jungle_emerald_rackfull"
+      "model": "storageracks:block/jungle_emerald_rackfull"
     }
   }
 }

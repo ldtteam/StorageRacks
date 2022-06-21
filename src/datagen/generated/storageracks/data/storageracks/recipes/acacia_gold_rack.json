@@ -1,22 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "FFF",
-    "XCX",
-    "FFF"
-  ],
+  "group": "racks",
   "key": {
-    "F": {
-      "item": "minecraft:acacia_slab"
-    },
     "C": {
       "item": "minecraft:gold_ingot"
+    },
+    "F": {
+      "item": "minecraft:acacia_planks"
     },
     "X": {
       "tag": "forge:rods/wooden"
     }
   },
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
   "result": {
+    "count": 1,
     "item": "storageracks:acacia_gold_rack"
   }
 }

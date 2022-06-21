@@ -1,10 +1,10 @@
 {
   "variants": {
     "variant=empty": {
-      "model": "storageracks:block/racks/oak_gold_rackempty"
+      "model": "storageracks:block/oak_gold_rackempty"
     },
     "variant=full": {
-      "model": "storageracks:block/racks/oak_gold_rackfull"
+      "model": "storageracks:block/oak_gold_rackfull"
     }
   }
 }

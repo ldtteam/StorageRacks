@@ -1,22 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "FFF",
-    "XCX",
-    "FFF"
-  ],
+  "group": "racks",
   "key": {
-    "F": {
-      "item": "minecraft:warped_slab"
-    },
     "C": {
       "item": "minecraft:iron_ingot"
+    },
+    "F": {
+      "item": "minecraft:warped_planks"
     },
     "X": {
       "tag": "forge:rods/wooden"
     }
   },
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
   "result": {
+    "count": 1,
     "item": "storageracks:warped_iron_rack"
   }
 }
