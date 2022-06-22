@@ -55,7 +55,7 @@ public class LangEntryProvider implements DataProvider
         backingLangJson.put("gui.storageracks.locating", "Locating...");
         backingLangJson.put("block.storageracks.controllertoolip", "Supports up to %d Racks");
         backingLangJson.put("com.storageracks.sort.unlock.failed", "Unlocking Sort Failed. You are missing 1 RedStone Block in your Inventory!");
-        backingLangJson.put("com.storageracks.sort.insert.failed", "Unlocking Insert Failed. You are missing 1 Hopper in your Inventory!");
+        backingLangJson.put("com.storageracks.insert.unlock.failed", "Unlocking Insert Failed. You are missing 1 Hopper in your Inventory!");
         backingLangJson.put("com.storageracks.sort.unlock.succeeded", "Successfully unlocked Sort Feature");
         backingLangJson.put("com.storageracks.insert.unlock.succeeded", "Successfully unlocked Insert Feature");
         backingLangJson.put("gui.storageracks.sort.unlock", "Unlock Sorting");
