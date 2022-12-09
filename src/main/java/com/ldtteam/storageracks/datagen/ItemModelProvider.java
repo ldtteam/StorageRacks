@@ -8,12 +8,17 @@ import com.ldtteam.storageracks.utils.Constants;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.util.Tuple;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class ItemModelProvider implements DataProvider
 {
@@ -24,8 +29,13 @@ public class ItemModelProvider implements DataProvider
         this.generator = generator;
     }
 
+    /**
+     * All generated models.
+     */
+    private final List<Tuple<ItemModelJson, String>> models = new ArrayList<>();
+
     @Override
-    public void run(@NotNull CachedOutput cache) throws IOException
+    public CompletableFuture<?> run(@NotNull CachedOutput cache)
     {
         final ItemModelJson modelJson = new ItemModelJson();
 
@@ -40,10 +50,7 @@ public class ItemModelProvider implements DataProvider
             textureMap.put("particle", "block/" +  ForgeRegistries.BLOCKS.getKey(state.get().getWoodType().getMaterial()).getPath());
             modelJson.setTextures(textureMap);
 
-            DataProvider.saveStable(
-              cache,
-              modelJson.serialize(),
-              generator.getOutputFolder().resolve(Constants.ITEM_MODEL_DIR).resolve(ForgeRegistries.BLOCKS.getKey(state.get()).getPath() + ".json"));
+            this.models.add(new Tuple<>(modelJson, ForgeRegistries.BLOCKS.getKey(state.get()).getPath()));
         }
 
         for (final RegistryObject<RackBlock> state : ModBlocks.racks)
@@ -57,11 +64,32 @@ public class ItemModelProvider implements DataProvider
             textureMap.put("particle", "block/" +  ForgeRegistries.BLOCKS.getKey(state.get().getWoodType().getMaterial()).getPath());
             modelJson.setTextures(textureMap);
 
-            DataProvider.saveStable(
-              cache,
-              modelJson.serialize(),
-              generator.getOutputFolder().resolve(Constants.ITEM_MODEL_DIR).resolve(ForgeRegistries.BLOCKS.getKey(state.get()).getPath() + ".json"));
+            this.models.add(new Tuple<>(modelJson, ForgeRegistries.BLOCKS.getKey(state.get()).getPath()));
         }
+        return generateAll(cache);
+    }
+
+    protected CompletableFuture<?> generateAll(CachedOutput cache)
+    {
+        CompletableFuture<?>[] futures = new CompletableFuture<?>[this.models.size()];
+        int i = 0;
+
+        for (Tuple<ItemModelJson, String> model : this.models)
+        {
+            Path target = getPath(model.getB());
+            futures[i++] = DataProvider.saveStable(cache, model.getA().serialize(), target);
+        }
+
+        return CompletableFuture.allOf(futures);
+    }
+
+    protected Path getPath(final String name)
+    {
+        return this.generator.getPackOutput()
+                 .getOutputFolder(PackOutput.Target.RESOURCE_PACK)
+                 .resolve(Constants.MOD_ID)
+                 .resolve(Constants.ITEM_MODEL_DIR)
+                 .resolve(name + ".json");
     }
 
     @Override

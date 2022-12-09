@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "storageracks:gui/paper",
+		"0": "storageracks:item/paper",
         "1": "minecraft:block/diamond_block",
 		"3": "minecraft:block/stone",
 		"particle": "minecraft:block/diamond_block"

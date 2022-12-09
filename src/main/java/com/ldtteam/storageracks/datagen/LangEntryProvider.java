@@ -8,11 +8,12 @@ import com.ldtteam.storageracks.utils.Constants;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 public class LangEntryProvider implements DataProvider
 {
@@ -26,7 +27,7 @@ public class LangEntryProvider implements DataProvider
     }
 
     @Override
-    public void run(@NotNull CachedOutput cache) throws IOException
+    public CompletableFuture<?> run(@NotNull CachedOutput cache)
     {
         for (final RegistryObject<CornerBlock> corner : ModBlocks.corners)
         {
@@ -67,7 +68,10 @@ public class LangEntryProvider implements DataProvider
         backingLangJson.put("container.title.rack", "Rack");
         backingLangJson.put("container.title.insertion", "Insertion Controller");
 
-        DataProvider.saveStable(cache, backingLangJson.serialize(), dataGenerator.getOutputFolder().resolve(Constants.EN_US_LANG));
+        return DataProvider.saveStable(cache, backingLangJson.serialize(), this.dataGenerator.getPackOutput()
+                                                                             .getOutputFolder(PackOutput.Target.RESOURCE_PACK)
+                                                                             .resolve(Constants.MOD_ID)
+                                                                             .resolve(Constants.EN_US_LANG));
     }
 
     @Override

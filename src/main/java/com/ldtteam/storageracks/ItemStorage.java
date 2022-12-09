@@ -5,6 +5,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class ItemStorage
     {
         this.stack = stack;
         this.amount = ItemStackUtils.getSize(stack);
-        this.creativeTabIndex = stack.getItem().getCreativeTabs().stream().filter(Objects::nonNull).map(g -> g.id).collect(Collectors.toList());
+        this.creativeTabIndex = new ArrayList<>(); //stack.getItem().getCreativeTabs().stream().filter(Objects::nonNull).map(g -> g.id).collect(Collectors.toList());
     }
 
     /**

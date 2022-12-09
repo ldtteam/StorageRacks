@@ -1,6 +1,5 @@
 package com.ldtteam.storageracks.blocks;
 
-import com.ldtteam.storageracks.ModCreativeTabs;
 import com.ldtteam.storageracks.utils.Constants;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.BlockItem;
@@ -53,18 +52,18 @@ public final class ModBlocks
 
     static
     {
-        stoneController = register("stone_controller", () -> new ControllerBlock(Items.STONE_SLAB, Items.IRON_BLOCK, 1), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
-        ironController = register("iron_controller", () -> new ControllerBlock(Items.IRON_INGOT, Items.GOLD_BLOCK, 2), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
-        goldController = register("gold_controller", () -> new ControllerBlock(Items.GOLD_INGOT, Items.EMERALD_BLOCK, 3), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
-        emeraldController = register("emerald_controller", () -> new ControllerBlock(Items.EMERALD, Items.DIAMOND_BLOCK, 4), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
-        diamondController = register("diamond_controller", () -> new ControllerBlock(Items.DIAMOND, null, 5), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS)));
+        stoneController = register("stone_controller", () -> new ControllerBlock(Items.STONE_SLAB, Items.IRON_BLOCK, 1), b -> new BlockItem(b, new Item.Properties()));
+        ironController = register("iron_controller", () -> new ControllerBlock(Items.IRON_INGOT, Items.GOLD_BLOCK, 2), b -> new BlockItem(b, new Item.Properties()));
+        goldController = register("gold_controller", () -> new ControllerBlock(Items.GOLD_INGOT, Items.EMERALD_BLOCK, 3), b -> new BlockItem(b, new Item.Properties()));
+        emeraldController = register("emerald_controller", () -> new ControllerBlock(Items.EMERALD, Items.DIAMOND_BLOCK, 4), b -> new BlockItem(b, new Item.Properties()));
+        diamondController = register("diamond_controller", () -> new ControllerBlock(Items.DIAMOND, null, 5), b -> new BlockItem(b, new Item.Properties()));
 
         for (final WoodType woodType : WoodType.values())
         {
             final List<RegistryObject<RackBlock>> list = new ArrayList<>();
             for (final FrameType frame : FrameType.values())
             {
-                list.add(register(woodType.getSerializedName() + "_" + frame.getSerializedName() + "_rack", () -> new RackBlock(woodType, frame, frame.getUpgradeCost()), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS))));
+                list.add(register(woodType.getSerializedName() + "_" + frame.getSerializedName() + "_rack", () -> new RackBlock(woodType, frame, frame.getUpgradeCost()), b -> new BlockItem(b, new Item.Properties())));
             }
             racks.addAll(list);
         }
@@ -74,7 +73,7 @@ public final class ModBlocks
             final List<RegistryObject<CornerBlock>> list = new ArrayList<>();
             for (final FrameType frame : FrameType.values())
             {
-                list.add(register(woodType.getSerializedName() + "_" + frame.getSerializedName() + "_corner", () -> new CornerBlock(woodType, frame), b -> new BlockItem(b, new Item.Properties().tab(ModCreativeTabs.STORAGERACKS))));
+                list.add(register(woodType.getSerializedName() + "_" + frame.getSerializedName() + "_corner", () -> new CornerBlock(woodType, frame), b -> new BlockItem(b, new Item.Properties())));
             }
             corners.addAll(list);
         }

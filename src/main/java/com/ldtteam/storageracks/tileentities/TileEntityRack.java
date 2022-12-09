@@ -136,13 +136,13 @@ public class TileEntityRack extends AbstractTileEntityRack
             return true;
         }
 
-        for (final ItemStorage storage : content.keySet())
+        /*for (final ItemStorage storage : content.keySet())
         {
-           if (checkItem.getPrimaryCreativeTabIndex() == storage.getPrimaryCreativeTabIndex())
+           if (checkItem.getItem().getPrimaryCreativeTabIndex() == storage.getPrimaryCreativeTabIndex())
            {
                return true;
            }
-        }
+        }*/
 
         return false;
     }

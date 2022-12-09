@@ -1,5 +1,6 @@
 package com.ldtteam.storageracks.datagen;
 
+import com.ldtteam.datagenerators.models.item.ItemModelJson;
 import com.ldtteam.datagenerators.recipes.RecipeIngredientJson;
 import com.ldtteam.datagenerators.recipes.RecipeIngredientKeyJson;
 import com.ldtteam.datagenerators.recipes.RecipeResultJson;
@@ -13,8 +14,9 @@ import com.ldtteam.storageracks.utils.Constants;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -23,8 +25,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class RecipeProvider implements DataProvider
 {
@@ -35,8 +40,13 @@ public class RecipeProvider implements DataProvider
         this.generator = generator;
     }
 
+    /**
+     * All generated models.
+     */
+    private final List<Tuple<ShapedRecipeJson, String>> models = new ArrayList<>();
+
     @Override
-    public void run(@NotNull final CachedOutput cache) throws IOException
+    public CompletableFuture<?> run(@NotNull final CachedOutput cache)
     {
         for (final RegistryObject<RackBlock> state : ModBlocks.racks)
         {
@@ -47,10 +57,7 @@ public class RecipeProvider implements DataProvider
             keys.put("X", new RecipeIngredientKeyJson(new RecipeIngredientJson(Tags.Items.RODS_WOODEN.location().toString(), true)));
 
             final ShapedRecipeJson json = new ShapedRecipeJson("racks", pattern, keys, new RecipeResultJson(1, ForgeRegistries.ITEMS.getKey(state.get().asItem()).toString()));
-            final Path recipeFolder = this.generator.getOutputFolder().resolve(Constants.RECIPES_DIR);
-            final Path blockstatePath = recipeFolder.resolve(ForgeRegistries.BLOCKS.getKey(state.get()).getPath() + ".json");
-
-            DataProvider.saveStable(cache, json.serialize(), blockstatePath);
+            this.models.add(new Tuple<>(json, ForgeRegistries.BLOCKS.getKey(state.get()).getPath()));
         }
 
         for (final RegistryObject<CornerBlock> state : ModBlocks.corners)
@@ -61,10 +68,7 @@ public class RecipeProvider implements DataProvider
             keys.put("C", new RecipeIngredientKeyJson(new RecipeIngredientJson(ForgeRegistries.ITEMS.getKey(state.get().frameType.getCreationCost()).toString(), false)));
 
             final ShapedRecipeJson json = new ShapedRecipeJson("corners", pattern, keys, new RecipeResultJson(8, ForgeRegistries.ITEMS.getKey(state.get().asItem()).toString()));
-            final Path recipeFolder = this.generator.getOutputFolder().resolve(Constants.RECIPES_DIR);
-            final Path blockstatePath = recipeFolder.resolve(ForgeRegistries.BLOCKS.getKey(state.get()).getPath() + ".json");
-
-            DataProvider.saveStable(cache, json.serialize(), blockstatePath);
+            this.models.add(new Tuple<>(json, ForgeRegistries.BLOCKS.getKey(state.get()).getPath()));
         }
 
         generateControllerRecipe(cache, ModBlocks.stoneController.get(), Items.PAPER);
@@ -73,9 +77,10 @@ public class RecipeProvider implements DataProvider
         generateControllerRecipe(cache, ModBlocks.emeraldController.get(), ModBlocks.goldController.get().asItem());
         generateControllerRecipe(cache, ModBlocks.diamondController.get(), ModBlocks.emeraldController.get().asItem());
 
+        return generateAll(cache);
     }
 
-    private void generateControllerRecipe(final CachedOutput cache, final ControllerBlock state, final Item prev) throws IOException
+    private void generateControllerRecipe(final CachedOutput cache, final ControllerBlock state, final Item prev)
     {
         final ShapedPatternJson pattern =  new ShapedPatternJson("SSS","SPS","SSS");
         final Map<String, RecipeIngredientKeyJson> keys = new HashMap<>();
@@ -83,10 +88,30 @@ public class RecipeProvider implements DataProvider
         keys.put("P", new RecipeIngredientKeyJson(new RecipeIngredientJson(ForgeRegistries.ITEMS.getKey(prev).toString(), false)));
 
         final ShapedRecipeJson json = new ShapedRecipeJson("controllers", pattern, keys, new RecipeResultJson(1, ForgeRegistries.ITEMS.getKey(state.asItem()).toString()));
-        final Path recipeFolder = this.generator.getOutputFolder().resolve(Constants.RECIPES_DIR);
-        final Path blockstatePath = recipeFolder.resolve(ForgeRegistries.BLOCKS.getKey(state).getPath() + ".json");
+        this.models.add(new Tuple<>(json, ForgeRegistries.BLOCKS.getKey(state).getPath()));
+    }
 
-        DataProvider.saveStable(cache, json.serialize(), blockstatePath);
+    protected CompletableFuture<?> generateAll(CachedOutput cache)
+    {
+        CompletableFuture<?>[] futures = new CompletableFuture<?>[this.models.size()];
+        int i = 0;
+
+        for (Tuple<ShapedRecipeJson, String> model : this.models)
+        {
+            Path target = getPath(model.getB());
+            futures[i++] = DataProvider.saveStable(cache, model.getA().serialize(), target);
+        }
+
+        return CompletableFuture.allOf(futures);
+    }
+
+    protected Path getPath(final String name)
+    {
+        return this.generator.getPackOutput()
+                 .getOutputFolder(PackOutput.Target.RESOURCE_PACK)
+                 .resolve(Constants.MOD_ID)
+                 .resolve(Constants.RECIPES_DIR)
+                 .resolve(name + ".json");
     }
 
     @NotNull

@@ -118,7 +118,7 @@ public class RackBlock extends UpgradeableBlock
             {
                 rack.checkForUpgrade(state, rack.getSize());
 
-                NetworkHooks.openGui((ServerPlayer) player,
+                NetworkHooks.openScreen((ServerPlayer) player,
                   rack,
                   buf -> buf.writeBlockPos(rack.getBlockPos()));
             }
