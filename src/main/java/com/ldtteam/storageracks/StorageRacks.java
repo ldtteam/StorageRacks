@@ -11,7 +11,6 @@ import com.ldtteam.storageracks.utils.Constants;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.CreativeModeTabRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -52,29 +51,23 @@ public class StorageRacks
     @SubscribeEvent
     public static void CreativeTabEvent(final CreativeModeTabEvent.Register event)
     {
-        event.registerCreativeModeTab(CREATIVE_TAB, (cf) -> cf.icon(() -> new ItemStack(ModBlocks.racks.get(0).get())).withSearchBar());
-    }
+        event.registerCreativeModeTab(CREATIVE_TAB, (cf) -> cf.icon(() -> new ItemStack(ModBlocks.racks.get(0).get())).withSearchBar().displayItems((flagSet, output, ifSth) -> {
+            output.accept(ModBlocks.stoneController.get());
+            output.accept(ModBlocks.ironController.get());
+            output.accept(ModBlocks.goldController.get());
+            output.accept(ModBlocks.emeraldController.get());
+            output.accept(ModBlocks.diamondController.get());
 
+            for (final RegistryObject<RackBlock> rack : ModBlocks.racks)
+            {
+                output.accept(rack.get());
+            }
 
-    @SubscribeEvent
-    public static void addItemsToCreativeTabEvent(final CreativeModeTabEvent.BuildContents event)
-    {
-        event.registerSimple(CreativeModeTabRegistry.getTab(CREATIVE_TAB),
-          ModBlocks.stoneController.get(),
-          ModBlocks.ironController.get(),
-          ModBlocks.goldController.get(),
-          ModBlocks.emeraldController.get(),
-          ModBlocks.diamondController.get());
-
-        for (final RegistryObject<RackBlock> rack : ModBlocks.racks)
-        {
-            event.registerSimple(CreativeModeTabRegistry.getTab(CREATIVE_TAB), rack.get());
-        }
-
-        for (final RegistryObject<CornerBlock> rack : ModBlocks.corners)
-        {
-            event.registerSimple(CreativeModeTabRegistry.getTab(CREATIVE_TAB), rack.get());
-        }
+            for (final RegistryObject<CornerBlock> rack : ModBlocks.corners)
+            {
+                output.accept(rack.get());
+            }
+        }));
     }
 
     /**
