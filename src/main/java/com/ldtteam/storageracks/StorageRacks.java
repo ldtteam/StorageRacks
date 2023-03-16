@@ -51,7 +51,7 @@ public class StorageRacks
     @SubscribeEvent
     public static void CreativeTabEvent(final CreativeModeTabEvent.Register event)
     {
-        event.registerCreativeModeTab(CREATIVE_TAB, (cf) -> cf.icon(() -> new ItemStack(ModBlocks.racks.get(0).get())).withSearchBar().displayItems((flagSet, output, ifSth) -> {
+        event.registerCreativeModeTab(CREATIVE_TAB, (cf) -> cf.icon(() -> new ItemStack(ModBlocks.racks.get(0).get())).withSearchBar().displayItems((flagSet, output) -> {
             output.accept(ModBlocks.stoneController.get());
             output.accept(ModBlocks.ironController.get());
             output.accept(ModBlocks.goldController.get());
