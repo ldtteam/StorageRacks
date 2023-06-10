@@ -55,7 +55,7 @@ public class OpenInventoryMessage implements IMessage
         {
             return;
         }
-        final BlockEntity tileEntity = player.level.getBlockEntity(pos);
+        final BlockEntity tileEntity = player.level().getBlockEntity(pos);
         NetworkHooks.openScreen(player, (MenuProvider) tileEntity, packetBuffer -> packetBuffer.writeBlockPos(pos));
     }
 }

@@ -62,7 +62,7 @@ public class ContainerRack extends AbstractContainerMenu
     {
         super(ModContainers.rackInv.get(), windowId);
 
-        final AbstractTileEntityRack abstractTileEntityRack = (AbstractTileEntityRack) inv.player.level.getBlockEntity(rack);
+        final AbstractTileEntityRack abstractTileEntityRack = (AbstractTileEntityRack) inv.player.level().getBlockEntity(rack);
 
         this.inventory = abstractTileEntityRack.getInventory();
 
@@ -120,7 +120,7 @@ public class ContainerRack extends AbstractContainerMenu
     @Override
     public void clicked(final int slotId, final int dragType, @NotNull final ClickType clickType, final Player player)
     {
-        if (player.level.isClientSide || slotId >= inventory.getSlots() || slotId < 0)
+        if (player.level().isClientSide || slotId >= inventory.getSlots() || slotId < 0)
         {
             super.clicked(slotId, dragType, clickType, player);
             return;
@@ -130,7 +130,7 @@ public class ContainerRack extends AbstractContainerMenu
         super.clicked(slotId, dragType, clickType, player);
         final ItemStack afterStack = inventory.getStackInSlot(slotId).copy();
 
-        if (!ItemStack.isSame(currentStack, afterStack))
+        if (!ItemStack.isSameItemSameTags(currentStack, afterStack))
         {
             this.updateRacks();
         }

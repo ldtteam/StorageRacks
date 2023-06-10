@@ -21,8 +21,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,6 @@ import java.util.Set;
 
 import static com.ldtteam.storageracks.utils.NbtTagConstants.*;
 import static com.ldtteam.storageracks.utils.NbtTagConstants.TAG_POS;
-import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
 /**
  * Class which handles the tileEntity of our colony warehouse.
@@ -154,7 +153,7 @@ public class TileEntityController extends BlockEntity implements MenuProvider
             return false;
         }
 
-        return InventoryUtils.transferItemStackIntoNextBestSlotInItemHandler(stack, rack.getCapability(ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(0)));
+        return InventoryUtils.transferItemStackIntoNextBestSlotInItemHandler(stack, rack.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(0)));
     }
 
     /**
@@ -388,7 +387,7 @@ public class TileEntityController extends BlockEntity implements MenuProvider
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull final Capability<T> capability, final Direction dir)
     {
-        if (!remove && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if (!remove && capability == ForgeCapabilities.ITEM_HANDLER)
         {
             return LazyOptional.of(() -> (T) new ControllerInventory());
         }
@@ -406,6 +405,6 @@ public class TileEntityController extends BlockEntity implements MenuProvider
     @Override
     public AbstractContainerMenu createMenu(final int id, @NotNull final Inventory inv, @NotNull final Player player)
     {
-        return new InsertContainer(id, inv, getCapability(ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(0)));
+        return new InsertContainer(id, inv, getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(0)));
     }
 }

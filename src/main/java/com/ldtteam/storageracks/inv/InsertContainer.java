@@ -7,12 +7,11 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
-
-import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
 /**
  * The insert container.
@@ -35,7 +34,7 @@ public class InsertContainer extends AbstractContainerMenu
     public static InsertContainer fromPacketBuffer(final int windowId, final Inventory inv, final FriendlyByteBuf packetBuffer)
     {
         final BlockPos tePos = packetBuffer.readBlockPos();
-        return new InsertContainer(windowId, inv, inv.player.level.getBlockEntity(tePos).getCapability(ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(0)));
+        return new InsertContainer(windowId, inv, inv.player.level().getBlockEntity(tePos).getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(0)));
     }
 
     /**

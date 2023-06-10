@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
@@ -41,51 +41,54 @@ public class HighlightManager
      * @param event the catched event.
      */
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void renderWorldLastEvent(@NotNull final RenderLevelLastEvent event)
+    public static void renderWorldLastEvent(@NotNull final RenderLevelStageEvent event)
     {
-        if (!HIGHLIGHT_MAP.isEmpty())
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS)
         {
-            final long worldTime = Minecraft.getInstance().level.getGameTime();
-            for (final Iterator<List<TimedBoxRenderData>> categoryIterator = HIGHLIGHT_MAP.values().iterator(); categoryIterator.hasNext(); )
+            if (!HIGHLIGHT_MAP.isEmpty())
             {
-                final List<TimedBoxRenderData> boxes = categoryIterator.next();
-                for (final Iterator<TimedBoxRenderData> boxListIterator = boxes.iterator(); boxListIterator.hasNext(); )
+                final long worldTime = Minecraft.getInstance().level.getGameTime();
+                for (final Iterator<List<TimedBoxRenderData>> categoryIterator = HIGHLIGHT_MAP.values().iterator(); categoryIterator.hasNext(); )
                 {
-                    final TimedBoxRenderData boxRenderData = boxListIterator.next();
-                    if (boxRenderData.removalTimePoint <= worldTime)
+                    final List<TimedBoxRenderData> boxes = categoryIterator.next();
+                    for (final Iterator<TimedBoxRenderData> boxListIterator = boxes.iterator(); boxListIterator.hasNext(); )
                     {
-                        boxListIterator.remove();
-                    }
-                    else
-                    {
-                        RenderUtils.renderBox(boxRenderData.pos,
-                          boxRenderData.pos,
-                          boxRenderData.getRed(),
-                          boxRenderData.getGreen(),
-                          boxRenderData.getBlue(),
-                          1.0F,
-                          0.002D,
-                          event.getPoseStack(),
-                          linesWithoutCullAndDepth.get());
-
-                        if (!boxRenderData.text.isEmpty())
+                        final TimedBoxRenderData boxRenderData = boxListIterator.next();
+                        if (boxRenderData.removalTimePoint <= worldTime)
                         {
-                            MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-                            RenderUtils.renderDebugText(boxRenderData.pos, boxRenderData.text, event.getPoseStack(), true, 3, buffer);
-                            RenderSystem.disableDepthTest();
-                            buffer.endBatch();
-                            RenderSystem.enableDepthTest();
+                            boxListIterator.remove();
+                        }
+                        else
+                        {
+                            RenderUtils.renderBox(boxRenderData.pos,
+                              boxRenderData.pos,
+                              boxRenderData.getRed(),
+                              boxRenderData.getGreen(),
+                              boxRenderData.getBlue(),
+                              1.0F,
+                              0.002D,
+                              event.getPoseStack(),
+                              linesWithoutCullAndDepth.get());
+
+                            if (!boxRenderData.text.isEmpty())
+                            {
+                                MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+                                RenderUtils.renderDebugText(boxRenderData.pos, boxRenderData.text, event.getPoseStack(), true, 3, buffer);
+                                RenderSystem.disableDepthTest();
+                                buffer.endBatch();
+                                RenderSystem.enableDepthTest();
+                            }
                         }
                     }
-                }
 
-                if (boxes.isEmpty())
-                {
-                    categoryIterator.remove();
+                    if (boxes.isEmpty())
+                    {
+                        categoryIterator.remove();
+                    }
                 }
             }
+            renderBuffer.endBatch();
         }
-        renderBuffer.endBatch();
     }
 
     /**

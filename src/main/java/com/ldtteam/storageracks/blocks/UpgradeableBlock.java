@@ -4,13 +4,13 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.MapColor;
 
 public abstract class UpgradeableBlock extends Block implements EntityBlock
 {
@@ -31,7 +31,7 @@ public abstract class UpgradeableBlock extends Block implements EntityBlock
 
     public UpgradeableBlock(final Item upgradeMaterial)
     {
-        super(BlockBehaviour.Properties.of(Material.STONE).noOcclusion().strength(BLOCK_HARDNESS, RESISTANCE));
+        super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(BLOCK_HARDNESS, RESISTANCE));
         this.upgradeMaterial = upgradeMaterial;
     }
 
@@ -54,13 +54,13 @@ public abstract class UpgradeableBlock extends Block implements EntityBlock
      */
     public void checkUpgrade(final BlockPos pos, final Player player)
     {
-        final BlockState state = player.level.getBlockState(pos);
+        final BlockState state = player.level().getBlockState(pos);
         final UpgradeableBlock block = (UpgradeableBlock) state.getBlock();
 
         if (player.getMainHandItem().getItem() == block.upgradeMaterial)
         {
             player.getInventory().removeItem(player.getInventory().selected, 1);
-            upgrade(pos, state, getNext(), player.level);
+            upgrade(pos, state, getNext(), player.level());
         }
     }
 

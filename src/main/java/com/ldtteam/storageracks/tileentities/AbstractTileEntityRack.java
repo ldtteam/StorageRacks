@@ -55,7 +55,7 @@ public abstract class AbstractTileEntityRack extends BlockEntity implements Menu
         public void setStackInSlot(final int slot, final @Nonnull ItemStack stack)
         {
             validateSlotIndex(slot);
-            final boolean changed = !ItemStack.isSame(stack, this.stacks.get(slot));
+            final boolean changed = !ItemStack.isSameItemSameTags(stack, this.stacks.get(slot));
             this.stacks.set(slot, stack);
             if (changed)
             {

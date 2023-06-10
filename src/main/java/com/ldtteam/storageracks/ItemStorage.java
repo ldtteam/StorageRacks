@@ -104,7 +104,7 @@ public class ItemStorage
         final ItemStorage that = (ItemStorage) o;
 
 
-        return stack.sameItem(that.getItemStack())
+        return ItemStack.isSameItem(stack, that.getItemStack())
                  && that.getDamageValueValue() == this.getDamageValueValue()
                  && ((that.getItemStack().getTag() == null && this.getItemStack().getTag() == null)
                        || (that.getItemStack().getTag() != null && that.getItemStack().getTag().equals(this.getItemStack().getTag())));

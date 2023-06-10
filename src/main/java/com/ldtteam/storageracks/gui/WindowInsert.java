@@ -1,8 +1,7 @@
 package com.ldtteam.storageracks.gui;
 
 import com.ldtteam.storageracks.inv.InsertContainer;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.resources.ResourceLocation;
@@ -28,25 +27,23 @@ public class WindowInsert extends AbstractContainerScreen<InsertContainer>
     public WindowInsert(@NotNull final InsertContainer container, @NotNull final Inventory player, @NotNull final Component label)
     {
         super(container, player, label);
-        this.passEvents = false;
         this.imageHeight = 133;
         this.inventoryLabelY = this.imageHeight - 94;
     }
 
     @Override
-    public void render(@NotNull final PoseStack stack, int partialTicks, int mouseX, float mouseY)
+    public void render(@NotNull final GuiGraphics graphics, int partialTicks, int mouseX, float mouseY)
     {
-        this.renderBackground(stack);
-        super.render(stack, partialTicks, mouseX, mouseY);
-        this.renderTooltip(stack, partialTicks, mouseX);
+        this.renderBackground(graphics);
+        super.render(graphics, partialTicks, mouseX, mouseY);
+        this.renderTooltip(graphics, partialTicks, mouseX);
     }
 
     @Override
-    protected void renderBg(@NotNull final PoseStack stack, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(@NotNull final GuiGraphics graphics, float partialTicks, int mouseX, int mouseY)
     {
-        RenderSystem.setShaderTexture(0, HOPPER_LOCATION);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        this.blit(stack, i, j, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(HOPPER_LOCATION, i, j, 0, 0, this.imageWidth, this.imageHeight);
     }
 }

@@ -61,7 +61,7 @@ public class EventManager
         }
         else
         {
-            final ControllerBlock controller = (ControllerBlock) event.getEntity().level.getBlockState(result).getBlock();
+            final ControllerBlock controller = (ControllerBlock) event.getEntity().level().getBlockState(result).getBlock();
             if (posSet.size() - 1 > controller.getTier() * 20)
             {
                 ((Player) event.getEntity()).displayClientMessage(Component.translatable("gui.storageracks.limitreached"), false);

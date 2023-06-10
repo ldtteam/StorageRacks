@@ -2,8 +2,7 @@ package com.ldtteam.storageracks.gui;
 
 import com.ldtteam.storageracks.inv.ContainerRack;
 import com.ldtteam.storageracks.utils.Constants;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.resources.ResourceLocation;
@@ -93,33 +92,32 @@ public class WindowRack extends AbstractContainerScreen<ContainerRack>
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
      */
     @Override
-    protected void renderLabels(@NotNull final PoseStack stack, int mouseX, int mouseY)
+    protected void renderLabels(@NotNull final GuiGraphics graphics, int mouseX, int mouseY)
     {
-        this.font.draw(stack, this.title.getString(), 8.0F, 6.0F, 4210752);
-        this.font.draw(stack, this.menu.rack.getDisplayName().getString(), 8.0F, (float) (this.imageHeight - 94), 4210752);
+        graphics.drawString(this.font, this.title, 8, 6, 4210752, false);
+        graphics.drawString(this.font, this.menu.rack.getDisplayName(), 8, this.imageHeight - 94, 4210752, false);
     }
 
     /**
      * Draws the background layer of this container (behind the items).
      */
     @Override
-    protected void renderBg(@NotNull final PoseStack stack, final float partialTicks, final int mouseX, final int mouseY)
+    protected void renderBg(@NotNull final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY)
     {
-        RenderSystem.setShaderTexture(0, CHEST_GUI_TEXTURE);
         final int i = (this.width - this.imageWidth) / 2;
         final int j = (this.height - this.imageHeight) / 2;
 
         if (inventoryRows < SLOTS_EACH_ROW)
         {
-            blit(stack, i, j, 0, 0, this.imageWidth, this.inventoryRows * SLOT_OFFSET + SLOT_OFFSET - 1, TEXTURE_SIZE, TEXTURE_SIZE);
-            blit(stack, i, j + this.inventoryRows * SLOT_OFFSET + SLOT_OFFSET - 1, 0,
+            graphics.blit(CHEST_GUI_TEXTURE, i, j, 0, 0, this.imageWidth, this.inventoryRows * SLOT_OFFSET + SLOT_OFFSET - 1, TEXTURE_SIZE, TEXTURE_SIZE);
+            graphics.blit(CHEST_GUI_TEXTURE, i, j + this.inventoryRows * SLOT_OFFSET + SLOT_OFFSET - 1, 0,
               TEXTURE_OFFSET, this.imageWidth, TEXTURE_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
         }
         else
         {
             final int textureOffset = TEXTURE_OFFSET - EXTRA_OFFSET;
-            blit(stack, i, j, 0, 0, (this.imageWidth * SIZE_MULTIPLIER) / 2, this.inventoryRows * SLOT_OFFSET + SLOT_OFFSET - 1, TEXTURE_SIZE, TEXTURE_SIZE);
-            blit(stack, i,
+            graphics.blit(CHEST_GUI_TEXTURE, i, j, 0, 0, (this.imageWidth * SIZE_MULTIPLIER) / 2, this.inventoryRows * SLOT_OFFSET + SLOT_OFFSET - 1, TEXTURE_SIZE, TEXTURE_SIZE);
+            graphics.blit(CHEST_GUI_TEXTURE, i,
               j + Math.min(SLOTS_EACH_ROW, this.inventoryRows) * SLOT_OFFSET + SLOT_OFFSET - 1,
               0,
               textureOffset,
@@ -131,10 +129,10 @@ public class WindowRack extends AbstractContainerScreen<ContainerRack>
     }
 
     @Override
-    public void render(@NotNull final PoseStack stack, int x, int y, float z)
+    public void render(@NotNull final GuiGraphics graphics, int x, int y, float z)
     {
-        this.renderBackground(stack);
-        super.render(stack, x, y, z);
-        this.renderTooltip(stack, x, y);
+        this.renderBackground(graphics);
+        super.render(graphics, x, y, z);
+        this.renderTooltip(graphics, x, y);
     }
 }

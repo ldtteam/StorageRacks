@@ -1,0 +1,30 @@
+configurations {
+    library
+    implementation.extendsFrom library
+}
+
+minecraft.runs.all {
+    lazyToken('minecraft_classpath') {
+        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+    }
+}
+
+repositories {
+    maven { url = 'https://files.minecraftforge.net/maven' }
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+}
+
+dependencies {
+    implementation fg.deobf("com.ldtteam:blockui:${project.minecraftVersion}-${project.blockUI_version}")
+
+    datagenLibrary ("com.ldtteam:datagenerators:${project.dataGeneratorsVersion}") {
+        transitive = false
+    }
+    library ("com.ldtteam:datagenerators:${project.dataGeneratorsVersion}") {
+        transitive = false
+    }
+}

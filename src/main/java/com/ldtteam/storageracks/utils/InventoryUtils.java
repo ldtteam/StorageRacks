@@ -5,6 +5,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
@@ -12,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Predicate;
-
-import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
 /**
  * Utility methods for the inventories.
@@ -96,9 +95,9 @@ public class InventoryUtils
         final Set<IItemHandler> handlerList = new HashSet<>();
         for (final Direction side : Direction.values())
         {
-            provider.getCapability(ITEM_HANDLER_CAPABILITY, side).ifPresent(handlerList::add);
+            provider.getCapability(ForgeCapabilities.ITEM_HANDLER, side).ifPresent(handlerList::add);
         }
-        provider.getCapability(ITEM_HANDLER_CAPABILITY, null).ifPresent(handlerList::add);
+        provider.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(handlerList::add);
         return handlerList;
     }
 
@@ -169,7 +168,7 @@ public class InventoryUtils
 
         for (int i = 0; i < targetHandler.getSlots(); i++)
         {
-            if (!ItemStackUtils.isEmpty(targetHandler.getStackInSlot(i)) && targetHandler.getStackInSlot(i).sameItem(sourceStack))
+            if (!ItemStackUtils.isEmpty(targetHandler.getStackInSlot(i)) && ItemStack.isSameItem(targetHandler.getStackInSlot(i), sourceStack))
             {
                 sourceStack = targetHandler.insertItem(i, sourceStack, false);
                 if (ItemStackUtils.isEmpty(sourceStack))
