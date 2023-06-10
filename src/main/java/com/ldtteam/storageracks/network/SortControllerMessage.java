@@ -10,6 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -79,7 +80,7 @@ public class SortControllerMessage implements IMessage
                     final BlockEntity te = world.getBlockEntity(pos);
                     if (te instanceof AbstractTileEntityRack)
                     {
-                        handlers.add((IItemHandlerModifiable) te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).resolve().get());
+                        handlers.add((IItemHandlerModifiable) te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).resolve().get());
                     }
                 }
             }
