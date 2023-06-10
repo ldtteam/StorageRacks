@@ -1,6 +1,7 @@
 package com.ldtteam.storageracks.blocks;
 
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,7 +32,7 @@ public abstract class UpgradeableBlock extends Block implements EntityBlock
 
     public UpgradeableBlock(final Item upgradeMaterial)
     {
-        super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(BLOCK_HARDNESS, RESISTANCE));
+        super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).sound(SoundType.STONE).noOcclusion().strength(BLOCK_HARDNESS, RESISTANCE));
         this.upgradeMaterial = upgradeMaterial;
     }
 

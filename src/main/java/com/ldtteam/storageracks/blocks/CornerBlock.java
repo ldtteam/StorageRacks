@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -40,7 +41,7 @@ public class CornerBlock extends Block
 
     public CornerBlock(final WoodType wood, final FrameType frame)
     {
-        super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(BLOCK_HARDNESS, RESISTANCE));
+        super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).sound(SoundType.STONE).noOcclusion().strength(BLOCK_HARDNESS, RESISTANCE));
         this.woodType = wood;
         this.frameType = frame;
     }
