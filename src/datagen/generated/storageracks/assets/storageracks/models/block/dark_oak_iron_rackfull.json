@@ -1,8 +1,4 @@
 {
-  "parent": "storageracks:block/rackfull",
-  "textures": {
-    "0": "block/dark_oak_planks",
-    "1": "block/iron_block",
-    "particle": "block/dark_oak_planks"
-  }
+  "parent": "storageracks:block/special/dark_oak_iron_rackfull",
+  "loader": "domum_ornamentum:materially_textured"
 }

@@ -27,5 +27,5 @@ public class Constants
     public static final String RECIPES_DIR =  "recipes/";
     public static final String BRICK_BLOCK_MODELS_DIR =  "models/block/";
     public static final String EN_US_LANG =  "lang/en_us.json";
-    public static final String LOOT_TABLES_DIR = DATAPACK_DIR + "loot_tables/blocks";
+    public static final String LOOT_TABLES_DIR = "loot_tables/blocks";
 }

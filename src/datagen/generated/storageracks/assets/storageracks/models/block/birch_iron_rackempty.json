@@ -1,8 +1,4 @@
 {
-  "parent": "storageracks:block/rackempty",
-  "textures": {
-    "0": "block/birch_planks",
-    "1": "block/iron_block",
-    "particle": "block/birch_planks"
-  }
+  "parent": "storageracks:block/special/birch_iron_rackempty",
+  "loader": "domum_ornamentum:materially_textured"
 }
