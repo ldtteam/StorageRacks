@@ -19,12 +19,17 @@ repositories {
 }
 
 dependencies {
-    implementation fg.deobf("com.ldtteam:blockui:${project.minecraftVersion}-${project.blockUI_version}")
+    implementation fg.deobf("com.ldtteam:blockui:${project.blockUI_version}")
+    compileOnly (fg.deobf("com.ldtteam:domum_ornamentum:${project.domumOrnamentumVersion}:universal")){
+        transitive = false
+    }
+    runtimeOnly (fg.deobf("com.ldtteam:domum_ornamentum:${project.domumOrnamentumVersion}:universal")){
+        transitive = false
+    }
 
-    datagenLibrary ("com.ldtteam:datagenerators:${project.dataGeneratorsVersion}") {
+    implementation fg.deobf("com.ldtteam:datagenerators:1.19.3-${project.dataGeneratorsVersion}:universal") {
         transitive = false
     }
-    library ("com.ldtteam:datagenerators:${project.dataGeneratorsVersion}") {
-        transitive = false
-    }
+
+    runtimeOnly fg.deobf("mezz.jei:jei-${project.jei_mcversion}-forge:${project.jei_version}")
 }

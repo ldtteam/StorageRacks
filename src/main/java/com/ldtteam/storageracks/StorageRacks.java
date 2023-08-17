@@ -39,8 +39,7 @@ public class StorageRacks
 
     public static final DeferredRegister<CreativeModeTab> TAB_REG = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
-    public static final RegistryObject<CreativeModeTab> GENERAL = TAB_REG.register("general", () -> new CreativeModeTab.Builder(CreativeModeTab.Row.TOP, 1).withTabsBefore(
-      CreativeModeTabs.SEARCH).icon(() -> new ItemStack(ModBlocks.racks.get(0).get())).title(Component.translatable("gui.storageracks.allinventory")).displayItems((config, output) -> {
+    public static final RegistryObject<CreativeModeTab> GENERAL = TAB_REG.register("general", () -> new CreativeModeTab.Builder(CreativeModeTab.Row.TOP, 1).icon(() -> new ItemStack(ModBlocks.racks.get(0).get())).title(Component.translatable("gui.storageracks.allinventory")).displayItems((config, output) -> {
         output.accept(ModBlocks.stoneController.get());
         output.accept(ModBlocks.ironController.get());
         output.accept(ModBlocks.goldController.get());

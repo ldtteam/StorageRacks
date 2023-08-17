@@ -37,10 +37,9 @@ public class ItemModelProvider implements DataProvider
     @Override
     public CompletableFuture<?> run(@NotNull CachedOutput cache)
     {
-        final ItemModelJson modelJson = new ItemModelJson();
-
         for (final RegistryObject<CornerBlock> state : ModBlocks.corners)
         {
+            final ItemModelJson modelJson = new ItemModelJson();
             final String modelLocation = Constants.MOD_ID + ":item/corner";
             modelJson.setParent(modelLocation);
 
@@ -55,13 +54,14 @@ public class ItemModelProvider implements DataProvider
 
         for (final RegistryObject<RackBlock> state : ModBlocks.racks)
         {
+            final ItemModelJson modelJson = new ItemModelJson();
             final String modelLocation = Constants.MOD_ID + ":item/rack";
             modelJson.setParent(modelLocation);
 
             final HashMap<String, String> textureMap = new HashMap<>();
             textureMap.put("0", "block/" + ForgeRegistries.BLOCKS.getKey(state.get().getWoodType().getMaterial()).getPath());
             textureMap.put("1", "block/" + ForgeRegistries.BLOCKS.getKey(state.get().getFrameType().getMaterial()).getPath());
-            textureMap.put("particle", "block/" +  ForgeRegistries.BLOCKS.getKey(state.get().getWoodType().getMaterial()).getPath());
+            textureMap.put("particle", "block/" + ForgeRegistries.BLOCKS.getKey(state.get().getWoodType().getMaterial()).getPath());
             modelJson.setTextures(textureMap);
 
             this.models.add(new Tuple<>(modelJson, ForgeRegistries.BLOCKS.getKey(state.get()).getPath()));

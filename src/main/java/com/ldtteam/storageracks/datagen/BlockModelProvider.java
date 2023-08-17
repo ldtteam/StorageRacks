@@ -1,7 +1,10 @@
 package com.ldtteam.storageracks.datagen;
 
-import com.google.gson.JsonElement;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonObject;
 import com.ldtteam.datagenerators.models.block.BlockModelJson;
+import com.ldtteam.datagenerators.models.element.ModelElementJson;
 import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.ModBlocks;
 import com.ldtteam.storageracks.blocks.RackBlock;
@@ -11,18 +14,15 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-import java.util.function.Supplier;
+
 
 public class BlockModelProvider implements DataProvider
 {
@@ -37,6 +37,7 @@ public class BlockModelProvider implements DataProvider
      * All generated models.
      */
     private final List<Tuple<BlockModelJson, String>> models = new ArrayList<>();
+    private final List<Tuple<BlockModelJson, String>> specialModels = new ArrayList<>();
 
     @Override
     public @NotNull CompletableFuture<?> run(@NotNull CachedOutput cache)
@@ -76,7 +77,23 @@ public class BlockModelProvider implements DataProvider
                 final String name = state.get().getWoodType().getSerializedName().toLowerCase(Locale.ROOT)
                                       + "_" + state.get().getFrameType().getSerializedName().toLowerCase(Locale.ROOT)
                                       + "_" + "rack" + type.getName() + ".json";
-                models.add(new Tuple<>(modelJson, name));
+                models.add(new Tuple<>(modelJson, "special/" + name));
+            }
+        }
+
+        for (final RegistryObject<RackBlock> state : ModBlocks.racks)
+        {
+            for (final RackType type : RackType.values())
+            {
+                final BlockModelJson modelJson = new BlockModelJson();
+                final String name = state.get().getWoodType().getSerializedName().toLowerCase(Locale.ROOT)
+                                      + "_" + state.get().getFrameType().getSerializedName().toLowerCase(Locale.ROOT)
+                                      + "_" + "rack" + type.getName();
+
+                modelJson.setParent("storageracks:block/special/" + name);
+
+
+                specialModels.add(new Tuple<>(modelJson, name + ".json"));
             }
         }
         return generateAll(cache);
@@ -84,13 +101,22 @@ public class BlockModelProvider implements DataProvider
 
     protected CompletableFuture<?> generateAll(CachedOutput cache)
     {
-        CompletableFuture<?>[] futures = new CompletableFuture<?>[this.models.size()];
+        CompletableFuture<?>[] futures = new CompletableFuture<?>[this.models.size() + this.specialModels.size()];
         int i = 0;
 
         for (Tuple<BlockModelJson, String> model : this.models)
         {
             Path target = getPath(model.getB());
-            futures[i++] = DataProvider.saveStable(cache, model.getA().serialize(), target);
+            JsonObject obj = model.getA().serialize().getAsJsonObject();
+            futures[i++] = DataProvider.saveStable(cache, obj, target);
+        }
+
+        for (Tuple<BlockModelJson, String> model : this.specialModels)
+        {
+            Path target = getPath(model.getB());
+            JsonObject obj = model.getA().serialize().getAsJsonObject();
+            obj.addProperty("loader", "domum_ornamentum:materially_textured");
+            futures[i++] = DataProvider.saveStable(cache, obj, target);
         }
 
         return CompletableFuture.allOf(futures);
@@ -102,7 +128,7 @@ public class BlockModelProvider implements DataProvider
                  .getOutputFolder(PackOutput.Target.RESOURCE_PACK)
                  .resolve(Constants.MOD_ID)
                  .resolve(Constants.BRICK_BLOCK_MODELS_DIR)
-                 .resolve(name + ".json");
+                 .resolve(name);
     }
 
     @Override

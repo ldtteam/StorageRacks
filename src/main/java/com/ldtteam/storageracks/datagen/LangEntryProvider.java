@@ -1,83 +1,72 @@
 package com.ldtteam.storageracks.datagen;
 
-import com.ldtteam.datagenerators.lang.LangJson;
 import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.ModBlocks;
 import com.ldtteam.storageracks.blocks.RackBlock;
 import com.ldtteam.storageracks.utils.Constants;
-import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.PackOutput;
+import com.ldtteam.data.LanguageProvider;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
 
-public class LangEntryProvider implements DataProvider
+public class LangEntryProvider extends LanguageProvider
 {
-    private final DataGenerator dataGenerator;
-    private final LangJson      backingLangJson;
 
-    public LangEntryProvider(final DataGenerator dataGenerator, LangJson backingLangJson)
+    public LangEntryProvider(final DataGenerator gen)
     {
-        this.dataGenerator = dataGenerator;
-        this.backingLangJson = backingLangJson;
+        super(gen, Constants.MOD_ID, "en_us", List.of(new GlobalLanguageEntries()));
     }
 
     @Override
-    public CompletableFuture<?> run(@NotNull CachedOutput cache)
-    {
-        for (final RegistryObject<CornerBlock> corner : ModBlocks.corners)
-        {
-            backingLangJson.put("block." + Constants.MOD_ID + "." + corner.getKey().location().getPath(),
-              corner.get().getWoodType().getSerializedName().substring(0, 1).toUpperCase(Locale.US) + corner.get().getWoodType().getSerializedName().substring(1) + " "
-                + corner.get().frameType.getSerializedName().substring(0, 1).toUpperCase(Locale.US) + corner.get().frameType.getSerializedName().substring(1) + " Corner");
-        }
-
-        for (final RegistryObject<RackBlock> rack : ModBlocks.racks)
-        {
-            backingLangJson.put("block." + Constants.MOD_ID + "." + rack.getKey().location().getPath(),
-              rack.get().getWoodType().getSerializedName().substring(0, 1).toUpperCase(Locale.US) + rack.get().getWoodType().getSerializedName().substring(1) + " "
-                + rack.get().frameType.getSerializedName().substring(0, 1).toUpperCase(Locale.US) + rack.get().frameType.getSerializedName().substring(1) + " Rack");
-        }
-
-        backingLangJson.put("block.storageracks.stone_controller", "Stone Controller");
-        backingLangJson.put("block.storageracks.iron_controller", "Iron Controller");
-        backingLangJson.put("block.storageracks.gold_controller", "Gold Controller");
-        backingLangJson.put("block.storageracks.emerald_controller", "Emerald Controller");
-        backingLangJson.put("block.storageracks.diamond_controller", "Diamond Controller");
-        backingLangJson.put("gui.storageracks.notconnected",
-          "Invalid Placement. Racks must be placed directly connected to a Controller or Rack but without connection to multiple Controllers.");
-        backingLangJson.put("gui.storageracks.limitreached", "Max Rack limit reached for this Controller. Upgrade the Controller to connect more Racks!");
-        backingLangJson.put("gui.storageracks.doublecontroller", "There can only be 1 Controller per Network!");
-        backingLangJson.put("gui.storageracks.allinventory", "Storage");
-        backingLangJson.put("gui.storageracks.locating", "Locating...");
-        backingLangJson.put("block.storageracks.controllertoolip", "Supports up to %d Racks");
-        backingLangJson.put("com.storageracks.sort.unlock.failed", "Unlocking Sort Failed. You are missing 1 RedStone Block in your Inventory!");
-        backingLangJson.put("com.storageracks.insert.unlock.failed", "Unlocking Insert Failed. You are missing 1 Hopper in your Inventory!");
-        backingLangJson.put("com.storageracks.sort.unlock.succeeded", "Successfully unlocked Sort Feature");
-        backingLangJson.put("com.storageracks.insert.unlock.succeeded", "Successfully unlocked Insert Feature");
-        backingLangJson.put("gui.storageracks.sort.unlock", "Unlock Sorting");
-        backingLangJson.put("gui.storageracks.insert.unlock", "Unlock Insertion");
-        backingLangJson.put("gui.storageracks.sort", "Sort");
-        backingLangJson.put("gui.storageracks.insert", "Insert");
-        backingLangJson.put("gui.storage.racks.missing", "Missing Required Item");
-        backingLangJson.put("gui.storage.racks.available", "Available in Inventory");
-        backingLangJson.put("container.title.rack", "Rack");
-        backingLangJson.put("container.title.insertion", "Insertion Controller");
-
-        return DataProvider.saveStable(cache, backingLangJson.serialize(), this.dataGenerator.getPackOutput()
-                                                                             .getOutputFolder(PackOutput.Target.RESOURCE_PACK)
-                                                                             .resolve(Constants.MOD_ID)
-                                                                             .resolve(Constants.EN_US_LANG));
-    }
-
-    @Override
-    @NotNull
     public String getName()
     {
-        return "Lang Provider";
+        return "Storage Rack Lang Provider";
+    }
+
+    private final static class GlobalLanguageEntries implements SubProvider
+    {
+        @Override
+        public void addTranslations(LanguageAcceptor acceptor) {
+            for (final RegistryObject<CornerBlock> corner : ModBlocks.corners)
+            {
+                acceptor.add("block." + Constants.MOD_ID + "." + corner.getKey().location().getPath(),
+                  corner.get().getWoodType().getSerializedName().substring(0, 1).toUpperCase(Locale.US) + corner.get().getWoodType().getSerializedName().substring(1) + " "
+                    + corner.get().frameType.getSerializedName().substring(0, 1).toUpperCase(Locale.US) + corner.get().frameType.getSerializedName().substring(1) + " Corner");
+            }
+
+            for (final RegistryObject<RackBlock> rack : ModBlocks.racks)
+            {
+                acceptor.add("block." + Constants.MOD_ID + "." + rack.getKey().location().getPath(),
+                  rack.get().getWoodType().getSerializedName().substring(0, 1).toUpperCase(Locale.US) + rack.get().getWoodType().getSerializedName().substring(1) + " "
+                    + rack.get().frameType.getSerializedName().substring(0, 1).toUpperCase(Locale.US) + rack.get().frameType.getSerializedName().substring(1) + " Rack");
+            }
+
+            acceptor.add("block.storageracks.stone_controller", "Stone Controller");
+            acceptor.add("block.storageracks.iron_controller", "Iron Controller");
+            acceptor.add("block.storageracks.gold_controller", "Gold Controller");
+            acceptor.add("block.storageracks.emerald_controller", "Emerald Controller");
+            acceptor.add("block.storageracks.diamond_controller", "Diamond Controller");
+            acceptor.add("gui.storageracks.notconnected",
+              "Invalid Placement. Racks must be placed directly connected to a Controller or Rack but without connection to multiple Controllers.");
+            acceptor.add("gui.storageracks.limitreached", "Max Rack limit reached for this Controller. Upgrade the Controller to connect more Racks!");
+            acceptor.add("gui.storageracks.doublecontroller", "There can only be 1 Controller per Network!");
+            acceptor.add("gui.storageracks.allinventory", "Storage");
+            acceptor.add("gui.storageracks.locating", "Locating...");
+            acceptor.add("block.storageracks.controllertoolip", "Supports up to %d Racks");
+            acceptor.add("com.storageracks.sort.unlock.failed", "Unlocking Sort Failed. You are missing 1 RedStone Block in your Inventory!");
+            acceptor.add("com.storageracks.insert.unlock.failed", "Unlocking Insert Failed. You are missing 1 Hopper in your Inventory!");
+            acceptor.add("com.storageracks.sort.unlock.succeeded", "Successfully unlocked Sort Feature");
+            acceptor.add("com.storageracks.insert.unlock.succeeded", "Successfully unlocked Insert Feature");
+            acceptor.add("gui.storageracks.sort.unlock", "Unlock Sorting");
+            acceptor.add("gui.storageracks.insert.unlock", "Unlock Insertion");
+            acceptor.add("gui.storageracks.sort", "Sort");
+            acceptor.add("gui.storageracks.insert", "Insert");
+            acceptor.add("gui.storage.racks.missing", "Missing Required Item");
+            acceptor.add("gui.storage.racks.available", "Available in Inventory");
+            acceptor.add("container.title.rack", "Rack");
+            acceptor.add("container.title.insertion", "Insertion Controller");
+        }
     }
 }

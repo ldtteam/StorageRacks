@@ -108,7 +108,7 @@ public class RecipeProvider implements DataProvider
     protected Path getPath(final String name)
     {
         return this.generator.getPackOutput()
-                 .getOutputFolder(PackOutput.Target.RESOURCE_PACK)
+                 .getOutputFolder(PackOutput.Target.DATA_PACK)
                  .resolve(Constants.MOD_ID)
                  .resolve(Constants.RECIPES_DIR)
                  .resolve(name + ".json");

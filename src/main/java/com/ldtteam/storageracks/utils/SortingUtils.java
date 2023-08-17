@@ -5,11 +5,11 @@ import com.ldtteam.storageracks.ItemStorage;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Tuple;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistry;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,14 +35,15 @@ public final class SortingUtils
      */
     public static void sort(final CombinedItemHandler inv)
     {
-        final CompoundTag backup = inv.serializeNBT();
-        final AtomicInteger runCount = new AtomicInteger(0);
-
-        try
+        if (inv != null)
         {
-            final Map<ItemStorage, Integer> map = new HashMap<>();
-            if (inv != null)
+            final CompoundTag backup = inv.serializeNBT();
+            final AtomicInteger runCount = new AtomicInteger(0);
+
+            try
             {
+                final Map<ItemStorage, Integer> map = new HashMap<>();
+
                 for (int i = 0; i < inv.getSlots(); i++)
                 {
                     if (ItemStackUtils.isEmpty(inv.getStackInSlot(i)))
@@ -58,17 +59,20 @@ public final class SortingUtils
                     map.put(storage, amount);
                 }
 
-                final Tuple<AtomicInteger, Map<Integer, Integer>> tuple = SortingUtils.calcRequiredSlots(map);
+                final AtomicInteger sum = SortingUtils.calcRequiredSlots(map);
                 final double totalSlots = inv.getSlots();
-                final int totalReq = tuple.getA().get();
-                map.entrySet().stream().sorted(SortingUtils::compare)
-                  .forEach(entry -> SortingUtils.pushIntoInv(runCount, entry, inv, tuple.getA(), totalSlots, totalReq, tuple.getB()));
+                final int totalReq = sum.get();
+                final List<Map.Entry<ItemStorage, Integer>> sortedList = map.entrySet().stream().sorted(SortingUtils::compare).toList();
+                for (int index = 0; index < sortedList.size(); index++)
+                {
+                    SortingUtils.pushIntoInv(runCount, sortedList.get(index), inv, sum, totalSlots, totalReq, index + 1 < sortedList.size() ? sortedList.get(index + 1).getKey() : null);
+                }
             }
-        }
-        catch (Exception e)
-        {
-            inv.deserializeNBT(backup);
-            Log.getLogger().warn("Minecolonies warehouse sorting had an error, report it to the mod author.", e);
+            catch (Exception e)
+            {
+                inv.deserializeNBT(backup);
+                Log.getLogger().warn("Storage sorting had an error, report it to the mod author.", e);
+            }
         }
     }
 
@@ -81,17 +85,14 @@ public final class SortingUtils
      * @param requiredSlots    the required slots in total to be pushed to (counting down).
      * @param totalSlots       the total available slots.
      * @param totalRequirement the required slots in total to be pushed to.
-     * @param creativeTabs     the creative tabs information for the items.
      */
     private static void pushIntoInv(
       final AtomicInteger currentSlot,
       final Map.Entry<ItemStorage, Integer> entry,
       final CombinedItemHandler inv,
       final AtomicInteger requiredSlots,
-      final double totalSlots, final double totalRequirement, final Map<Integer, Integer> creativeTabs)
+      final double totalSlots, final double totalRequirement, final ItemStorage next)
     {
-        final int creativeTabId = entry.getKey().getPrimaryCreativeTabIndex();
-
         int slotLimit = 0;
         final ItemStack stack = entry.getKey().getItemStack();
         int tempSize = entry.getValue();
@@ -106,10 +107,9 @@ public final class SortingUtils
             }
             tempSize -= tempStack.getCount();
             requiredSlots.decrementAndGet();
-            creativeTabs.put(creativeTabId, creativeTabs.get(creativeTabId) - 1);
         }
 
-        if (creativeTabs.get(creativeTabId) <= 0 && (totalSlots - slotLimit) >= requiredSlots.get())
+        if (next != null && Math.abs(getId(next.getItem()) - getId(entry.getKey().getItem())) > 18 && (totalSlots - slotLimit) >= requiredSlots.get())
         {
             final double dumpedSlots = (totalRequirement - requiredSlots.get());
             final double usageFactor = totalSlots / dumpedSlots;
@@ -131,21 +131,14 @@ public final class SortingUtils
      */
     private static int compare(final Map.Entry<ItemStorage, Integer> t1, final Map.Entry<ItemStorage, Integer> t2)
     {
-        final int creativeTabId1 = t1.getKey().getPrimaryCreativeTabIndex();
-        final int creativeTabId2 = t2.getKey().getPrimaryCreativeTabIndex();
-
-        if (creativeTabId1 != creativeTabId2)
-        {
-            return creativeTabId1 - creativeTabId2;
-        }
-
         final int id1 = getId(t1.getKey().getItem());
         final int id2 = getId(t2.getKey().getItem());
 
         if (id1 == id2)
         {
-            return t1.getKey().getDamageValueValue() - t2.getKey().getDamageValueValue();
+            return 0;
         }
+
         return id1 - id2;
     }
 
@@ -166,17 +159,14 @@ public final class SortingUtils
      * @param map the map of itemStorages with amount.
      * @return a tuple containing the required information.
      */
-    private static Tuple<AtomicInteger, Map<Integer, Integer>> calcRequiredSlots(final Map<ItemStorage, Integer> map)
+    private static AtomicInteger calcRequiredSlots(final Map<ItemStorage, Integer> map)
     {
-        final Map<Integer, Integer> creativeTabs = new HashMap<>();
         int sum = 0;
         for (final Map.Entry<ItemStorage, Integer> entry : map.entrySet())
         {
             sum += Math.ceil((double) entry.getValue() / entry.getKey().getItemStack().getMaxStackSize());
-            final int index = entry.getKey().getPrimaryCreativeTabIndex();
-            creativeTabs.put(index, creativeTabs.getOrDefault(index, 0) + (int) Math.ceil((double) entry.getValue() / entry.getKey().getItemStack().getMaxStackSize()));
         }
 
-        return new Tuple<>(new AtomicInteger(sum), creativeTabs);
+        return new AtomicInteger(sum);
     }
 }

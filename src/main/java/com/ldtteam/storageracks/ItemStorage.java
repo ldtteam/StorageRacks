@@ -5,13 +5,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
- * Used to store an stack with various informations to compare items later on.
+ * Used to store an stack with various information to compare items later on.
  */
 public class ItemStorage
 {
@@ -19,11 +16,6 @@ public class ItemStorage
      * The stack to store.
      */
     private final ItemStack stack;
-
-    /**
-     * The creative tab index of the storage.
-     */
-    private final List<Integer> creativeTabIndex;
 
     /**
      * Amount of the storage.
@@ -39,7 +31,6 @@ public class ItemStorage
     {
         this.stack = stack;
         this.amount = ItemStackUtils.getSize(stack);
-        this.creativeTabIndex = new ArrayList<>(); //stack.getItem().getCreativeTabs().stream().filter(Objects::nonNull).map(g -> g.id).collect(Collectors.toList());
     }
 
     /**
@@ -72,16 +63,6 @@ public class ItemStorage
         this.amount = amount;
     }
 
-    /**
-     * Getter for the primary creativeTab index of the storage.
-     *
-     * @return the index.
-     */
-    public int getPrimaryCreativeTabIndex()
-    {
-        return creativeTabIndex.isEmpty() ? 0 : creativeTabIndex.get(0);
-    }
-
     @Override
     public int hashCode()
     {
@@ -105,7 +86,7 @@ public class ItemStorage
 
 
         return ItemStack.isSameItem(stack, that.getItemStack())
-                 && that.getDamageValueValue() == this.getDamageValueValue()
+                 && that.getDamageValue() == this.getDamageValue()
                  && ((that.getItemStack().getTag() == null && this.getItemStack().getTag() == null)
                        || (that.getItemStack().getTag() != null && that.getItemStack().getTag().equals(this.getItemStack().getTag())));
     }
@@ -126,7 +107,7 @@ public class ItemStorage
      *
      * @return the damage value.
      */
-    public int getDamageValueValue()
+    public int getDamageValue()
     {
         return stack.getDamageValue();
     }
