@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashSet;
@@ -25,11 +25,11 @@ public class EventManager
     @SubscribeEvent
     public static void on(final PlayerInteractEvent.LeftClickBlock event)
     {
-        if (!event.getWorld().isClientSide)
+        if (!event.getLevel().isClientSide)
         {
-            if (event.getWorld().getBlockState(event.getPos()).getBlock() instanceof UpgradeableBlock)
+            if (event.getLevel().getBlockState(event.getPos()).getBlock() instanceof UpgradeableBlock)
             {
-                ((UpgradeableBlock) event.getWorld().getBlockState(event.getPos()).getBlock()).checkUpgrade(event.getPos(), event.getPlayer());
+                ((UpgradeableBlock) event.getLevel().getBlockState(event.getPos()).getBlock()).checkUpgrade(event.getPos(), event.getEntity());
             }
         }
     }
@@ -44,8 +44,8 @@ public class EventManager
         }
 
         final HashSet<BlockPos> posSet = new HashSet<>();
-        final BlockPos result = TileEntityRack.visitPositions((Level) event.getWorld(), posSet, event.getPos());
-        posSet.removeIf(pos -> event.getWorld().getBlockState(pos).getBlock() instanceof CornerBlock);
+        final BlockPos result = TileEntityRack.visitPositions((Level) event.getLevel(), posSet, event.getPos());
+        posSet.removeIf(pos -> event.getLevel().getBlockState(pos).getBlock() instanceof CornerBlock);
 
         if (result == null || result.equals(BlockPos.ZERO))
         {

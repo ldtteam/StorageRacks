@@ -18,9 +18,16 @@ buildscript {
 apply from: 'https://raw.githubusercontent.com/ldtteam/OperaPublicaCreator/main/gradle/mod.gradle'
 
 dependencies {
-    implementation fg.deobf("mezz.jei:jei-1.19-forge:${project.jei_version}")
+    compileOnly (fg.deobf("com.ldtteam:domum_ornamentum:${project.domumOrnamentumVersion}:universal")){
+        transitive = false
+    }
+    runtimeOnly (fg.deobf("com.ldtteam:domum_ornamentum:${project.domumOrnamentumVersion}:universal")){
+        transitive = false
+    }
 
-    implementation fg.deobf("com.ldtteam:blockui:${project.minecraftVersion}-${project.blockUI_version}")
+    implementation fg.deobf("mezz.jei:jei-1.19.2-forge:${project.jei_version}")
+
+    implementation fg.deobf("com.ldtteam:blockui:${project.blockUI_version}")
 
     datagenLibrary ("com.ldtteam:datagenerators:${project.dataGeneratorsVersion}") {
         transitive = false
@@ -29,3 +36,22 @@ dependencies {
         transitive = false
     }
 }
+
+configurations {
+    library
+    implementation.extendsFrom library
+}
+
+// Allow 400 errors.
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xmaxerrs" << "1000"
+    }
+}
+
+minecraft.runs.all {
+    lazyToken('minecraft_classpath') {
+        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+    }
+}
+

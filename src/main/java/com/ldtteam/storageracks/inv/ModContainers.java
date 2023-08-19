@@ -4,6 +4,7 @@ import com.ldtteam.storageracks.gui.WindowInsert;
 import com.ldtteam.storageracks.gui.WindowRack;
 import com.ldtteam.storageracks.utils.Constants;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.core.Registry;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -16,7 +17,7 @@ import net.minecraftforge.registries.RegistryObject;
 @Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModContainers
 {
-    public final static DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Constants.MOD_ID);
+    public final static DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Constants.MOD_ID);
 
     public static RegistryObject<MenuType<ContainerRack>>   rackInv   = CONTAINERS.register("rack_inv", () -> IForgeMenuType.create(ContainerRack::fromPacketBuffer));
     public static RegistryObject<MenuType<InsertContainer>> insertInv = CONTAINERS.register("insert_inv", () -> IForgeMenuType.create(InsertContainer::fromPacketBuffer));

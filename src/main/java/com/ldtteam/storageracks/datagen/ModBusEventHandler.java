@@ -2,10 +2,9 @@ package com.ldtteam.storageracks.datagen;
 
 import com.ldtteam.datagenerators.lang.LangJson;
 import com.ldtteam.storageracks.utils.Constants;
-import net.minecraft.data.loot.LootTableProvider;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 @Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModBusEventHandler

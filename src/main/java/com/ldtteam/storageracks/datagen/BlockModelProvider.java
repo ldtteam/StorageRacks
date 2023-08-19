@@ -1,5 +1,6 @@
 package com.ldtteam.storageracks.datagen;
 
+import com.google.gson.JsonObject;
 import com.ldtteam.datagenerators.models.block.BlockModelJson;
 import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.ModBlocks;
@@ -62,10 +63,32 @@ public class BlockModelProvider implements DataProvider
 
                 modelJson.setTextures(textureMap);
 
+                final String name = "special/" + state.get().getWoodType().getSerializedName().toLowerCase(Locale.ROOT)
+                                      + "_" + state.get().getFrameType().getSerializedName().toLowerCase(Locale.ROOT)
+                                      + "_" + "rack" + type.getName() + ".json";
+                final Path saveFile = this.generator.getOutputFolder().resolve(Constants.BRICK_BLOCK_MODELS_DIR).resolve(name);
+                DataProvider.saveStable(cache, modelJson.serialize(), saveFile);
+            }
+        }
+
+        for (final RegistryObject<RackBlock> state : ModBlocks.racks)
+        {
+            for (final RackType type : RackType.values())
+            {
+                final BlockModelJson modelJson = new BlockModelJson();
+                final String parentName = "special/" + state.get().getWoodType().getSerializedName().toLowerCase(Locale.ROOT)
+                                      + "_" + state.get().getFrameType().getSerializedName().toLowerCase(Locale.ROOT)
+                                      + "_" + "rack" + type.getName() + ".json";
+                modelJson.setParent("storageracks:block/special/" + parentName);
+
                 final String name = state.get().getWoodType().getSerializedName().toLowerCase(Locale.ROOT)
                                       + "_" + state.get().getFrameType().getSerializedName().toLowerCase(Locale.ROOT)
                                       + "_" + "rack" + type.getName() + ".json";
                 final Path saveFile = this.generator.getOutputFolder().resolve(Constants.BRICK_BLOCK_MODELS_DIR).resolve(name);
+
+                JsonObject jsonObject = modelJson.serialize().getAsJsonObject();
+                jsonObject.addProperty("loader", "domum_ornamentum:materially_textured");
+
                 DataProvider.saveStable(cache, modelJson.serialize(), saveFile);
             }
         }

@@ -1,5 +1,8 @@
 package com.ldtteam.storageracks.tileentities;
 
+import com.google.common.collect.ImmutableList;
+import com.ldtteam.domumornamentum.client.model.data.MaterialTextureData;
+import com.ldtteam.domumornamentum.entity.block.IMateriallyTexturedBlockEntity;
 import com.ldtteam.storageracks.ItemStorage;
 import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.RackBlock;
@@ -9,6 +12,11 @@ import com.ldtteam.storageracks.utils.BlockPosUtil;
 import com.ldtteam.storageracks.utils.ItemStackUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.EmptyBlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,10 +41,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static com.ldtteam.storageracks.utils.Constants.*;
@@ -45,8 +50,26 @@ import static com.ldtteam.storageracks.utils.NbtTagConstants.*;
 /**
  * Tile entity for the warehouse shelves.
  */
-public class TileEntityRack extends AbstractTileEntityRack
+public class TileEntityRack extends AbstractTileEntityRack implements IMateriallyTexturedBlockEntity
 {
+    /**
+     * Static texture mappings
+     */
+    private static final List<ResourceLocation> textureMapping = ImmutableList.<ResourceLocation>builder()
+                                                                   .add(new ResourceLocation("block/bricks"))
+                                                                   .add(new ResourceLocation("block/sand"))
+                                                                   .add(new ResourceLocation("block/orange_wool"))
+                                                                   .add(new ResourceLocation("block/dirt"))
+                                                                   .add(new ResourceLocation("block/obsidian"))
+                                                                   .add(new ResourceLocation("block/polished_andesite"))
+                                                                   .add(new ResourceLocation("block/andesite")).build();
+
+
+    /**
+     * Cached resmap.
+     */
+    private MaterialTextureData textureDataCache = new MaterialTextureData();
+
     /**
      * The content of the chest.
      */
@@ -280,6 +303,11 @@ public class TileEntityRack extends AbstractTileEntityRack
 
         this.controllerPos = BlockPosUtil.readFromNBT(compound, TAG_POS);
         invalidateCap();
+
+        if (level != null && level.isClientSide)
+        {
+            refreshTextureCache();
+        }
     }
 
     //Make a dag between rack -> controller
@@ -519,5 +547,58 @@ public class TileEntityRack extends AbstractTileEntityRack
             }
         }
         return controller;
+    }
+
+    @Override
+    public void updateTextureDataWith(final MaterialTextureData materialTextureData)
+    {
+        // noop
+    }
+
+    /**
+     * Refresh the texture mapping.
+     */
+    private void refreshTextureCache()
+    {
+        final Map<ResourceLocation, Block> resMap = new HashMap<>();
+        int index = 0;
+        final List<Map.Entry<ItemStorage, Integer>> list = content.entrySet().stream().sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue())).toList();
+        for (final Map.Entry<ItemStorage,Integer> entry : list)
+        {
+            // Need more solid checks!
+            if (index < textureMapping.size()
+                  && entry.getKey().getItemStack().getItem() instanceof BlockItem blockitem
+                  && blockitem.getBlock().defaultBlockState().isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO))
+            {
+                resMap.put(textureMapping.get(index), blockitem.getBlock());
+                index++;
+            }
+        }
+
+        if (resMap.isEmpty())
+        {
+            for (int i = 0; i < content.size() && i < textureMapping.size(); i++)
+            {
+                resMap.put(textureMapping.get(i), Blocks.BARREL);
+                index++;
+            }
+        }
+
+        for (int i = index; i < textureMapping.size(); i++)
+        {
+            resMap.put(textureMapping.get(i), Blocks.AIR);
+        }
+        this.textureDataCache =  new MaterialTextureData(resMap);
+        this.requestModelDataUpdate();
+        if (level != null)
+        {
+            level.sendBlockUpdated(getBlockPos(), Blocks.AIR.defaultBlockState(), getBlockState(), Block.UPDATE_ALL);
+        }
+    }
+
+    @Override
+    public @NotNull MaterialTextureData getTextureData()
+    {
+        return textureDataCache;
     }
 }
