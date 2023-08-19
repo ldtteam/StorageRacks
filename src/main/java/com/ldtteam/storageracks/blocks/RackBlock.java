@@ -65,9 +65,6 @@ public class RackBlock extends UpgradeableBlock implements IMateriallyTexturedBl
                                                                                .add(new SimpleRetexturableComponent(new ResourceLocation("block/sand"), ModTags.TIMBERFRAMES_FRAME, Blocks.SAND))
                                                                                .add(new SimpleRetexturableComponent(new ResourceLocation("block/orange_wool"), ModTags.TIMBERFRAMES_FRAME, Blocks.ORANGE_WOOL))
                                                                                .add(new SimpleRetexturableComponent(new ResourceLocation("block/dirt"), ModTags.TIMBERFRAMES_FRAME, Blocks.DIRT))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/obsidian"), ModTags.TIMBERFRAMES_FRAME, Blocks.OBSIDIAN))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/polished_andesite"), ModTags.TIMBERFRAMES_FRAME, Blocks.POLISHED_ANDESITE))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/andesite"), ModTags.TIMBERFRAMES_FRAME, Blocks.ANDESITE))
                                                                                .build();
 
     /**

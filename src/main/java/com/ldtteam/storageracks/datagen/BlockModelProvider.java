@@ -76,9 +76,9 @@ public class BlockModelProvider implements DataProvider
             for (final RackType type : RackType.values())
             {
                 final BlockModelJson modelJson = new BlockModelJson();
-                final String parentName = "special/" + state.get().getWoodType().getSerializedName().toLowerCase(Locale.ROOT)
+                final String parentName = state.get().getWoodType().getSerializedName().toLowerCase(Locale.ROOT)
                                       + "_" + state.get().getFrameType().getSerializedName().toLowerCase(Locale.ROOT)
-                                      + "_" + "rack" + type.getName() + ".json";
+                                      + "_" + "rack" + type.getName();
                 modelJson.setParent("storageracks:block/special/" + parentName);
 
                 final String name = state.get().getWoodType().getSerializedName().toLowerCase(Locale.ROOT)
@@ -89,7 +89,7 @@ public class BlockModelProvider implements DataProvider
                 JsonObject jsonObject = modelJson.serialize().getAsJsonObject();
                 jsonObject.addProperty("loader", "domum_ornamentum:materially_textured");
 
-                DataProvider.saveStable(cache, modelJson.serialize(), saveFile);
+                DataProvider.saveStable(cache, jsonObject, saveFile);
             }
         }
     }

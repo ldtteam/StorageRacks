@@ -2,6 +2,7 @@ package com.ldtteam.storageracks.tileentities;
 
 import com.google.common.collect.ImmutableList;
 import com.ldtteam.domumornamentum.client.model.data.MaterialTextureData;
+import com.ldtteam.domumornamentum.client.model.properties.ModProperties;
 import com.ldtteam.domumornamentum.entity.block.IMateriallyTexturedBlockEntity;
 import com.ldtteam.storageracks.ItemStorage;
 import com.ldtteam.storageracks.blocks.CornerBlock;
@@ -32,6 +33,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -59,10 +61,7 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
                                                                    .add(new ResourceLocation("block/bricks"))
                                                                    .add(new ResourceLocation("block/sand"))
                                                                    .add(new ResourceLocation("block/orange_wool"))
-                                                                   .add(new ResourceLocation("block/dirt"))
-                                                                   .add(new ResourceLocation("block/obsidian"))
-                                                                   .add(new ResourceLocation("block/polished_andesite"))
-                                                                   .add(new ResourceLocation("block/andesite")).build();
+                                                                   .add(new ResourceLocation("block/dirt")).build();
 
 
     /**
@@ -561,39 +560,66 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
     private void refreshTextureCache()
     {
         final Map<ResourceLocation, Block> resMap = new HashMap<>();
+        final int displayPerSlots = this.getInventory().getSlots() / 4;
         int index = 0;
+
         final List<Map.Entry<ItemStorage, Integer>> list = content.entrySet().stream().sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue())).toList();
-        for (final Map.Entry<ItemStorage,Integer> entry : list)
+        final Queue<Block> extraBlockQueue = new ArrayDeque<>();
+        for (final Map.Entry<ItemStorage, Integer> entry : list)
         {
             // Need more solid checks!
-            if (index < textureMapping.size()
-                  && entry.getKey().getItemStack().getItem() instanceof BlockItem blockitem
-                  && blockitem.getBlock().defaultBlockState().isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO))
+            if (index < textureMapping.size())
             {
-                resMap.put(textureMapping.get(index), blockitem.getBlock());
-                index++;
-            }
-        }
+                Block block = Blocks.BARREL;
+                if (entry.getKey().getItemStack().getItem() instanceof BlockItem blockitem
+                      && blockitem.getBlock().defaultBlockState().isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO))
+                {
+                    block = blockitem.getBlock();
+                }
 
-        if (resMap.isEmpty())
-        {
-            for (int i = 0; i < content.size() && i < textureMapping.size(); i++)
-            {
-                resMap.put(textureMapping.get(i), Blocks.BARREL);
+                int displayRows = (int) Math.ceil((Math.max(1.0, (double) entry.getValue() / entry.getKey().getItemStack().getMaxStackSize())) / displayPerSlots);
+                if (displayRows > 1)
+                {
+                    for (int i = 0; i < displayRows - 1; i++)
+                    {
+                        extraBlockQueue.add(block);
+                    }
+                }
+
+                if (entry.getValue() < 16 && !extraBlockQueue.isEmpty())
+                {
+                    block = extraBlockQueue.poll();
+                }
+
+                resMap.put(textureMapping.get(index), block);
                 index++;
             }
         }
 
         for (int i = index; i < textureMapping.size(); i++)
         {
-            resMap.put(textureMapping.get(i), Blocks.AIR);
+            Block block = Blocks.AIR;
+            if (!extraBlockQueue.isEmpty())
+            {
+                block = extraBlockQueue.poll();
+            }
+            resMap.put(textureMapping.get(i), block);
         }
+
         this.textureDataCache =  new MaterialTextureData(resMap);
         this.requestModelDataUpdate();
         if (level != null)
         {
             level.sendBlockUpdated(getBlockPos(), Blocks.AIR.defaultBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
+    }
+
+    @Override
+    public @NotNull ModelData getModelData()
+    {
+        return ModelData.builder()
+                 .with(ModProperties.MATERIAL_TEXTURE_PROPERTY, textureDataCache)
+                 .build();
     }
 
     @Override
