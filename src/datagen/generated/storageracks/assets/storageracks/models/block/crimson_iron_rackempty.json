@@ -1,8 +1,4 @@
 {
-  "parent": "storageracks:block/rackempty",
-  "textures": {
-    "0": "block/crimson_planks",
-    "1": "block/iron_block",
-    "particle": "block/crimson_planks"
-  }
+  "parent": "storageracks:block/special/crimson_iron_rackempty",
+  "loader": "domum_ornamentum:materially_textured"
 }

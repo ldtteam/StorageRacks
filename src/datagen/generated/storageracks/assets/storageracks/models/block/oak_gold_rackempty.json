@@ -1,8 +1,4 @@
 {
-  "parent": "storageracks:block/rackempty",
-  "textures": {
-    "0": "block/oak_planks",
-    "1": "block/gold_block",
-    "particle": "block/oak_planks"
-  }
+  "parent": "storageracks:block/special/oak_gold_rackempty",
+  "loader": "domum_ornamentum:materially_textured"
 }

@@ -1,8 +1,4 @@
 {
-  "parent": "storageracks:block/rackempty",
-  "textures": {
-    "0": "block/mangrove_planks",
-    "1": "block/oak_planks",
-    "particle": "block/mangrove_planks"
-  }
+  "parent": "storageracks:block/special/mangrove_wood_rackempty",
+  "loader": "domum_ornamentum:materially_textured"
 }

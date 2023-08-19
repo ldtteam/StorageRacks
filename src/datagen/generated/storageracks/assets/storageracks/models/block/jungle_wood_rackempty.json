@@ -1,8 +1,4 @@
 {
-  "parent": "storageracks:block/rackempty",
-  "textures": {
-    "0": "block/jungle_planks",
-    "1": "block/oak_planks",
-    "particle": "block/jungle_planks"
-  }
+  "parent": "storageracks:block/special/jungle_wood_rackempty",
+  "loader": "domum_ornamentum:materially_textured"
 }
