@@ -1,18 +1,13 @@
 package com.ldtteam.storageracks.blocks;
 
-import com.google.common.collect.ImmutableList;
 import com.ldtteam.domumornamentum.block.IMateriallyTexturedBlock;
 import com.ldtteam.domumornamentum.block.IMateriallyTexturedBlockComponent;
-import com.ldtteam.domumornamentum.block.components.SimpleRetexturableComponent;
-import com.ldtteam.domumornamentum.tag.ModTags;
 import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
@@ -43,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Block for the shelves of the warehouse.
@@ -59,16 +53,6 @@ public class RackBlock extends UpgradeableBlock implements IMateriallyTexturedBl
      * Smaller shape.
      */
     private static final VoxelShape SHAPE = Shapes.box(0.1, 0.1, 0.1, 0.9, 0.9, 0.9);
-
-    public static final List<IMateriallyTexturedBlockComponent> COMPONENTS = ImmutableList.<IMateriallyTexturedBlockComponent>builder()
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/bricks"), ModTags.TIMBERFRAMES_FRAME, Blocks.BRICKS))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/sand"), ModTags.TIMBERFRAMES_FRAME, Blocks.SAND))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/orange_wool"), ModTags.TIMBERFRAMES_FRAME, Blocks.ORANGE_WOOL))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/dirt"), ModTags.TIMBERFRAMES_FRAME, Blocks.DIRT))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/obsidian"), ModTags.TIMBERFRAMES_FRAME, Blocks.OBSIDIAN))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/polished_andesite"), ModTags.TIMBERFRAMES_FRAME, Blocks.POLISHED_ANDESITE))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/andesite"), ModTags.TIMBERFRAMES_FRAME, Blocks.ANDESITE))
-                                                                               .build();
 
     /**
      * The two types.
