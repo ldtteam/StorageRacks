@@ -9,7 +9,6 @@ import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -59,13 +58,6 @@ public class RackBlock extends UpgradeableBlock implements IMateriallyTexturedBl
      * Smaller shape.
      */
     private static final VoxelShape SHAPE = Shapes.box(0.1, 0.1, 0.1, 0.9, 0.9, 0.9);
-
-    public static final List<IMateriallyTexturedBlockComponent> COMPONENTS = ImmutableList.<IMateriallyTexturedBlockComponent>builder()
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/bricks"), ModTags.TIMBERFRAMES_FRAME, Blocks.BRICKS))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/sand"), ModTags.TIMBERFRAMES_FRAME, Blocks.SAND))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/orange_wool"), ModTags.TIMBERFRAMES_FRAME, Blocks.ORANGE_WOOL))
-                                                                               .add(new SimpleRetexturableComponent(new ResourceLocation("block/dirt"), ModTags.TIMBERFRAMES_FRAME, Blocks.DIRT))
-                                                                               .build();
 
     /**
      * The two types.

@@ -63,6 +63,12 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
                                                                    .add(new ResourceLocation("block/orange_wool"))
                                                                    .add(new ResourceLocation("block/dirt")).build();
 
+    private static final List<ResourceLocation> secondarytextureMapping = ImmutableList.<ResourceLocation>builder()
+                                                                            .add(new ResourceLocation("block/oak_log"))
+                                                                            .add(new ResourceLocation("block/spruce_log"))
+                                                                            .add(new ResourceLocation("block/birch_log"))
+                                                                            .add(new ResourceLocation("block/jungle_log"))
+                                                                            .build();
 
     /**
      * Cached resmap.
@@ -572,8 +578,7 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
             if (index < textureMapping.size())
             {
                 Block block = Blocks.BARREL;
-                if (entry.getKey().getItemStack().getItem() instanceof BlockItem blockitem
-                      && blockitem.getBlock().defaultBlockState().isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO))
+                if (entry.getKey().getItemStack().getItem() instanceof BlockItem blockitem)
                 {
                     block = blockitem.getBlock();
                 }
@@ -592,10 +597,23 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
                     block = extraBlockQueue.poll();
                 }
 
-                final ResourceLocation resLoc = textureMapping.get(index);
+                final ResourceLocation secondaryResLoc = secondarytextureMapping.get(index);
+                if (!block.defaultBlockState().isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO))
+                {
+                    resMap.put(secondaryResLoc, block);
+                    block = Blocks.BARREL;
+                }
+                else
+                {
+                    resMap.put(secondaryResLoc, Blocks.AIR);
+                }
 
+                final ResourceLocation resLoc = textureMapping.get(index);
                 resMap.put(resLoc, block);
-                if (this.textureDataCache == null || !this.textureDataCache.getTexturedComponents().getOrDefault(resLoc, Blocks.BEDROCK).equals(block))
+
+                if (this.textureDataCache == null
+                      || !this.textureDataCache.getTexturedComponents().getOrDefault(resLoc, Blocks.BEDROCK).equals(resMap.get(resLoc))
+                      || !this.textureDataCache.getTexturedComponents().getOrDefault(secondaryResLoc, Blocks.BEDROCK).equals(resMap.get(secondaryResLoc)))
                 {
                     update = true;
                 }
@@ -610,9 +628,24 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
             {
                 block = extraBlockQueue.poll();
             }
+
+            final ResourceLocation secondaryResLoc = secondarytextureMapping.get(i);
+            if (block != Blocks.AIR && !block.defaultBlockState().isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO))
+            {
+                resMap.put(secondaryResLoc, block);
+                block = Blocks.BARREL;
+            }
+            else
+            {
+                resMap.put(secondaryResLoc, Blocks.AIR);
+            }
+
             final ResourceLocation resLoc = textureMapping.get(i);
             resMap.put(resLoc, block);
-            if (this.textureDataCache == null || !this.textureDataCache.getTexturedComponents().getOrDefault(resLoc, Blocks.BEDROCK).equals(block))
+
+            if (this.textureDataCache == null
+                  || !this.textureDataCache.getTexturedComponents().getOrDefault(resLoc, Blocks.BEDROCK).equals(resMap.get(resLoc))
+                  || !this.textureDataCache.getTexturedComponents().getOrDefault(secondaryResLoc, Blocks.BEDROCK).equals(resMap.get(secondaryResLoc)))
             {
                 update = true;
             }
