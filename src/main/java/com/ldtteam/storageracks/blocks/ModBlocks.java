@@ -56,7 +56,8 @@ public final class ModBlocks
         ironController = register("iron_controller", () -> new ControllerBlock(Items.IRON_INGOT, Items.GOLD_BLOCK, 2), b -> new BlockItem(b, new Item.Properties()));
         goldController = register("gold_controller", () -> new ControllerBlock(Items.GOLD_INGOT, Items.EMERALD_BLOCK, 3), b -> new BlockItem(b, new Item.Properties()));
         emeraldController = register("emerald_controller", () -> new ControllerBlock(Items.EMERALD, Items.DIAMOND_BLOCK, 4), b -> new BlockItem(b, new Item.Properties()));
-        diamondController = register("diamond_controller", () -> new ControllerBlock(Items.DIAMOND, null, 5), b -> new BlockItem(b, new Item.Properties()));
+        diamondController = register("diamond_controller", () -> new ControllerBlock(Items.DIAMOND, Items.NETHERITE_BLOCK, 5), b -> new BlockItem(b, new Item.Properties()));
+        diamondController = register("netherite_controller", () -> new ControllerBlock(Items.NETHERITE_INGOT, null, 6), b -> new BlockItem(b, new Item.Properties()));
 
         for (final WoodType woodType : WoodType.values())
         {

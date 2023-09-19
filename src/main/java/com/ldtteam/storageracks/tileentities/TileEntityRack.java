@@ -341,6 +341,10 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
         {
             size = 5;
         }
+        else if (block.frameType.getSerializedName().contains("netherite"))
+        {
+            size = 6;
+        }
 
         if (oldSize != size)
         {
@@ -570,18 +574,23 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
         final int displayPerSlots = this.getInventory().getSlots() / 4;
         int index = 0;
         boolean update = false;
+        boolean alreadyAddedItem = false;
 
         final List<Map.Entry<ItemStorage, Integer>> list = content.entrySet().stream().sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue())).toList();
+
         final Queue<Block> extraBlockQueue = new ArrayDeque<>();
+        final Queue<Block> itemQueue = new ArrayDeque<>();
         for (final Map.Entry<ItemStorage, Integer> entry : list)
         {
             // Need more solid checks!
             if (index < textureMapping.size())
             {
                 Block block = Blocks.BARREL;
-                if (entry.getKey().getItemStack().getItem() instanceof BlockItem blockitem)
+                boolean isBlockItem = false;
+                if (entry.getKey().getItemStack().getItem() instanceof BlockItem blockItem)
                 {
-                    block = blockitem.getBlock();
+                    block = blockItem.getBlock();
+                    isBlockItem = true;
                 }
 
                 int displayRows = (int) Math.ceil((Math.max(1.0, (double) entry.getValue() / entry.getKey().getItemStack().getMaxStackSize())) / displayPerSlots);
@@ -589,7 +598,27 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
                 {
                     for (int i = 0; i < displayRows - 1; i++)
                     {
-                        extraBlockQueue.add(block);
+                        if (isBlockItem)
+                        {
+                            extraBlockQueue.add(block);
+                        }
+                        else
+                        {
+                            itemQueue.add(block);
+                        }
+                    }
+                }
+
+                if (!isBlockItem)
+                {
+                    if (alreadyAddedItem)
+                    {
+                        itemQueue.add(block);
+                        continue;
+                    }
+                    else
+                    {
+                        alreadyAddedItem = true;
                     }
                 }
 
@@ -620,7 +649,13 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
                 }
                 index++;
             }
+            else
+            {
+                break;
+            }
         }
+
+        extraBlockQueue.addAll(itemQueue);
 
         for (int i = index; i < textureMapping.size(); i++)
         {

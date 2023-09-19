@@ -18,7 +18,8 @@ public enum FrameType implements StringRepresentable
     IRON("iron", Blocks.IRON_BLOCK, Items.GOLD_INGOT, Items.IRON_INGOT),
     GOLD("gold", Blocks.GOLD_BLOCK, Items.EMERALD, Items.GOLD_INGOT),
     EMERALD("emerald", Blocks.EMERALD_BLOCK, Items.DIAMOND, Items.EMERALD),
-    DIAMOND("diamond", Blocks.DIAMOND_BLOCK, null, Items.DIAMOND);
+    DIAMOND("diamond", Blocks.DIAMOND_BLOCK, null, Items.DIAMOND),
+    NETHERITE("netherite", Blocks.NETHERITE_BLOCK, null, Items.NETHERITE_INGOT);
 
     private final String                name;
     private final Block                 material;

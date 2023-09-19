@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "racks",
+  "key": {
+    "C": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "F": {
+      "item": "minecraft:jungle_planks"
+    },
+    "X": {
+      "tag": "forge:rods/wooden"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
+  "result": {
+    "count": 1,
+    "item": "storageracks:jungle_netherite_rack"
+  }
+}

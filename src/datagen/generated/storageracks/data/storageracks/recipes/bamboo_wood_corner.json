@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "corners",
+  "key": {
+    "C": {
+      "item": "minecraft:oak_planks"
+    },
+    "F": {
+      "item": "minecraft:bamboo_planks"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "FCF",
+    "FFF"
+  ],
+  "result": {
+    "count": 8,
+    "item": "storageracks:bamboo_wood_corner"
+  }
+}

@@ -48,6 +48,8 @@ public class LangEntryProvider extends LanguageProvider
             acceptor.add("block.storageracks.gold_controller", "Gold Controller");
             acceptor.add("block.storageracks.emerald_controller", "Emerald Controller");
             acceptor.add("block.storageracks.diamond_controller", "Diamond Controller");
+            acceptor.add("block.storageracks.netherite_controller", "Netherite Controller");
+
             acceptor.add("gui.storageracks.notconnected",
               "Invalid Placement. Racks must be placed directly connected to a Controller or Rack but without connection to multiple Controllers.");
             acceptor.add("gui.storageracks.limitreached", "Max Rack limit reached for this Controller. Upgrade the Controller to connect more Racks!");
