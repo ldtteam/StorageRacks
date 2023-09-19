@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "variant=empty": {
+      "model": "storageracks:block/cherry_diamond_rackempty"
+    },
+    "variant=full": {
+      "model": "storageracks:block/cherry_diamond_rackfull"
+    }
+  }
+}

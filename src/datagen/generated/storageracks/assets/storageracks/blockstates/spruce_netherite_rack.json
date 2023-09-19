@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "variant=empty": {
+      "model": "storageracks:block/spruce_netherite_rackempty"
+    },
+    "variant=full": {
+      "model": "storageracks:block/spruce_netherite_rackfull"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "variant=empty": {
+      "model": "storageracks:block/dark_oak_netherite_rackempty"
+    },
+    "variant=full": {
+      "model": "storageracks:block/dark_oak_netherite_rackfull"
+    }
+  }
+}

@@ -341,6 +341,10 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
         {
             size = 5;
         }
+        else if (block.frameType.getSerializedName().contains("netherite"))
+        {
+            size = 6;
+        }
 
         if (oldSize != size)
         {

@@ -1,0 +1,8 @@
+{
+  "parent": "storageracks:block/controller",
+  "textures": {
+    "0": "storageracks:item/paper",
+    "1": "minecraft:block/netherite_block",
+    "particle": "minecraft:block/netherite_block"
+  }
+}

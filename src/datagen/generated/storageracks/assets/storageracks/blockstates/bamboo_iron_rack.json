@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "variant=empty": {
+      "model": "storageracks:block/bamboo_iron_rackempty"
+    },
+    "variant=full": {
+      "model": "storageracks:block/bamboo_iron_rackfull"
+    }
+  }
+}

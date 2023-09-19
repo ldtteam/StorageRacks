@@ -6,7 +6,7 @@
       "item": "storageracks:emerald_controller"
     },
     "S": {
-      "item": "minecraft:diamond"
+      "item": "minecraft:netherite_ingot"
     }
   },
   "pattern": [
@@ -16,6 +16,6 @@
   ],
   "result": {
     "count": 1,
-    "item": "storageracks:diamond_controller"
+    "item": "storageracks:netherite_controller"
   }
 }
