@@ -19,6 +19,7 @@ public class ModBusEventHandler
         event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator()));
         event.getGenerator().addProvider(true, new BlockModelProvider(event.getGenerator()));
         event.getGenerator().addProvider(true, new DefaultBlockLootTableProvider(event.getGenerator()));
+        event.getGenerator().addProvider(true, new DefaultBlockTagsProvider(event.getGenerator(), event.getExistingFileHelper()));
         event.getGenerator().addProvider(true, new LangEntryProvider(event.getGenerator(), langJson));
     }
 }
