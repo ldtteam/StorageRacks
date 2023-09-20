@@ -1,0 +1,9 @@
+{
+  "values": [
+    "storageracks:stone_controller",
+    "storageracks:iron_controller",
+    "storageracks:gold_controller",
+    "storageracks:emerald_controller",
+    "storageracks:netherite_controller"
+  ]
+}
