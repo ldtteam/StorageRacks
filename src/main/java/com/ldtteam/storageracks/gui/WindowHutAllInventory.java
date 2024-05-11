@@ -260,7 +260,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
             filterItems.add(storage);
         });
         final Predicate<ItemStorage> filterPredicate = stack -> filter.isEmpty()
-                                                                  || stack.getItemStack().getDescriptionId().toLowerCase(Locale.US).contains(filter.toLowerCase(Locale.US))
+                                                                  || stack.getItemStack().getDisplayName().toString().toLowerCase(Locale.US).contains(filter.toLowerCase(Locale.US))
                                                                   || getString(stack.getItemStack())
                                                                        .toLowerCase(Locale.US)
                                                                        .contains(filter.toLowerCase(Locale.US));
@@ -349,7 +349,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
             {
                 final ItemStorage resource = allItems.get(index);
                 final Text resourceLabel = rowPane.findPaneOfTypeByID("ressourceStackName", Text.class);
-                final String name = Component.translatable(resource.getItemStack().getDescriptionId()).getString();
+                final String name = resource.getItemStack().getDisplayName().getString().replace("[", "").replace("]", "");
                 resourceLabel.setText(Component.translatable(name.substring(0, Math.min(17, name.length()))));
                 final Text qtys = rowPane.findPaneOfTypeByID("quantities", Text.class);
                 if (!Screen.hasShiftDown())
