@@ -3,28 +3,27 @@ package com.ldtteam.storageracks.inv;
 import com.ldtteam.storageracks.gui.WindowInsert;
 import com.ldtteam.storageracks.gui.WindowRack;
 import com.ldtteam.storageracks.utils.Constants;
-import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
-@Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ModContainers
 {
-    public final static DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Constants.MOD_ID);
+    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, Constants.MOD_ID);
 
-    public static RegistryObject<MenuType<ContainerRack>>   rackInv   = CONTAINERS.register("rack_inv", () -> IForgeMenuType.create(ContainerRack::fromPacketBuffer));
-    public static RegistryObject<MenuType<InsertContainer>> insertInv = CONTAINERS.register("insert_inv", () -> IForgeMenuType.create(InsertContainer::fromPacketBuffer));
+    public static DeferredHolder<MenuType<?>, MenuType<ContainerRack>>   rackInv   = CONTAINERS.register("rack_inv", () -> IMenuTypeExtension.create(ContainerRack::fromPacketBuffer));
+    public static DeferredHolder<MenuType<?>, MenuType<InsertContainer>> insertInv = CONTAINERS.register("insert_inv", () -> IMenuTypeExtension.create(InsertContainer::fromPacketBuffer));
 
     @SubscribeEvent
-    public static void doClientStuff(final FMLClientSetupEvent event)
+    public static void doClientStuff(final RegisterMenuScreensEvent event)
     {
-        MenuScreens.register(ModContainers.rackInv.get(), WindowRack::new);
-        MenuScreens.register(ModContainers.insertInv.get(), WindowInsert::new);
+        event.register(ModContainers.rackInv.get(), WindowRack::new);
+        event.register(ModContainers.insertInv.get(), WindowInsert::new);
     }
 }

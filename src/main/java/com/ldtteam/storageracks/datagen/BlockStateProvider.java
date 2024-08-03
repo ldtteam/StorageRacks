@@ -8,13 +8,13 @@ import com.ldtteam.storageracks.blocks.ModBlocks;
 import com.ldtteam.storageracks.blocks.RackBlock;
 import com.ldtteam.storageracks.blocks.RackType;
 import com.ldtteam.storageracks.utils.Constants;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.util.Tuple;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -41,26 +41,26 @@ public class BlockStateProvider implements DataProvider
     @Override
     public CompletableFuture<?> run(@NotNull final CachedOutput cache)
     {
-        for (final RegistryObject<CornerBlock> state : ModBlocks.corners)
+        for (final DeferredBlock<CornerBlock> state : ModBlocks.corners)
         {
             final Map<String, BlockstateVariantJson> variants = new HashMap<>();
-            variants.put("", new BlockstateVariantJson(new BlockstateModelJson(Constants.MOD_ID + ":block/" + ForgeRegistries.BLOCKS.getKey(state.get()).getPath())));
+            variants.put("", new BlockstateVariantJson(new BlockstateModelJson(Constants.MOD_ID + ":block/" + BuiltInRegistries.BLOCK.getKey(state.get()).getPath())));
 
             final BlockstateJson blockstate = new BlockstateJson(variants);
-            models.add(new Tuple<>(blockstate, ForgeRegistries.BLOCKS.getKey(state.get()).getPath()));
+            models.add(new Tuple<>(blockstate, BuiltInRegistries.BLOCK.getKey(state.get()).getPath()));
         }
 
-        for (final RegistryObject<RackBlock> state : ModBlocks.racks)
+        for (final DeferredBlock<RackBlock> state : ModBlocks.racks)
         {
             final Map<String, BlockstateVariantJson> variants = new HashMap<>();
             for (final RackType type : RackType.values())
             {
-                variants.put("variant=" + type.getName(), new BlockstateVariantJson(new BlockstateModelJson(Constants.MOD_ID + ":block/" + ForgeRegistries.BLOCKS.getKey(state.get()).getPath() + type.getName())));
+                variants.put("variant=" + type.getName(), new BlockstateVariantJson(new BlockstateModelJson(Constants.MOD_ID + ":block/" + BuiltInRegistries.BLOCK.getKey(state.get()).getPath() + type.getName())));
             }
 
             final BlockstateJson blockstate = new BlockstateJson(variants);
 
-            models.add(new Tuple<>(blockstate, ForgeRegistries.BLOCKS.getKey(state.get()).getPath()));
+            models.add(new Tuple<>(blockstate, BuiltInRegistries.BLOCK.getKey(state.get()).getPath()));
         }
         return generateAll(cache);
     }

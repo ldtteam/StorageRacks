@@ -5,7 +5,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.util.StringRepresentable;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,9 +22,9 @@ public enum FrameType implements StringRepresentable
     NETHERITE("netherite", Blocks.NETHERITE_BLOCK, null, Items.NETHERITE_INGOT);
 
     private final String                name;
-    private final Block                 material;
-    private final RegistryObject<Block> registeredMaterial;
-    private final Item upgradeCost;
+    private final Block                material;
+    private final DeferredBlock<Block> registeredMaterial;
+    private final Item                 upgradeCost;
     private final Item creationCost;
 
     FrameType(final String nameIn, final Block material, final Item cost, final Item creation)

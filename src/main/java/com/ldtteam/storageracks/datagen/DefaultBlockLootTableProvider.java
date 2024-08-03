@@ -10,14 +10,14 @@ import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.ModBlocks;
 import com.ldtteam.storageracks.blocks.RackBlock;
 import com.ldtteam.storageracks.utils.Constants;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -44,12 +44,12 @@ public class DefaultBlockLootTableProvider implements DataProvider
     @Override
     public CompletableFuture<?> run(@NotNull final CachedOutput cache)
     {
-        for (final RegistryObject<CornerBlock> block : ModBlocks.corners)
+        for (final DeferredBlock<CornerBlock> block : ModBlocks.corners)
         {
             saveBlock(block.get(), cache);
         }
 
-        for (final RegistryObject<RackBlock> block : ModBlocks.racks)
+        for (final DeferredBlock<RackBlock> block : ModBlocks.racks)
         {
             saveBlock(block.get(), cache);
         }
@@ -67,7 +67,7 @@ public class DefaultBlockLootTableProvider implements DataProvider
     {
         final EntryJson entryJson = new EntryJson();
         entryJson.setType(EntryTypeEnum.ITEM);
-        entryJson.setName(ForgeRegistries.BLOCKS.getKey(block).toString());
+        entryJson.setName(BuiltInRegistries.BLOCK.getKey(block).toString());
 
         final PoolJson poolJson = new PoolJson();
         poolJson.setEntries(Collections.singletonList(entryJson));
@@ -78,7 +78,7 @@ public class DefaultBlockLootTableProvider implements DataProvider
         lootTableJson.setType(LootTableTypeEnum.BLOCK);
         lootTableJson.setPools(Collections.singletonList(poolJson));
 
-        this.models.add(new Tuple<>(lootTableJson, ForgeRegistries.BLOCKS.getKey(block).getPath()));
+        this.models.add(new Tuple<>(lootTableJson, BuiltInRegistries.BLOCK.getKey(block).getPath()));
     }
 
     protected CompletableFuture<?> generateAll(CachedOutput cache)

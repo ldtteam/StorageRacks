@@ -5,13 +5,13 @@ import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.ModBlocks;
 import com.ldtteam.storageracks.blocks.RackBlock;
 import com.ldtteam.storageracks.utils.Constants;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.util.Tuple;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -37,34 +37,34 @@ public class ItemModelProvider implements DataProvider
     @Override
     public CompletableFuture<?> run(@NotNull CachedOutput cache)
     {
-        for (final RegistryObject<CornerBlock> state : ModBlocks.corners)
+        for (final DeferredBlock<CornerBlock> state : ModBlocks.corners)
         {
             final ItemModelJson modelJson = new ItemModelJson();
             final String modelLocation = Constants.MOD_ID + ":item/corner";
             modelJson.setParent(modelLocation);
 
             final HashMap<String, String> textureMap = new HashMap<>();
-            textureMap.put("0", "block/" + ForgeRegistries.BLOCKS.getKey(state.get().getWoodType().getMaterial()).getPath());
-            textureMap.put("1", "block/" + ForgeRegistries.BLOCKS.getKey(state.get().getFrameType().getMaterial()).getPath());
-            textureMap.put("particle", "block/" +  ForgeRegistries.BLOCKS.getKey(state.get().getWoodType().getMaterial()).getPath());
+            textureMap.put("0", "block/" + BuiltInRegistries.BLOCK.getKey(state.get().getWoodType().getMaterial()).getPath());
+            textureMap.put("1", "block/" + BuiltInRegistries.BLOCK.getKey(state.get().getFrameType().getMaterial()).getPath());
+            textureMap.put("particle", "block/" +  BuiltInRegistries.BLOCK.getKey(state.get().getWoodType().getMaterial()).getPath());
             modelJson.setTextures(textureMap);
 
-            this.models.add(new Tuple<>(modelJson, ForgeRegistries.BLOCKS.getKey(state.get()).getPath()));
+            this.models.add(new Tuple<>(modelJson, BuiltInRegistries.BLOCK.getKey(state.get()).getPath()));
         }
 
-        for (final RegistryObject<RackBlock> state : ModBlocks.racks)
+        for (final DeferredBlock<RackBlock> state : ModBlocks.racks)
         {
             final ItemModelJson modelJson = new ItemModelJson();
             final String modelLocation = Constants.MOD_ID + ":item/rack";
             modelJson.setParent(modelLocation);
 
             final HashMap<String, String> textureMap = new HashMap<>();
-            textureMap.put("0", "block/" + ForgeRegistries.BLOCKS.getKey(state.get().getWoodType().getMaterial()).getPath());
-            textureMap.put("1", "block/" + ForgeRegistries.BLOCKS.getKey(state.get().getFrameType().getMaterial()).getPath());
-            textureMap.put("particle", "block/" + ForgeRegistries.BLOCKS.getKey(state.get().getWoodType().getMaterial()).getPath());
+            textureMap.put("0", "block/" + BuiltInRegistries.BLOCK.getKey(state.get().getWoodType().getMaterial()).getPath());
+            textureMap.put("1", "block/" + BuiltInRegistries.BLOCK.getKey(state.get().getFrameType().getMaterial()).getPath());
+            textureMap.put("particle", "block/" + BuiltInRegistries.BLOCK.getKey(state.get().getWoodType().getMaterial()).getPath());
             modelJson.setTextures(textureMap);
 
-            this.models.add(new Tuple<>(modelJson, ForgeRegistries.BLOCKS.getKey(state.get()).getPath()));
+            this.models.add(new Tuple<>(modelJson, BuiltInRegistries.BLOCK.getKey(state.get()).getPath()));
         }
         return generateAll(cache);
     }

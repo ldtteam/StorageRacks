@@ -1,23 +1,19 @@
 package com.ldtteam.storageracks;
 
 import com.ldtteam.storageracks.utils.RenderUtils;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
 public class HighlightManager
@@ -29,24 +25,26 @@ public class HighlightManager
     public static final Map<String, List<TimedBoxRenderData>> HIGHLIGHT_MAP = new HashMap<>();
 
     /**
-     * Render buffers.
-     */
-    public static final  RenderBuffers        renderBuffers            = new RenderBuffers();
-    private static final MultiBufferSource.BufferSource   renderBuffer             = renderBuffers.bufferSource();
-    private static final Supplier<VertexConsumer> linesWithoutCullAndDepth = () -> renderBuffer.getBuffer(RenderUtils.LINES_GLINT);
-
-    /**
      * Used to catch the renderWorldLastEvent in order to draw the debug nodes for pathfinding.
      *
      * @param event the catched event.
      */
-    @SubscribeEvent(priority = EventPriority.LOW)
+    @SubscribeEvent
     public static void renderWorldLastEvent(@NotNull final RenderLevelStageEvent event)
     {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS)
         {
             if (!HIGHLIGHT_MAP.isEmpty())
             {
+                final Minecraft mc = Minecraft.getInstance();
+
+                final Vec3 viewPosition = mc.gameRenderer.getMainCamera().getPosition();
+                final PoseStack matrixStack = event.getPoseStack();
+                final MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
+
+                matrixStack.pushPose();
+                matrixStack.translate(-viewPosition.x(), -viewPosition.y(), -viewPosition.z());
+
                 final long worldTime = Minecraft.getInstance().level.getGameTime();
                 for (final Iterator<List<TimedBoxRenderData>> categoryIterator = HIGHLIGHT_MAP.values().iterator(); categoryIterator.hasNext(); )
                 {
@@ -65,19 +63,17 @@ public class HighlightManager
                               boxRenderData.getRed(),
                               boxRenderData.getGreen(),
                               boxRenderData.getBlue(),
-                              1.0F,
+                              0xff,
                               0.002D,
                               event.getPoseStack(),
-                              linesWithoutCullAndDepth.get());
+                              bufferSource);
 
-                            if (!boxRenderData.text.isEmpty())
-                            {
-                                MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-                                RenderUtils.renderDebugText(boxRenderData.pos, boxRenderData.text, event.getPoseStack(), true, 3, buffer);
-                                RenderSystem.disableDepthTest();
-                                buffer.endBatch();
-                                RenderSystem.enableDepthTest();
-                            }
+                            RenderUtils.renderDebugText(boxRenderData.pos, boxRenderData.text, event.getPoseStack(),
+                              boxRenderData.getRed(),
+                              boxRenderData.getGreen(),
+                              boxRenderData.getBlue(),
+                              0xff,  bufferSource);
+
                         }
                     }
 
@@ -86,8 +82,9 @@ public class HighlightManager
                         categoryIterator.remove();
                     }
                 }
+                bufferSource.endBatch();
+                matrixStack.popPose();
             }
-            renderBuffer.endBatch();
         }
     }
 
@@ -145,9 +142,9 @@ public class HighlightManager
          *
          * @return
          */
-        private float getRed()
+        private int getRed()
         {
-            return ((hexColor >> 16) & 255) / 255f;
+            return ((hexColor >> 16) & 255);
         }
 
         /**
@@ -155,9 +152,9 @@ public class HighlightManager
          *
          * @return
          */
-        private float getGreen()
+        private int getGreen()
         {
-            return ((hexColor >> 8) & 255) / 255f;
+            return ((hexColor >> 8) & 255);
         }
 
         /**
@@ -165,9 +162,9 @@ public class HighlightManager
          *
          * @return
          */
-        private float getBlue()
+        private int getBlue()
         {
-            return ((hexColor) & 255) / 255f;
+            return ((hexColor) & 255);
         }
     }
 

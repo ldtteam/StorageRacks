@@ -2,10 +2,10 @@ package com.ldtteam.storageracks.utils;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.chunk.ChunkStatus;
 
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 
 /**
  * Class which has world related util functions like chunk load checks

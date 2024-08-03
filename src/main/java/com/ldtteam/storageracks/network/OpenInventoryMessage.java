@@ -1,18 +1,22 @@
 package com.ldtteam.storageracks.network;
 
+import com.ldtteam.common.network.AbstractServerPlayMessage;
+import com.ldtteam.common.network.PlayMessageType;
+import com.ldtteam.storageracks.utils.Constants;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
  * Message sent to open an inventory.
  */
-public class OpenInventoryMessage implements IMessage
+public class OpenInventoryMessage extends AbstractServerPlayMessage
 {
+    public static final PlayMessageType<?> TYPE = PlayMessageType.forServer(Constants.MOD_ID, "open_inventory", OpenInventoryMessage::new);
+
     /**
      * The position of the inventory block/entity.
      */
@@ -21,9 +25,10 @@ public class OpenInventoryMessage implements IMessage
     /**
      * Empty public constructor.
      */
-    public OpenInventoryMessage()
+    public OpenInventoryMessage(final RegistryFriendlyByteBuf buf, final PlayMessageType<?> type)
     {
-        super();
+        super(buf, type);
+        this.pos = buf.readBlockPos();
     }
 
     /**
@@ -32,30 +37,24 @@ public class OpenInventoryMessage implements IMessage
      */
     public OpenInventoryMessage(final BlockPos pos)
     {
+        super(TYPE);
         this.pos = pos;
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buf)
+    public void toBytes(final RegistryFriendlyByteBuf buf)
     {
         buf.writeBlockPos(pos);
     }
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buf)
+    protected void onExecute(final IPayloadContext context, final ServerPlayer playerEntity)
     {
-        this.pos = buf.readBlockPos();
-    }
-
-    @Override
-    public void onExecute(final NetworkEvent.Context ctxIn, final boolean isLogicalServer)
-    {
-        final ServerPlayer player = ctxIn.getSender();
-        if (player == null)
+        if (playerEntity == null)
         {
             return;
         }
-        final BlockEntity tileEntity = player.level().getBlockEntity(pos);
-        NetworkHooks.openScreen(player, (MenuProvider) tileEntity, packetBuffer -> packetBuffer.writeBlockPos(pos));
+        final BlockEntity tileEntity = playerEntity.level().getBlockEntity(pos);
+        playerEntity.openMenu((MenuProvider) tileEntity, pos);
     }
 }

@@ -1,8 +1,8 @@
 package com.ldtteam.storageracks.configuration;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
@@ -18,11 +18,10 @@ public class Configuration
     /**
      * Builds configuration tree.
      */
-    public Configuration()
+    public Configuration(final FMLModContainer modContainer)
     {
-        final Pair<ServerConfiguration, ForgeConfigSpec> ser = new ForgeConfigSpec.Builder().configure(ServerConfiguration::new);
-
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ser.getRight());
+        final Pair<ServerConfiguration, ModConfigSpec> ser = new ModConfigSpec.Builder().configure(ServerConfiguration::new);
+        modContainer.registerConfig(ModConfig.Type.SERVER, ser.getRight());
 
         serverConfig = ser.getLeft();
     }

@@ -85,10 +85,8 @@ public class ItemStorage
         final ItemStorage that = (ItemStorage) o;
 
 
-        return ItemStack.isSameItem(stack, that.getItemStack())
-                 && that.getDamageValue() == this.getDamageValue()
-                 && ((that.getItemStack().getTag() == null && this.getItemStack().getTag() == null)
-                       || (that.getItemStack().getTag() != null && that.getItemStack().getTag().equals(this.getItemStack().getTag())));
+        return ItemStack.isSameItem(stack, that.getItemStack()) && that.getDamageValue() == this.getDamageValue()
+                 && that.getItemStack().getComponents().equals(this.getItemStack().getComponents());
     }
 
     /**

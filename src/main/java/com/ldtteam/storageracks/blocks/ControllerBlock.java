@@ -5,7 +5,9 @@ import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.gui.WindowHutAllInventory;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -32,8 +34,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,7 +85,7 @@ public class ControllerBlock extends UpgradeableBlock
         {
             return null;
         }
-        return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Constants.MOD_ID,  FrameType.values()[tier + 1].getSerializedName() + "_controller"));
+        return BuiltInRegistries.BLOCK.get(new ResourceLocation(Constants.MOD_ID,  FrameType.values()[tier + 1].getSerializedName() + "_controller"));
     }
 
     @Nullable
@@ -115,7 +116,7 @@ public class ControllerBlock extends UpgradeableBlock
     }
 
     @Override
-    public void appendHoverText(final ItemStack stack, @Nullable final BlockGetter world, final List<Component> tooltip, final TooltipFlag flag)
+    public void appendHoverText(final ItemStack stack, final Item.TooltipContext world, final List<Component> tooltip, final TooltipFlag flag)
     {
         super.appendHoverText(stack, world, tooltip, flag);
         tooltip.add(Component.translatable("block.storageracks.controllertoolip", tier*20));
@@ -140,35 +141,33 @@ public class ControllerBlock extends UpgradeableBlock
         super.spawnAfterBreak(state, worldIn, pos, stack, check);
     }
 
-    /**
-     * Choose a different gui when no colony view, for colony overview and creation/deletion
-     *
-     * @param state   the blockstate.
-     * @param world the world.
-     * @param pos     the position.
-     * @param player  the player.
-     * @param hand    the hand.
-     * @param ray     the raytraceresult.
-     * @return the result type.
-     */
-    @NotNull
     @Override
-    public InteractionResult use(
-      final BlockState state,
-      final Level world,
-      final BlockPos pos,
-      final Player player,
-      final InteractionHand hand,
-      final BlockHitResult ray)
+    protected InteractionResult useWithoutItem(final BlockState state, final Level world, final BlockPos pos, final Player player, final BlockHitResult result)
     {
-       /*
-        If the world is client, open the gui of the building
-         */
         if (world.isClientSide)
         {
             new WindowHutAllInventory((TileEntityController) world.getBlockEntity(pos)).open();
+            return InteractionResult.SUCCESS;
         }
-        return InteractionResult.SUCCESS;
+        return super.useWithoutItem(state, world, pos, player, result);
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(
+      final ItemStack stack,
+      final BlockState state,
+      final Level level,
+      final BlockPos pos,
+      final Player player,
+      final InteractionHand hand,
+      final BlockHitResult result)
+    {
+        if (level.isClientSide)
+        {
+            new WindowHutAllInventory((TileEntityController) level.getBlockEntity(pos)).open();
+            return ItemInteractionResult.SUCCESS;
+        }
+        return super.useItemOn(stack, state, level, pos, player, hand, result);
     }
 
     @Nullable

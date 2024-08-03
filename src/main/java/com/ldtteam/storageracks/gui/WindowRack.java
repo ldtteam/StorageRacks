@@ -7,8 +7,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
@@ -131,7 +131,7 @@ public class WindowRack extends AbstractContainerScreen<ContainerRack>
     @Override
     public void render(@NotNull final GuiGraphics graphics, int x, int y, float z)
     {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, x, y, z);
         super.render(graphics, x, y, z);
         this.renderTooltip(graphics, x, y);
     }

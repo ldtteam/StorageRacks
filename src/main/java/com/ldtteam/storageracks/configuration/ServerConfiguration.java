@@ -1,6 +1,6 @@
 package com.ldtteam.storageracks.configuration;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,14 +14,14 @@ public class ServerConfiguration extends AbstractConfiguration
      *  ------------------- ######## Main Settings ######## ------------------- *
      *  -------------------------------------------------------------------------------- */
 
-    public final ForgeConfigSpec.ConfigValue<List<? extends String>> enabledModTags;
+    public final ModConfigSpec.ConfigValue<List<? extends String>> enabledModTags;
 
     /**
      * Builds server configuration.
      *
      * @param builder config builder
      */
-    protected ServerConfiguration(final ForgeConfigSpec.Builder builder)
+    protected ServerConfiguration(final ModConfigSpec.Builder builder)
     {
         createCategory(builder, "main");
 

@@ -1,22 +1,27 @@
 package com.ldtteam.storageracks.network;
 
+import com.ldtteam.common.network.AbstractServerPlayMessage;
+import com.ldtteam.common.network.PlayMessageType;
 import com.ldtteam.storageracks.tileentities.TileEntityController;
+import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import com.ldtteam.storageracks.utils.SoundUtils;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Items;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
  * Unlock insert feature at controller.
  */
-public class UnlockInsertMessage implements IMessage
+public class UnlockInsertMessage extends AbstractServerPlayMessage
 {
+    public static final PlayMessageType<?> TYPE = PlayMessageType.forServer(Constants.MOD_ID, "unlock_insert", UnlockInsertMessage::new);
+
     /**
      * Pos of the controller.
      */
@@ -25,9 +30,10 @@ public class UnlockInsertMessage implements IMessage
     /**
      * Empty constructor used when registering the
      */
-    public UnlockInsertMessage()
+    public UnlockInsertMessage(final RegistryFriendlyByteBuf buf, final PlayMessageType<?> type)
     {
-        super();
+        super(buf, type);
+        this.pos = buf.readBlockPos();
     }
 
     /**
@@ -36,25 +42,20 @@ public class UnlockInsertMessage implements IMessage
      */
     public UnlockInsertMessage(final BlockPos pos)
     {
+        super(TYPE);
         this.pos = pos;
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buf)
+    public void toBytes(final RegistryFriendlyByteBuf buf)
     {
         buf.writeBlockPos(pos);
     }
 
-    @Override
-    public void fromBytes(final FriendlyByteBuf buf)
-    {
-        this.pos = buf.readBlockPos();
-    }
 
     @Override
-    public void onExecute(final NetworkEvent.Context ctxIn, final boolean isLogicalServer)
+    protected void onExecute(final IPayloadContext context, final ServerPlayer playerEntity)
     {
-        final ServerPlayer playerEntity = ctxIn.getSender();
         final BlockEntity te = playerEntity.getCommandSenderWorld().getBlockEntity(pos);
         if (!(te instanceof TileEntityController))
         {

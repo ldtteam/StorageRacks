@@ -21,7 +21,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -132,11 +132,11 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
     {
         if (controller.isInsertUnlocked())
         {
-            Network.getNetwork().sendToServer(new OpenInventoryMessage(this.controller.getBlockPos()));
+            new OpenInventoryMessage(this.controller.getBlockPos()).sendToServer();
         }
         else
         {
-            Network.getNetwork().sendToServer(new UnlockInsertMessage(this.controller.getBlockPos()));
+            new UnlockInsertMessage(this.controller.getBlockPos()).sendToServer();
             close();
         }
     }
@@ -148,11 +148,11 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
     {
         if (controller.isSortUnlocked())
         {
-            Network.getNetwork().sendToServer(new SortControllerMessage(this.controller.getBlockPos()));
+            new SortControllerMessage(this.controller.getBlockPos()).sendToServer();
         }
         else
         {
-            Network.getNetwork().sendToServer(new UnlockSortMessage(this.controller.getBlockPos()));
+            new UnlockSortMessage(this.controller.getBlockPos()).sendToServer();
         }
 
         close();
@@ -312,7 +312,7 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
     private static String getString(final ItemStack stack)
     {
         final StringBuilder output = new StringBuilder();
-        for (final Component comp : stack.getTooltipLines(Minecraft.getInstance().player, TooltipFlag.Default.NORMAL))
+        for (final Component comp : stack.getTooltipLines(Item.TooltipContext.EMPTY, Minecraft.getInstance().player, TooltipFlag.Default.NORMAL))
         {
             output.append(comp.getString()).append(" ");
         }
@@ -360,10 +360,9 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
                 {
                     qtys.setText(Component.translatable(Integer.toString(resource.getAmount())));
                 }
-                final Item imagesrc = resource.getItemStack().getItem();
-                final ItemStack image = new ItemStack(imagesrc, 1);
-                image.setTag(resource.getItemStack().getTag());
-                rowPane.findPaneOfTypeByID(RESOURCE_ICON, ItemIcon.class).setItem(image);
+                final ItemStack stack = resource.getItemStack().copy();
+                stack.setCount(1);
+                rowPane.findPaneOfTypeByID(RESOURCE_ICON, ItemIcon.class).setItem(stack);
             }
         });
     }

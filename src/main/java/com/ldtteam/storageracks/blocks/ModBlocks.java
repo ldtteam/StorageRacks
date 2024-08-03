@@ -5,9 +5,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +22,8 @@ public final class ModBlocks
     /**
      * The deferred registry.
      */
-    public final static DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Constants.MOD_ID);
-    public final static DeferredRegister<Item>  ITEMS  = DeferredRegister.create(ForgeRegistries.ITEMS, Constants.MOD_ID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Constants.MOD_ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Constants.MOD_ID);
 
     /**
      * Utility shorthand to register blocks using the deferred registry.
@@ -34,21 +33,21 @@ public final class ModBlocks
      * @param <B> the block subclass for the factory response
      * @return the block entry saved to the registry
      */
-    public static <B extends Block, I extends Item> RegistryObject<B> register(String name, Supplier<B> block, Function<B, I> item)
+    public static <B extends Block, I extends Item> DeferredBlock<B> register(String name, Supplier<B> block, Function<B, I> item)
     {
-        RegistryObject<B> registered = BLOCKS.register(name.toLowerCase(), block);
+        DeferredBlock<B> registered = BLOCKS.register(name.toLowerCase(), block);
         ITEMS.register(name.toLowerCase(), () -> item.apply(registered.get()));
         return registered;
     }
 
-    public static List<RegistryObject<RackBlock>> racks = new ArrayList<>();
-    public static List<RegistryObject<CornerBlock>> corners = new ArrayList<>();
+    public static List<DeferredBlock<RackBlock>>   racks   = new ArrayList<>();
+    public static List<DeferredBlock<CornerBlock>> corners = new ArrayList<>();
 
-    public static RegistryObject<ControllerBlock> stoneController;
-    public static RegistryObject<ControllerBlock> ironController;
-    public static RegistryObject<ControllerBlock> goldController;
-    public static RegistryObject<ControllerBlock> emeraldController;
-    public static RegistryObject<ControllerBlock> diamondController;
+    public static DeferredBlock<ControllerBlock> stoneController;
+    public static DeferredBlock<ControllerBlock> ironController;
+    public static DeferredBlock<ControllerBlock> goldController;
+    public static DeferredBlock<ControllerBlock> emeraldController;
+    public static DeferredBlock<ControllerBlock> diamondController;
 
     static
     {
@@ -61,7 +60,7 @@ public final class ModBlocks
 
         for (final WoodType woodType : WoodType.values())
         {
-            final List<RegistryObject<RackBlock>> list = new ArrayList<>();
+            final List<DeferredBlock<RackBlock>> list = new ArrayList<>();
             for (final FrameType frame : FrameType.values())
             {
                 list.add(register(woodType.getSerializedName() + "_" + frame.getSerializedName() + "_rack", () -> new RackBlock(woodType, frame, frame.getUpgradeCost()), b -> new BlockItem(b, new Item.Properties())));
@@ -71,7 +70,7 @@ public final class ModBlocks
 
         for (final WoodType woodType : WoodType.values())
         {
-            final List<RegistryObject<CornerBlock>> list = new ArrayList<>();
+            final List<DeferredBlock<CornerBlock>> list = new ArrayList<>();
             for (final FrameType frame : FrameType.values())
             {
                 list.add(register(woodType.getSerializedName() + "_" + frame.getSerializedName() + "_corner", () -> new CornerBlock(woodType, frame), b -> new BlockItem(b, new Item.Properties())));

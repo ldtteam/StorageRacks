@@ -1,11 +1,11 @@
 package com.ldtteam.storageracks.datagen;
 
 import com.ldtteam.storageracks.utils.Constants;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-@Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ModBusEventHandler
 {
     @SubscribeEvent
@@ -17,6 +17,6 @@ public class ModBusEventHandler
         event.getGenerator().addProvider(true, new BlockModelProvider(event.getGenerator()));
         event.getGenerator().addProvider(true, new DefaultBlockLootTableProvider(event.getGenerator()));
         event.getGenerator().addProvider(true, new DefaultBlockTagsProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
-        event.getGenerator().addProvider(true, new LangEntryProvider(event.getGenerator()));
+        event.getGenerator().addProvider(true, new LangEntryProvider(event.getGenerator().getPackOutput()));
     }
 }

@@ -3,11 +3,8 @@ package com.ldtteam.storageracks.utils;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,24 +78,6 @@ public class InventoryUtils
         }
 
         return -1;
-    }
-
-    /**
-     * Method to get all the IItemHandlers from a given Provider.
-     *
-     * @param provider The provider to get the IItemHandlers from.
-     * @return A list with all the unique IItemHandlers a provider has.
-     */
-    @NotNull
-    public static Set<IItemHandler> getItemHandlersFromProvider(@NotNull final ICapabilityProvider provider)
-    {
-        final Set<IItemHandler> handlerList = new HashSet<>();
-        for (final Direction side : Direction.values())
-        {
-            provider.getCapability(ForgeCapabilities.ITEM_HANDLER, side).ifPresent(handlerList::add);
-        }
-        provider.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(handlerList::add);
-        return handlerList;
     }
 
     /**

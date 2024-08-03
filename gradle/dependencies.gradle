@@ -3,33 +3,35 @@ configurations {
     implementation.extendsFrom library
 }
 
-minecraft.runs.all {
-    lazyToken('minecraft_classpath') {
-        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
-    }
-}
-
 repositories {
     maven { url = 'https://files.minecraftforge.net/maven' }
     mavenLocal()
     mavenCentral()
     maven {
+        name "JEI"
+        url 'https://maven.blamejared.com/'
+    }
+    maven {
         url "https://plugins.gradle.org/m2/"
+    }
+    maven {
+        name 'LDTTeam - Modding'
+        url 'https://ldtteam.jfrog.io/ldtteam/modding/'
     }
 }
 
 dependencies {
-    implementation fg.deobf("com.ldtteam:blockui:${project.blockUI_version}")
-    compileOnly (fg.deobf("com.ldtteam:domum_ornamentum:${project.domumOrnamentumVersion}:universal")){
+    implementation ("com.ldtteam:blockui:${project.blockUI_version}")
+    compileOnly (("com.ldtteam:domum-ornamentum:${project.domumOrnamentumVersion}")){
         transitive = false
     }
-    runtimeOnly (fg.deobf("com.ldtteam:domum_ornamentum:${project.domumOrnamentumVersion}:universal")){
-        transitive = false
-    }
-
-    implementation fg.deobf("com.ldtteam:datagenerators:1.19.3-${project.dataGeneratorsVersion}:universal") {
+    runtimeOnly (("com.ldtteam:domum-ornamentum:${project.domumOrnamentumVersion}")){
         transitive = false
     }
 
-    runtimeOnly fg.deobf("mezz.jei:jei-${project.jei_mcversion}-forge:${project.jei_version}")
+    implementation ("com.ldtteam:datagenerators:1.19.3-${project.dataGeneratorsVersion}:universal") {
+        transitive = false
+    }
+
+    runtimeOnly ("mezz.jei:jei-${project.jei_mcversion}-neoforge:${project.jei_version}")
 }

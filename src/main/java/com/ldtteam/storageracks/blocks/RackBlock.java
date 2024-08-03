@@ -5,13 +5,15 @@ import com.ldtteam.domumornamentum.block.IMateriallyTexturedBlockComponent;
 import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -26,9 +28,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.core.Direction;
@@ -75,7 +75,7 @@ public class RackBlock extends UpgradeableBlock implements IMateriallyTexturedBl
         {
             return null;
         }
-        return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Constants.MOD_ID, woodType.getSerializedName() + "_" + FrameType.values()[frameType.ordinal() + 1].getSerializedName() + "_rack"));
+        return BuiltInRegistries.BLOCK.get(new ResourceLocation(Constants.MOD_ID, woodType.getSerializedName() + "_" + FrameType.values()[frameType.ordinal() + 1].getSerializedName() + "_rack"));
     }
 
     @Override
@@ -103,15 +103,33 @@ public class RackBlock extends UpgradeableBlock implements IMateriallyTexturedBl
         super.spawnAfterBreak(state, worldIn, pos, stack, check);
     }
 
-    @NotNull
     @Override
-    public InteractionResult use(
+    protected InteractionResult useWithoutItem(final BlockState state, final Level world, final BlockPos pos, final Player player, final BlockHitResult result)
+    {
+        final BlockEntity tileEntity = world.getBlockEntity(pos);
+
+        if (tileEntity instanceof TileEntityRack)
+        {
+            final TileEntityRack rack = (TileEntityRack) tileEntity;
+            if (!world.isClientSide)
+            {
+                rack.checkForUpgrade(state, rack.getSize());
+                player.openMenu(rack, buf -> buf.writeBlockPos(rack.getBlockPos()));
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return super.useWithoutItem(state, world, pos, player, result);
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(
+      final ItemStack stack,
       final BlockState state,
       final Level world,
       final BlockPos pos,
       final Player player,
       final InteractionHand hand,
-      final BlockHitResult ray)
+      final BlockHitResult result)
     {
         final BlockEntity tileEntity = world.getBlockEntity(pos);
 
@@ -122,13 +140,11 @@ public class RackBlock extends UpgradeableBlock implements IMateriallyTexturedBl
             {
                 rack.checkForUpgrade(state, rack.getSize());
 
-                NetworkHooks.openScreen((ServerPlayer) player,
-                  rack,
-                  buf -> buf.writeBlockPos(rack.getBlockPos()));
+                player.openMenu(rack, buf -> buf.writeBlockPos(rack.getBlockPos()));
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
-        return InteractionResult.FAIL;
+        return super.useItemOn(stack, state, world, pos, player, hand, result);
     }
 
     @Override
@@ -221,14 +237,14 @@ public class RackBlock extends UpgradeableBlock implements IMateriallyTexturedBl
     }
 
     @Override
-    public @NotNull Block getBlock()
-    {
-        return this;
-    }
-
-    @Override
     public @NotNull Collection<IMateriallyTexturedBlockComponent> getComponents()
     {
         return Collections.emptyList();
+    }
+
+    @Override
+    public void buildRecipes(final RecipeOutput recipeOutput)
+    {
+
     }
 }

@@ -1,6 +1,7 @@
 package com.ldtteam.storageracks.utils;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.TypedDataComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -158,31 +159,19 @@ public final class ItemStackUtils
                 return false;
             }
 
-            // Then sort on NBT
-            if (itemStack1.hasTag() && itemStack2.hasTag())
+            for (TypedDataComponent<?> component : itemStack1.getComponents())
             {
-                CompoundTag nbt1 = itemStack1.getTag();
-                CompoundTag nbt2 = itemStack2.getTag();
-
-                for(String key :nbt1.getAllKeys())
+                if (!matchDamage && component.type() == DataComponents.DAMAGE)
                 {
-                    if(!matchDamage && key.equals("Damage"))
-                    {
-                        continue;
-                    }
-                    if(!nbt2.contains(key) || !nbt1.get(key).equals(nbt2.get(key)))
-                    {
-                        return false;
-                    }
+                    continue;
                 }
-                
-                return nbt1.size() == nbt2.size();
+                if (!component.equals(itemStack2.getComponents().get(component.type())))
+                {
+                    return false;
+                }
             }
-            else
-            {
-                return (!itemStack1.hasTag() || itemStack1.getTag().isEmpty())
-                         && (!itemStack2.hasTag() || itemStack2.getTag().isEmpty());
-            }
+
+            return itemStack1.getComponents().size() == itemStack2.getComponents().size();
         }
         return false;
     }

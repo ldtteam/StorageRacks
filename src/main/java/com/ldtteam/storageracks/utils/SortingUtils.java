@@ -2,11 +2,11 @@ package com.ldtteam.storageracks.utils;
 
 import com.ldtteam.storageracks.inv.CombinedItemHandler;
 import com.ldtteam.storageracks.ItemStorage;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistry;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,11 +33,11 @@ public final class SortingUtils
      *
      * @param inv the item handler to sort.
      */
-    public static void sort(final CombinedItemHandler inv)
+    public static void sort(final CombinedItemHandler inv, final HolderLookup.Provider lookupProvider)
     {
         if (inv != null)
         {
-            final CompoundTag backup = inv.serializeNBT();
+            final CompoundTag backup = inv.serializeNBT(lookupProvider);
             final AtomicInteger runCount = new AtomicInteger(0);
 
             try
@@ -70,7 +70,7 @@ public final class SortingUtils
             }
             catch (Exception e)
             {
-                inv.deserializeNBT(backup);
+                inv.deserializeNBT(lookupProvider, backup);
                 Log.getLogger().warn("Storage sorting had an error, report it to the mod author.", e);
             }
         }
@@ -150,7 +150,7 @@ public final class SortingUtils
      */
     private static int getId(final Item item)
     {
-        return ((ForgeRegistry<Item>) ForgeRegistries.ITEMS).getID(item);
+        return BuiltInRegistries.ITEM.getId(item);
     }
 
     /**

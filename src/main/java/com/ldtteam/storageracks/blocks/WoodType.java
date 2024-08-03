@@ -3,7 +3,7 @@ package com.ldtteam.storageracks.blocks;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,8 +24,8 @@ public enum WoodType implements StringRepresentable
     BAMBOO("bamboo", Blocks.BAMBOO_PLANKS);
 
     private final String name;
-    private final Block                 material;
-    private final RegistryObject<Block> registeredMaterial;
+    private final Block                material;
+    private final DeferredBlock<Block> registeredMaterial;
 
     WoodType(final String nameIn, final Block material)
     {
@@ -34,7 +34,7 @@ public enum WoodType implements StringRepresentable
         this.registeredMaterial = null;
     }
 
-    WoodType(final String nameIn, final RegistryObject<Block> material)
+    WoodType(final String nameIn, final DeferredBlock<Block> material)
     {
         this.name = nameIn;
         this.material = null;

@@ -3,9 +3,12 @@ package com.ldtteam.storageracks.tileentities;
 import com.ldtteam.storageracks.blocks.ControllerBlock;
 import com.ldtteam.storageracks.inv.InsertContainer;
 import com.ldtteam.storageracks.utils.BlockPosUtil;
+import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.InventoryUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,10 +23,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,7 +156,7 @@ public class TileEntityController extends BlockEntity implements MenuProvider
             return false;
         }
 
-        return InventoryUtils.transferItemStackIntoNextBestSlotInItemHandler(stack, rack.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(0)));
+        return InventoryUtils.transferItemStackIntoNextBestSlotInItemHandler(stack, Capabilities.ItemHandler.BLOCK.getCapability(level, rack.getBlockPos(), rack.getBlockState(), rack, null));
     }
 
     /**
@@ -167,9 +170,9 @@ public class TileEntityController extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public void load(final CompoundTag compound)
+    public void loadAdditional(final CompoundTag compound, final HolderLookup.Provider lookupProvider)
     {
-        super.load(compound);
+        super.loadAdditional(compound, lookupProvider);
         racks.clear();
         setTier(((ControllerBlock) getBlockState().getBlock()).getTier());
         final ListTag racksNBT = compound.getList(TAG_INVENTORY, Tag.TAG_COMPOUND);
@@ -183,9 +186,9 @@ public class TileEntityController extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public void saveAdditional(final @NotNull CompoundTag compound)
+    public void saveAdditional(final @NotNull CompoundTag compound, final HolderLookup.Provider lookupProvider)
     {
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, lookupProvider);
         @NotNull final ListTag racksNBT = new ListTag();
         for (final BlockPos pos : racks)
         {
@@ -212,23 +215,23 @@ public class TileEntityController extends BlockEntity implements MenuProvider
 
     @NotNull
     @Override
-    public CompoundTag getUpdateTag()
+    public CompoundTag getUpdateTag(final HolderLookup.Provider lookupProvider)
     {
         final CompoundTag tag = new CompoundTag();
-        this.saveAdditional(tag);
+        this.saveAdditional(tag, lookupProvider);
         return tag;
     }
 
     @Override
-    public void onDataPacket(final Connection net, final ClientboundBlockEntityDataPacket packet)
+    public void onDataPacket(final Connection net, final ClientboundBlockEntityDataPacket packet, final HolderLookup.Provider lookupProvider)
     {
-        this.load(packet.getTag());
+        this.loadAdditional(packet.getTag(), lookupProvider);
     }
 
     @Override
-    public void handleUpdateTag(final CompoundTag tag)
+    public void handleUpdateTag(final CompoundTag tag, final HolderLookup.Provider lookupProvider)
     {
-        this.load(tag);
+        this.loadAdditional(tag, lookupProvider);
     }
 
     /**
@@ -383,15 +386,9 @@ public class TileEntityController extends BlockEntity implements MenuProvider
         this.setChanged();
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull final Capability<T> capability, final Direction dir)
+    public IItemHandler getCapability(Direction direction)
     {
-        if (!remove && capability == ForgeCapabilities.ITEM_HANDLER)
-        {
-            return LazyOptional.of(() -> (T) new ControllerInventory());
-        }
-        return super.getCapability(capability, dir);
+        return new ControllerInventory();
     }
 
     @NotNull
@@ -405,6 +402,7 @@ public class TileEntityController extends BlockEntity implements MenuProvider
     @Override
     public AbstractContainerMenu createMenu(final int id, @NotNull final Inventory inv, @NotNull final Player player)
     {
-        return new InsertContainer(id, inv, getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(0)));
+
+        return new InsertContainer(id, inv, Capabilities.ItemHandler.BLOCK.getCapability(level, getBlockPos(), getBlockState(), this, null));
     }
 }

@@ -7,9 +7,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,11 +41,11 @@ public class DefaultBlockTagsProvider extends BlockTagsProvider
           .add(ModBlocks.diamondController.get());
 
         final IntrinsicTagAppender<Block> axeTagAppender = tag(BlockTags.MINEABLE_WITH_AXE);
-        for (RegistryObject<RackBlock> rack : ModBlocks.racks)
+        for (DeferredBlock<RackBlock> rack : ModBlocks.racks)
         {
             axeTagAppender.add(rack.get());
         }
-        for (RegistryObject<CornerBlock> rack : ModBlocks.corners)
+        for (DeferredBlock<CornerBlock> rack : ModBlocks.corners)
         {
             axeTagAppender.add(rack.get());
         }

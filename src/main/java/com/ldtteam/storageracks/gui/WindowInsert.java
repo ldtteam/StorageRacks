@@ -6,8 +6,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
@@ -16,7 +16,7 @@ public class WindowInsert extends AbstractContainerScreen<InsertContainer>
     /**
      * Hopper inv ui texture location.
      */
-    private static final ResourceLocation HOPPER_LOCATION = new ResourceLocation("textures/gui/container/hopper.png");
+    private static final ResourceLocation HOPPER_LOCATION = new ResourceLocation("minecraft","textures/gui/container/hopper.png");
 
     /**
      * Create a new insert window.
@@ -34,7 +34,7 @@ public class WindowInsert extends AbstractContainerScreen<InsertContainer>
     @Override
     public void render(@NotNull final GuiGraphics graphics, int partialTicks, int mouseX, float mouseY)
     {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, partialTicks, mouseX, mouseY);
         super.render(graphics, partialTicks, mouseX, mouseY);
         this.renderTooltip(graphics, partialTicks, mouseX);
     }

@@ -6,9 +6,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 
 import static com.ldtteam.storageracks.utils.Constants.DEFAULT_SIZE;
 
-public abstract class AbstractTileEntityRack extends BlockEntity implements MenuProvider, ICapabilityProvider
+public abstract class AbstractTileEntityRack extends BlockEntity implements MenuProvider
 {
     /**
      * Pos of the owning building.
@@ -55,7 +55,7 @@ public abstract class AbstractTileEntityRack extends BlockEntity implements Menu
         public void setStackInSlot(final int slot, final @Nonnull ItemStack stack)
         {
             validateSlotIndex(slot);
-            final boolean changed = !ItemStack.isSameItemSameTags(stack, this.stacks.get(slot));
+            final boolean changed = !ItemStack.isSameItemSameComponents(stack, this.stacks.get(slot));
             this.stacks.set(slot, stack);
             if (changed)
             {

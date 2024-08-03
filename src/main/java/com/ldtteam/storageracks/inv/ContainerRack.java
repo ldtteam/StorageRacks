@@ -11,8 +11,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import static com.ldtteam.storageracks.utils.InventoryConstants.*;
@@ -130,7 +130,7 @@ public class ContainerRack extends AbstractContainerMenu
         super.clicked(slotId, dragType, clickType, player);
         final ItemStack afterStack = inventory.getStackInSlot(slotId).copy();
 
-        if (!ItemStack.isSameItemSameTags(currentStack, afterStack))
+        if (!ItemStack.isSameItemSameComponents(currentStack, afterStack))
         {
             this.updateRacks();
         }

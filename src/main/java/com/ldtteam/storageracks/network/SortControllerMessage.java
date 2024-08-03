@@ -1,20 +1,22 @@
 package com.ldtteam.storageracks.network;
 
+import com.ldtteam.common.network.AbstractServerPlayMessage;
+import com.ldtteam.common.network.PlayMessageType;
 import com.ldtteam.storageracks.tileentities.AbstractTileEntityRack;
 import com.ldtteam.storageracks.inv.CombinedItemHandler;
 import com.ldtteam.storageracks.tileentities.TileEntityController;
+import com.ldtteam.storageracks.utils.Constants;
 import com.ldtteam.storageracks.utils.SortingUtils;
 import com.ldtteam.storageracks.utils.SoundUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.network.NetworkEvent;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -22,16 +24,19 @@ import java.util.Set;
 /**
  * Sorts the racks connected to the controller.
  */
-public class SortControllerMessage implements IMessage
+public class SortControllerMessage extends AbstractServerPlayMessage
 {
+    public static final PlayMessageType<?> TYPE = PlayMessageType.forServer(Constants.MOD_ID, "sort_controller", SortControllerMessage::new);
+
     private BlockPos controllerPos;
 
     /**
      * Empty constructor used when registering the
      */
-    public SortControllerMessage()
+    public SortControllerMessage(final RegistryFriendlyByteBuf buf, final PlayMessageType<?> type)
     {
-        super();
+        super(buf, type);
+        this.controllerPos = buf.readBlockPos();
     }
 
     /**
@@ -41,32 +46,20 @@ public class SortControllerMessage implements IMessage
      */
     public SortControllerMessage(final BlockPos pos)
     {
+        super(TYPE);
         this.controllerPos = pos;
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf packetBuffer)
+    protected void toBytes(final RegistryFriendlyByteBuf buf)
     {
-        packetBuffer.writeBlockPos(controllerPos);
+        buf.writeBlockPos(controllerPos);
     }
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buf)
+    protected void onExecute(final IPayloadContext context, final ServerPlayer player)
     {
-        this.controllerPos = buf.readBlockPos();
-    }
-
-    @Nullable
-    @Override
-    public LogicalSide getExecutionSide()
-    {
-        return LogicalSide.SERVER;
-    }
-
-    @Override
-    public void onExecute(final NetworkEvent.Context context, final boolean b)
-    {
-        final Level world = context.getSender().getCommandSenderWorld();
+        final Level world = player.level();
         final BlockEntity tileEntity = world.getBlockEntity(controllerPos);
         if (tileEntity instanceof TileEntityController && ((TileEntityController) tileEntity).isSortUnlocked())
         {
@@ -79,12 +72,12 @@ public class SortControllerMessage implements IMessage
                     final BlockEntity te = world.getBlockEntity(pos);
                     if (te instanceof AbstractTileEntityRack)
                     {
-                        handlers.add((IItemHandlerModifiable) te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).resolve().get());
+                        handlers.add((IItemHandlerModifiable) Capabilities.ItemHandler.BLOCK.getCapability(world, pos, te.getBlockState(), te, null));
                     }
                 }
             }
-            SortingUtils.sort(new CombinedItemHandler("controller", handlers.toArray(new IItemHandlerModifiable[0])));
-            SoundUtils.playSuccessSound(context.getSender(), controllerPos);
+            SortingUtils.sort(new CombinedItemHandler("controller", handlers.toArray(new IItemHandlerModifiable[0])), player.level().registryAccess());
+            SoundUtils.playSuccessSound(player, controllerPos);
         }
     }
 }

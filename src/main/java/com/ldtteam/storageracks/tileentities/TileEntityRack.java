@@ -12,6 +12,7 @@ import com.ldtteam.storageracks.inv.ContainerRack;
 import com.ldtteam.storageracks.utils.BlockPosUtil;
 import com.ldtteam.storageracks.utils.ItemStackUtils;
 import com.ldtteam.storageracks.utils.WorldUtil;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -33,15 +34,11 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
@@ -58,23 +55,23 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
      * Static texture mappings
      */
     private static final List<ResourceLocation> textureMapping = ImmutableList.<ResourceLocation>builder()
-                                                                   .add(new ResourceLocation("block/bricks"))
-                                                                   .add(new ResourceLocation("block/sand"))
-                                                                   .add(new ResourceLocation("block/orange_wool"))
-                                                                   .add(new ResourceLocation("block/dirt")).build();
+                                                                   .add(ResourceLocation.withDefaultNamespace("block/bricks"))
+                                                                   .add(ResourceLocation.withDefaultNamespace("block/sand"))
+                                                                   .add(ResourceLocation.withDefaultNamespace("block/orange_wool"))
+                                                                   .add(ResourceLocation.withDefaultNamespace("block/dirt")).build();
 
     private static final List<ResourceLocation> secondarytextureMapping = ImmutableList.<ResourceLocation>builder()
-                                                                            .add(new ResourceLocation("block/oak_log"))
-                                                                            .add(new ResourceLocation("block/spruce_log"))
-                                                                            .add(new ResourceLocation("block/birch_log"))
-                                                                            .add(new ResourceLocation("block/jungle_log"))
+                                                                            .add(ResourceLocation.withDefaultNamespace("block/oak_log"))
+                                                                            .add(ResourceLocation.withDefaultNamespace("block/spruce_log"))
+                                                                            .add(ResourceLocation.withDefaultNamespace("block/birch_log"))
+                                                                            .add(ResourceLocation.withDefaultNamespace("block/jungle_log"))
                                                                             .build();
 
 
     /**
      * Cached resmap.
      */
-    private MaterialTextureData textureDataCache = new MaterialTextureData();
+    private MaterialTextureData textureDataCache = new MaterialTextureData(Map.of());
 
     /**
      * The content of the chest.
@@ -95,11 +92,6 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
      * Offset to the controller.
      */
     private BlockPos controller;
-
-    /**
-     * Last optional we created.
-     */
-    private LazyOptional<IItemHandler> lastOptional;
 
     /**
      * New TileEntity.
@@ -196,7 +188,6 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
         }
 
         inventory = tempInventory;
-        invalidateCap();
     }
 
     @Override
@@ -283,11 +274,10 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
         return content.isEmpty();
     }
 
-
     @Override
-    public void load(@NotNull final CompoundTag compound)
+    public void loadAdditional(@NotNull final CompoundTag compound, final HolderLookup.Provider lookupProvider)
     {
-        super.load(compound);
+        super.loadAdditional(compound, lookupProvider);
 
         int oldSize = compound.getInt(TAG_SIZE);
         checkForUpgrade(getBlockState(), oldSize);
@@ -300,7 +290,7 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
             final CompoundTag inventoryCompound = inventoryTagList.getCompound(i);
             if (!inventoryCompound.contains(TAG_EMPTY))
             {
-                final ItemStack stack = ItemStack.of(inventoryCompound);
+                final ItemStack stack = ItemStack.parseOptional(lookupProvider, inventoryCompound);
                 inventory.setStackInSlot(i, stack);
             }
         }
@@ -308,7 +298,6 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
         updateContent();
 
         this.controllerPos = BlockPosUtil.readFromNBT(compound, TAG_POS);
-        invalidateCap();
 
         if (level != null && level.isClientSide)
         {
@@ -353,25 +342,25 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
     }
 
     @Override
-    public void saveAdditional(@NotNull final CompoundTag compound)
+    public void saveAdditional(@NotNull final CompoundTag compound, final HolderLookup.Provider lookupProvider)
     {
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, lookupProvider);
         compound.putInt(TAG_SIZE, size);
 
         @NotNull final ListTag inventoryTagList = new ListTag();
         for (int slot = 0; slot < inventory.getSlots(); slot++)
         {
-            @NotNull final CompoundTag inventoryCompound = new CompoundTag();
             final ItemStack stack = inventory.getStackInSlot(slot);
             if (stack.isEmpty())
             {
+                @NotNull CompoundTag inventoryCompound = new CompoundTag();
                 inventoryCompound.putBoolean(TAG_EMPTY, true);
+                inventoryTagList.add(inventoryCompound);
             }
             else
             {
-                stack.save(inventoryCompound);
+                inventoryTagList.add(stack.save(lookupProvider, new CompoundTag()));
             }
-            inventoryTagList.add(inventoryCompound);
         }
         compound.put(TAG_INVENTORY, inventoryTagList);
         BlockPosUtil.writeToNBT(compound, TAG_POS, controllerPos);
@@ -385,48 +374,28 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
 
     @NotNull
     @Override
-    public CompoundTag getUpdateTag()
+    public CompoundTag getUpdateTag(final HolderLookup.Provider lookupProvider)
     {
         final CompoundTag tag = new CompoundTag();
-        this.saveAdditional(tag);
+        this.saveAdditional(tag, lookupProvider);
         return tag;
     }
 
     @Override
-    public void onDataPacket(final Connection net, final ClientboundBlockEntityDataPacket packet)
+    public void onDataPacket(final Connection net, final ClientboundBlockEntityDataPacket packet, final HolderLookup.Provider lookupProvider)
     {
-        this.load(packet.getTag());
+        this.loadAdditional(packet.getTag(), lookupProvider);
     }
 
     @Override
-    public void handleUpdateTag(final CompoundTag tag)
+    public void handleUpdateTag(final CompoundTag tag, final HolderLookup.Provider lookupProvider)
     {
-        this.load(tag);
+        this.loadAdditional(tag, lookupProvider);
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull final Capability<T> capability, final Direction dir)
+    public IItemHandler getCapability(final Direction dir)
     {
-        if (!remove && capability == ForgeCapabilities.ITEM_HANDLER)
-        {
-            if (lastOptional != null && lastOptional.isPresent())
-            {
-                return lastOptional.cast();
-            }
-
-            lastOptional = LazyOptional.of(() ->
-            {
-                if (this.isRemoved())
-                {
-                    return new RackInventory(0);
-                }
-
-                return getInventory();
-            });
-            return lastOptional.cast();
-        }
-        return super.getCapability(capability, dir);
+        return getInventory();
     }
 
     @Override
@@ -453,20 +422,6 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
     public void setRemoved()
     {
         super.setRemoved();
-        invalidateCap();
-    }
-
-    /**
-     * Invalidates the cap
-     */
-    private void invalidateCap()
-    {
-        if (lastOptional != null && lastOptional.isPresent())
-        {
-            lastOptional.invalidate();
-        }
-
-        lastOptional = null;
     }
 
     public int getSize()
@@ -517,13 +472,6 @@ public class TileEntityRack extends AbstractTileEntityRack implements IMateriall
                 }
             }
         }
-    }
-
-    @Override
-    public void setBlockState(@NotNull final BlockState state)
-    {
-        super.setBlockState(state);
-        invalidateCap();
     }
 
     public static BlockPos visitPositions(final Level level, final Set<BlockPos> visitedPositions, final BlockPos current)
