@@ -552,7 +552,7 @@ public class RenderUtils
             throw new IllegalStateException();
         }
 
-        private static final RenderType LINES_WITH_WIDTH = create("structurize_lines_with_width",
+        private static final RenderType LINES_WITH_WIDTH = create("storage_racks_lines_with_width",
           DefaultVertexFormat.POSITION_COLOR,
           VertexFormat.Mode.TRIANGLES,
           1 << 13,
@@ -602,7 +602,7 @@ public class RenderUtils
       final int green,
       final int blue,
       final int alpha,
-      final MultiBufferSource buffer)
+      final MultiBufferSource.BufferSource buffer)
     {
         final EntityRenderDispatcher erm = Minecraft.getInstance().getEntityRenderDispatcher();
         final int cap = text.size();
@@ -611,10 +611,9 @@ public class RenderUtils
             final Font fontrenderer = Minecraft.getInstance().font;
 
             matrixStack.pushPose();
-            matrixStack.translate(pos.getX() + 0.5d, pos.getY() + 0.75d, pos.getZ() + 0.5d);
+            matrixStack.translate(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             matrixStack.mulPose(erm.cameraOrientation());
-            matrixStack.scale(-0.014f, -0.014f, 0.014f);
-            matrixStack.translate(0.0d, 18.0d, 0.0d);
+            matrixStack.scale(0.025F, -0.025F, 0.025F);
 
             final float backgroundTextOpacity = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
             final int alphaMask = (int) (backgroundTextOpacity * 255.0F) << 24;
@@ -629,7 +628,7 @@ public class RenderUtils
                 fontrenderer.drawInBatch(renderText,
                   textCenterShift,
                   0.0F,
-                  0xff,
+                  0xffffffff,
                   false,
                   rawPosMatrix,
                   buffer,
