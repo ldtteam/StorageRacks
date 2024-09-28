@@ -24,7 +24,7 @@ public class Constants
     private static final String RESOURCEPACK_DIR = "assets/" + Constants.MOD_ID + "/";
     public static final String ITEM_MODEL_DIR =  "models/item/";
     public static final String BLOCKSTATE_DIR = "blockstates/";
-    public static final String RECIPES_DIR =  "recipes/";
+    public static final String RECIPES_DIR =  "recipe/";
     public static final String BRICK_BLOCK_MODELS_DIR =  "models/block/";
     public static final String EN_US_LANG =  "lang/en_us.json";
     public static final String LOOT_TABLES_DIR = "loot_tables/blocks";

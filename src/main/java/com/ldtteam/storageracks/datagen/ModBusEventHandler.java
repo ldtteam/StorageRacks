@@ -11,7 +11,7 @@ public class ModBusEventHandler
     @SubscribeEvent
     public static void dataGeneratorSetup(final GatherDataEvent event)
     {
-        event.getGenerator().addProvider(true, new RecipeProvider(event.getGenerator()));
+        event.getGenerator().addProvider(true, new DefaultRecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()));
         event.getGenerator().addProvider(true, new BlockStateProvider(event.getGenerator()));
         event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator()));
         event.getGenerator().addProvider(true, new BlockModelProvider(event.getGenerator()));
