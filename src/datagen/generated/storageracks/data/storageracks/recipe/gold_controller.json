@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "storageracks:iron_controller"
+    },
+    "S": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SPS",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:gold_controller"
+  }
+}

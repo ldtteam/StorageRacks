@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "storageracks:emerald_controller"
+    },
+    "S": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SPS",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:netherite_controller"
+  }
+}

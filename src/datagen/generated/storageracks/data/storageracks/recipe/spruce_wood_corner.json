@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:oak_planks"
+    },
+    "F": {
+      "item": "minecraft:spruce_planks"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "FCF",
+    "FFF"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:spruce_wood_corner"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:diamond"
+    },
+    "F": {
+      "item": "minecraft:jungle_planks"
+    },
+    "X": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:jungle_diamond_rack"
+  }
+}

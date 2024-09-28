@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "storageracks:gold_controller"
+    },
+    "S": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SPS",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:emerald_controller"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:iron_ingot"
+    },
+    "F": {
+      "item": "minecraft:cherry_planks"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "FCF",
+    "FFF"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:cherry_iron_corner"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "F": {
+      "item": "minecraft:mangrove_planks"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "FCF",
+    "FFF"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:mangrove_netherite_corner"
+  }
+}

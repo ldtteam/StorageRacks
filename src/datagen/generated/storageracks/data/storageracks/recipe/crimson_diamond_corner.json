@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:diamond"
+    },
+    "F": {
+      "item": "minecraft:crimson_planks"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "FCF",
+    "FFF"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:crimson_diamond_corner"
+  }
+}

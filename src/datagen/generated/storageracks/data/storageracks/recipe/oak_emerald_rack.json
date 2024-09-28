@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:emerald"
+    },
+    "F": {
+      "item": "minecraft:oak_planks"
+    },
+    "X": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:oak_emerald_rack"
+  }
+}

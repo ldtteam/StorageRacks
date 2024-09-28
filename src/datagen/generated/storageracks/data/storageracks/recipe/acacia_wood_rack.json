@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:oak_planks"
+    },
+    "F": {
+      "item": "minecraft:acacia_planks"
+    },
+    "X": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "XCX",
+    "FFF"
+  ],
+  "result": {
+    "count": 1,
+    "id": "storageracks:acacia_wood_rack"
+  }
+}
