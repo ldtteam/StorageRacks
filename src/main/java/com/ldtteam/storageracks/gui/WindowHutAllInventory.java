@@ -312,9 +312,16 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
     private static String getString(final ItemStack stack)
     {
         final StringBuilder output = new StringBuilder();
-        for (final Component comp : stack.getTooltipLines(Item.TooltipContext.EMPTY, Minecraft.getInstance().player, TooltipFlag.Default.NORMAL))
+        try
         {
-            output.append(comp.getString()).append(" ");
+            for (final Component comp : stack.getTooltipLines(Item.TooltipContext.EMPTY, Minecraft.getInstance().player, TooltipFlag.Default.NORMAL))
+            {
+                output.append(comp.getString()).append(" ");
+            }
+        }
+        catch (final Exception e)
+        {
+            // Swallow Exception.
         }
         return output.toString();
     }
