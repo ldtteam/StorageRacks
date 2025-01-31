@@ -1,113 +1,62 @@
 package com.ldtteam.storageracks.datagen;
 
-import com.ldtteam.datagenerators.loot_table.LootTableJson;
-import com.ldtteam.datagenerators.loot_table.LootTableTypeEnum;
-import com.ldtteam.datagenerators.loot_table.pool.PoolJson;
-import com.ldtteam.datagenerators.loot_table.pool.conditions.survives_explosion.SurvivesExplosionConditionJson;
-import com.ldtteam.datagenerators.loot_table.pool.entry.EntryJson;
-import com.ldtteam.datagenerators.loot_table.pool.entry.EntryTypeEnum;
 import com.ldtteam.storageracks.blocks.CornerBlock;
 import com.ldtteam.storageracks.blocks.ModBlocks;
 import com.ldtteam.storageracks.blocks.RackBlock;
-import com.ldtteam.storageracks.utils.Constants;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.PackOutput;
-import net.minecraft.util.Tuple;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
+import java.util.function.Consumer;
 
 
-public class DefaultBlockLootTableProvider implements DataProvider
+public class DefaultBlockLootTableProvider extends BlockLootSubProvider
 {
-    private final DataGenerator generator;
-
-    public DefaultBlockLootTableProvider(final DataGenerator generator)
+    public DefaultBlockLootTableProvider(@NotNull final HolderLookup.Provider provider)
     {
-        this.generator = generator;
+        super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
     }
 
-    /**
-     * All generated models.
-     */
-    private final List<Tuple<LootTableJson, String>> models = new ArrayList<>();
-
     @Override
-    public CompletableFuture<?> run(@NotNull final CachedOutput cache)
-    {
+    public void generate() {
         for (final DeferredBlock<CornerBlock> block : ModBlocks.corners)
         {
-            saveBlock(block.get(), cache);
+            saveBlock(block.get());
         }
 
         for (final DeferredBlock<RackBlock> block : ModBlocks.racks)
         {
-            saveBlock(block.get(), cache);
+            saveBlock(block.get());
         }
 
-        saveBlock(ModBlocks.diamondController.get(), cache);
-        saveBlock(ModBlocks.emeraldController.get(), cache);
-        saveBlock(ModBlocks.goldController.get(), cache);
-        saveBlock(ModBlocks.ironController.get(), cache);
-        saveBlock(ModBlocks.stoneController.get(), cache);
-
-        return generateAll(cache);
+        saveBlock(ModBlocks.diamondController.get());
+        saveBlock(ModBlocks.emeraldController.get());
+        saveBlock(ModBlocks.goldController.get());
+        saveBlock(ModBlocks.ironController.get());
+        saveBlock(ModBlocks.stoneController.get());
     }
 
-    private void saveBlock(final Block block, final CachedOutput cache)
+    private void saveBlock(@NotNull final Block block)
     {
-        final EntryJson entryJson = new EntryJson();
-        entryJson.setType(EntryTypeEnum.ITEM);
-        entryJson.setName(BuiltInRegistries.BLOCK.getKey(block).toString());
-
-        final PoolJson poolJson = new PoolJson();
-        poolJson.setEntries(Collections.singletonList(entryJson));
-        poolJson.setRolls(1);
-        poolJson.setConditions(Collections.singletonList(new SurvivesExplosionConditionJson()));
-
-        final LootTableJson lootTableJson = new LootTableJson();
-        lootTableJson.setType(LootTableTypeEnum.BLOCK);
-        lootTableJson.setPools(Collections.singletonList(poolJson));
-
-        this.models.add(new Tuple<>(lootTableJson, BuiltInRegistries.BLOCK.getKey(block).getPath()));
+        final LootPoolSingletonContainer.Builder<?> item = LootItem.lootTableItem(block);
+        item.apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY));
+        this.saveBlock(block, lootPool -> lootPool.add(item).when(ExplosionCondition.survivesExplosion()));
     }
 
-    protected CompletableFuture<?> generateAll(CachedOutput cache)
+    private void saveBlock(@NotNull final Block block, final Consumer<LootPool.Builder> lootPoolConfigurer)
     {
-        CompletableFuture<?>[] futures = new CompletableFuture<?>[this.models.size()];
-        int i = 0;
-
-        for (Tuple<LootTableJson, String> model : this.models)
-        {
-            Path target = getPath(model.getB());
-            futures[i++] = DataProvider.saveStable(cache, model.getA().serialize(), target);
-        }
-
-        return CompletableFuture.allOf(futures);
-    }
-
-    protected Path getPath(final String name)
-    {
-        return this.generator.getPackOutput()
-                 .getOutputFolder(PackOutput.Target.DATA_PACK)
-                 .resolve(Constants.MOD_ID)
-                 .resolve(Constants.LOOT_TABLES_DIR)
-                 .resolve(name + ".json");
-    }
-
-    @Override
-    @NotNull
-    public String getName()
-    {
-        return "Default Block Loot Tables Provider";
+        final LootPool.Builder lootPoolbuilder = LootPool.lootPool();
+        lootPoolConfigurer.accept(lootPoolbuilder);
+        add(block, LootTable.lootTable().withPool(lootPoolbuilder));
     }
 }
