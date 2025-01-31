@@ -58,6 +58,7 @@ public class StorageRacks
         output.accept(ModBlocks.goldController.get());
         output.accept(ModBlocks.emeraldController.get());
         output.accept(ModBlocks.diamondController.get());
+        output.accept(ModBlocks.netherite_controller.get());
 
         for (final DeferredBlock<RackBlock> rack : ModBlocks.racks)
         {

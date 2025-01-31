@@ -58,7 +58,7 @@ public class DefaultRecipeProvider extends RecipeProvider
         generateControllerRecipe(consumer, ModBlocks.goldController.get(), ModBlocks.ironController.get().asItem());
         generateControllerRecipe(consumer, ModBlocks.emeraldController.get(), ModBlocks.goldController.get().asItem());
         generateControllerRecipe(consumer, ModBlocks.diamondController.get(), ModBlocks.emeraldController.get().asItem());
-
+        generateControllerRecipe(consumer, ModBlocks.emeraldController.get(), ModBlocks.netherite_controller.get().asItem());
     }
 
     private void generateControllerRecipe(final RecipeOutput consumer, final ControllerBlock state, final Item prev)

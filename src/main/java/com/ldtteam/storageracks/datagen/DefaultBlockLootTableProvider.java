@@ -14,10 +14,12 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 public class DefaultBlockLootTableProvider extends BlockLootSubProvider
@@ -28,7 +30,8 @@ public class DefaultBlockLootTableProvider extends BlockLootSubProvider
     }
 
     @Override
-    public void generate() {
+    public void generate()
+    {
         for (final DeferredBlock<CornerBlock> block : ModBlocks.corners)
         {
             saveBlock(block.get());
@@ -39,6 +42,7 @@ public class DefaultBlockLootTableProvider extends BlockLootSubProvider
             saveBlock(block.get());
         }
 
+        saveBlock(ModBlocks.netherite_controller.get());
         saveBlock(ModBlocks.diamondController.get());
         saveBlock(ModBlocks.emeraldController.get());
         saveBlock(ModBlocks.goldController.get());
@@ -58,5 +62,11 @@ public class DefaultBlockLootTableProvider extends BlockLootSubProvider
         final LootPool.Builder lootPoolbuilder = LootPool.lootPool();
         lootPoolConfigurer.accept(lootPoolbuilder);
         add(block, LootTable.lootTable().withPool(lootPoolbuilder));
+    }
+
+    @Override
+    protected Iterable<Block> getKnownBlocks()
+    {
+        return ModBlocks.BLOCKS.getEntries().stream().map(DeferredHolder::get).collect(Collectors.toSet());
     }
 }

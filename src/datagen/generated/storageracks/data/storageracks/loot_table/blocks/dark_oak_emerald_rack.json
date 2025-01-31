@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_name",
+              "source": "block_entity"
+            }
+          ],
+          "name": "storageracks:dark_oak_emerald_rack"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "storageracks:blocks/dark_oak_emerald_rack"
+}

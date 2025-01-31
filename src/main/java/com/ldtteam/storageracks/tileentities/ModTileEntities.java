@@ -18,5 +18,5 @@ public class ModTileEntities
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<TileEntityRack>>
       RACK = BLOCK_ENTITIES.register("rack", () -> BlockEntityType.Builder.of(TileEntityRack::new, ModBlocks.racks.stream().map(DeferredHolder::get).toList().toArray(new RackBlock[0])).build(Util.fetchChoiceType(References.BLOCK_ENTITY, Constants.MOD_ID + ":rack")));
 
-    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<? extends TileEntityController>> CONTROLLER = BLOCK_ENTITIES.register("controller", () -> BlockEntityType.Builder.of(TileEntityController::new, ModBlocks.stoneController.get(), ModBlocks.ironController.get(), ModBlocks.emeraldController.get(), ModBlocks.diamondController.get()).build(Util.fetchChoiceType(References.BLOCK_ENTITY, Constants.MOD_ID + ":controller")));
+    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<? extends TileEntityController>> CONTROLLER = BLOCK_ENTITIES.register("controller", () -> BlockEntityType.Builder.of(TileEntityController::new, ModBlocks.stoneController.get(), ModBlocks.goldController.get(), ModBlocks.ironController.get(), ModBlocks.emeraldController.get(), ModBlocks.diamondController.get(), ModBlocks.netherite_controller.get()).build(Util.fetchChoiceType(References.BLOCK_ENTITY, Constants.MOD_ID + ":controller")));
 }

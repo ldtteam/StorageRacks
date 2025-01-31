@@ -45,5 +45,11 @@ public class ModBusEventHandler
                     new SubProviderEntry(DefaultBlockLootTableProvider::new, LootContextParamSets.BLOCK)
             ), provider);
         }
+
+        @Override
+        protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector)
+        {
+
+        }
     }
 }

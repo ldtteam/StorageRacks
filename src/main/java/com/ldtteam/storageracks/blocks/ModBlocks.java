@@ -48,6 +48,7 @@ public final class ModBlocks
     public static DeferredBlock<ControllerBlock> goldController;
     public static DeferredBlock<ControllerBlock> emeraldController;
     public static DeferredBlock<ControllerBlock> diamondController;
+    public static DeferredBlock<ControllerBlock> netherite_controller;
 
     static
     {
@@ -56,7 +57,7 @@ public final class ModBlocks
         goldController = register("gold_controller", () -> new ControllerBlock(Items.GOLD_INGOT, Items.EMERALD_BLOCK, 3), b -> new BlockItem(b, new Item.Properties()));
         emeraldController = register("emerald_controller", () -> new ControllerBlock(Items.EMERALD, Items.DIAMOND_BLOCK, 4), b -> new BlockItem(b, new Item.Properties()));
         diamondController = register("diamond_controller", () -> new ControllerBlock(Items.DIAMOND, Items.NETHERITE_BLOCK, 5), b -> new BlockItem(b, new Item.Properties()));
-        diamondController = register("netherite_controller", () -> new ControllerBlock(Items.NETHERITE_INGOT, null, 6), b -> new BlockItem(b, new Item.Properties()));
+        netherite_controller = register("netherite_controller", () -> new ControllerBlock(Items.NETHERITE_INGOT, null, 6), b -> new BlockItem(b, new Item.Properties()));
 
         for (final WoodType woodType : WoodType.values())
         {
