@@ -176,5 +176,9 @@
   "gui.storageracks.locating": "Locating...",
   "gui.storageracks.notconnected": "Invalid Placement. Racks must be placed directly connected to a Controller or Rack but without connection to multiple Controllers.",
   "gui.storageracks.sort": "Sort",
-  "gui.storageracks.sort.unlock": "Unlock Sorting"
+  "gui.storageracks.sort.unlock": "Unlock Sorting",
+  "gui.storageracks.sort.alphabetical.asc": "Sorted alphabetically (ascending)",
+  "gui.storageracks.sort.alphabetical.desc": "Sorted alphabetically (descending)",
+  "gui.storageracks.sort.count.asc": "Sorted by item count (ascending)",
+  "gui.storageracks.sort.count.desc": "Sorted by item count (descending)"
 }

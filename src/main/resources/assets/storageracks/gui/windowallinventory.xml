@@ -1,24 +1,24 @@
-<window pause="true" lightbox="true" size="190 244">
+<window xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/ldtteam/BlockUI/version/1.20.1/src/main/resources/assets/blockui/gui/block_ui.xsd"
+        size="190 244">
     <image source="storageracks:textures/gui/builder_paper.png" size="190 244"/>
-    <label id="desc" size="130 11" pos="30 14" color="black" textalign="MIDDLE" label="$(gui.storageracks.allinventory)"/>
+    <text id="desc" size="130 11" pos="30 14" color="black" textalign="MIDDLE" label="$(gui.storageracks.allinventory)"/>
     <input id="names" size="132 18" pos="15 30" maxlength="25"/>
-    <buttonimage id="sortStorageFilter" size="14 15" pos="158 31" textcolor="black"
-                 source="storageracks:textures/gui/button_mini.png"
-                 label="v^"/>
+    <button id="sortStorageFilter" size="14 15" pos="158 31" color="black" source="storageracks:textures/gui/button_mini.png"/>
     <list id="allinventorylist" size="165 144" pos="15 55">
         <box size="100% 18" linewidth="2">
             <itemicon id="resourceIcon" size="17 17" pos="0 0"/>
-            <label id="ressourceStackName" size="100 12" pos="20 3" color="black"/>
-            <label id="quantities" size="25 18" pos="117 1" color="black"/>
-            <buttonimage id="locate" size="14 15" pos="141 1" textcolor="black"
+            <text id="ressourceStackName" size="100 12" pos="20 3" color="black"/>
+            <text id="quantities" size="25 18" pos="117 1" color="black"/>
+            <button id="locate" size="14 15" pos="141 1" color="black"
                          source="storageracks:textures/gui/button_mini.png"
                          label="?"/>
         </box>
     </list>
-    <buttonimage id="sort" size="129 17" pos="30 200" textcolor="black"
+    <button id="sort" size="129 17" pos="30 200" color="black"
                  source="storageracks:textures/gui/button_medium_large.png"/>
     <itemicon id="sortcost" size="12 12" pos="140 201" visible="false"/>
-    <buttonimage id="insert" size="129 17" pos="30 217" textcolor="black"
+    <button id="insert" size="129 17" pos="30 217" color="black"
                  source="storageracks:textures/gui/button_medium_large.png"/>
     <itemicon id="insertcost" size="12 12" pos="140 218" visible="false"/>
 </window>
