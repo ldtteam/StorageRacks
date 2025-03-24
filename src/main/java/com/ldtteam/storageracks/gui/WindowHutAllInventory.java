@@ -4,70 +4,83 @@ import com.ldtteam.blockui.Color;
 import com.ldtteam.blockui.Pane;
 import com.ldtteam.blockui.PaneBuilders;
 import com.ldtteam.blockui.controls.*;
+import com.ldtteam.blockui.views.BOWindow;
 import com.ldtteam.blockui.views.ScrollingList;
-import com.ldtteam.storageracks.*;
+import com.ldtteam.storageracks.HighlightManager;
+import com.ldtteam.storageracks.ItemStorage;
 import com.ldtteam.storageracks.network.*;
 import com.ldtteam.storageracks.tileentities.TileEntityController;
 import com.ldtteam.storageracks.tileentities.TileEntityRack;
 import com.ldtteam.storageracks.utils.Constants;
-import com.ldtteam.storageracks.utils.InventoryUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import static com.ldtteam.storageracks.utils.WindowConstants.*;
 
 /**
  * Window for a hut name entry.
  */
-public class WindowHutAllInventory extends AbstractWindowSkeleton
+public class WindowHutAllInventory extends BOWindow implements ButtonHandler
 {
-    private static final NavigableMap<Long, String> suffixes = new TreeMap<>();
-    static
-    {
-        suffixes.put(1_000L, "k");
-        suffixes.put(1_000_000L, "M");
-        suffixes.put(1_000_000_000L, "G");
-        suffixes.put(1_000_000_000_000L, "T");
-        suffixes.put(1_000_000_000_000_000L, "P");
-        suffixes.put(1_000_000_000_000_000_000L, "E");
-    }
+    /**
+     * Red and green colors for in world highlights
+     */
+    private static final int RED   = Color.rgbaToInt(240, 150, 135, 255);
+    private static final int GREEN = Color.rgbaToInt(85, 255, 255, 255);
 
-    public static final int RED   = Color.rgbaToInt(240, 150, 135, 255);
-    public static final int GREEN = Color.rgbaToInt(85, 255, 255, 255);
+    /**
+     * The formatting suffixes for numeric values.
+     */
+    private static final NavigableMap<Integer, String> SUFFIXES = new TreeMap<>(Map.ofEntries(Map.entry(1000, "k"), Map.entry(1000000, "M"), Map.entry(1000000000, "G")));
+
+    /**
+     * Comparator functions used in sorting.
+     */
+    private static final Comparator<ItemStorage> COMPARE_BY_NAME  = Comparator.comparing((o) -> o.getItemStack().getDisplayName().getString());
+    private static final Comparator<ItemStorage> COMPARE_BY_COUNT = Comparator.comparingInt(ItemStorage::getAmount);
+
+    /**
+     * Filter methods used for filtering.
+     */
+    private static final BiPredicate<String, ItemStorage> FILTER_DISPLAY_NAME  =
+        (filter, stack) -> StringUtils.containsIgnoreCase(stack.getItemStack().getDisplayName().getString(), filter);
+    private static final BiPredicate<String, ItemStorage> FILTER_TOOLTIP_LINES = (filter, stack) -> StringUtils.containsIgnoreCase(stack.getItemStack()
+        .getTooltipLines(Minecraft.getInstance().player, TooltipFlag.Default.NORMAL)
+        .stream()
+        .map(Component::getString)
+        .collect(Collectors.joining(" ")), filter);
+
+    /**
+     * Translatable constants.
+     */
+    private static final String TEXT_SORT            = "gui.storageracks.sort";
+    private static final String TEXT_SORT_UNLOCK     = "gui.storageracks.sort.unlock";
+    private static final String TEXT_INSERT          = "gui.storageracks.insert";
+    private static final String TEXT_INSERT_UNLOCK   = "gui.storageracks.insert.unlock";
+    private static final String TEXT_ITEMS_AVAILABLE = "gui.storage.racks.available";
+    private static final String TEXT_ITEMS_MISSING   = "gui.storage.racks.missing";
 
     /**
      * List of all item stacks in the warehouse.
      */
-    List<ItemStorage> allItems = new ArrayList<>();
-
-    /**
-     * Resource scrolling list.
-     */
-    private final ScrollingList stackList;
-
-    /**
-     * The filter for the resource list.
-     */
-    private String filter = "";
-
-    /**
-     * The sortDescriptor so how we want to sort
-     */
-    private int sortDescriptor = 0;
+    private final List<ItemStorage> allItems = new ArrayList<>();
 
     /**
      * The owner controller.
@@ -75,151 +88,147 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
     private final TileEntityController controller;
 
     /**
+     * Resource scrolling list.
+     */
+    private final ScrollingList stackList;
+
+    /**
+     * The sortDescriptor so how we want to sort
+     */
+    private SortDescriptor sortDescriptor = SortDescriptor.ALPHABETICAL_ASC;
+
+    /**
      * Constructor for a hut inv display window.
      */
     public WindowHutAllInventory(final TileEntityController controller)
     {
-        super(Constants.MOD_ID + HUT_ALL_INVENTORY_SUFFIX);
+        super(new ResourceLocation(Constants.MOD_ID, HUT_ALL_INVENTORY_SUFFIX));
         this.controller = controller;
-        registerButton(BUTTON_SORT, this::setSortFlag);
-        this.stackList = findPaneOfTypeByID(LIST_ALLINVENTORY, ScrollingList.class);
-        updateResources();
-        registerButton(LOCATE, this::locate);
-        registerButton(SORT, this::sort);
-        registerButton(INSERT, this::insert);
-
-        if (controller.isSortUnlocked())
+        this.stackList = findPaneOfTypeByID(LIST_ALL_INVENTORY, ScrollingList.class);
+        this.stackList.setDataProvider(new ScrollingList.DataProvider()
         {
-            findPaneOfTypeByID(SORT, ButtonImage.class).setText(Component.translatable("gui.storageracks.sort"));
-        }
-        else
-        {
-            findPaneOfTypeByID(SORT, ButtonImage.class).setText(Component.translatable("gui.storageracks.sort.unlock"));
-            final ItemIcon icon = findPaneOfTypeByID("sortcost", ItemIcon.class);
-            setupIcon(icon, Items.REDSTONE_BLOCK);
-        }
-
-        if (controller.isInsertUnlocked())
-        {
-            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(Component.translatable("gui.storageracks.insert"));
-        }
-        else
-        {
-            findPaneOfTypeByID(INSERT, ButtonImage.class).setText(Component.translatable("gui.storageracks.insert.unlock"));
-            final ItemIcon icon = findPaneOfTypeByID("insertcost", ItemIcon.class);
-            setupIcon(icon, Items.HOPPER);
-        }
-    }
-
-    private void setupIcon(final ItemIcon icon, final Item item)
-    {
-        icon.setVisible(true);
-        icon.setItem(new ItemStack(item, 1));
-        if (InventoryUtils.findFirstSlotInItemHandlerWith(new InvWrapper(Minecraft.getInstance().player.getInventory()), item) >= 0)
-        {
-            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(Component.translatable("gui.storage.racks.available")).color(GREEN).build();
-        }
-        else
-        {
-            PaneBuilders.tooltipBuilder().hoverPane(icon).paragraphBreak().append(Component.translatable("gui.storage.racks.missing")).color(RED).build();
-        }
-    }
-
-    /**
-     * If not yet unlocked, try to spend the player res and unlock. Else Open the insert window.
-     */
-    private void insert()
-    {
-        if (controller.isInsertUnlocked())
-        {
-            Network.getNetwork().sendToServer(new OpenInventoryMessage(this.controller.getBlockPos()));
-        }
-        else
-        {
-            Network.getNetwork().sendToServer(new UnlockInsertMessage(this.controller.getBlockPos()));
-            close();
-        }
-    }
-
-    /**
-     * If not yet unlocked, try to spend the player res and unlock. Else Sends a message to the server side to sort all the inventories.
-     */
-    private void sort()
-    {
-        if (controller.isSortUnlocked())
-        {
-            Network.getNetwork().sendToServer(new SortControllerMessage(this.controller.getBlockPos()));
-        }
-        else
-        {
-            Network.getNetwork().sendToServer(new UnlockSortMessage(this.controller.getBlockPos()));
-        }
-
-        close();
-    }
-
-    private void locate(final Button button)
-    {
-        final int row = stackList.getListElementIndexByPane(button);
-        final ItemStorage storage = allItems.get(row);
-        final Set<BlockPos> containerList = new HashSet<>(controller.racks);
-        HighlightManager.clearCategory("inventoryHighlight");
-
-        Minecraft.getInstance().player.displayClientMessage(Component.translatable("gui.storageracks.locating"), false);
-        close();
-
-        for (BlockPos blockPos : containerList)
-        {
-            final BlockEntity rack = Minecraft.getInstance().level.getBlockEntity(blockPos);
-            if (rack instanceof TileEntityRack)
+            @Override
+            public int getElementCount()
             {
-                int count = ((TileEntityRack) rack).getCount(storage.getItemStack());
-                if (count > 0)
+                return allItems.size();
+            }
+
+            @Override
+            public boolean shouldUpdate()
+            {
+                return false;
+            }
+
+            @Override
+            public void updateElement(final int index, @NotNull final Pane rowPane)
+            {
+                final ItemStorage resource = allItems.get(index);
+                rowPane.findPaneOfTypeByID(ITEM_ICON_RESOURCE_ICON, ItemIcon.class).setItem(resource.getItemStack().copyWithCount(1));
+                final String text = resource.getItemStack().getDisplayName().getString().replace("[", "").replace("]", "");
+                final String filter = getFilter();
+                if (filter.isBlank())
                 {
-                    // Varies the color between yellow(low count) to green(64+)
-                    final int color = 0x00FF00 + 0xFF0000 * Math.max(0, 1 - count / 64);
-                    HighlightManager.addRenderBox("inventoryHighlight",
-                      new HighlightManager.TimedBoxRenderData().setPos(blockPos)
-                        .setRemovalTimePoint(Minecraft.getInstance().level.getGameTime() + 60 * 20)
-                        .addText("" + count)
-                        .setColor(color));
+                    rowPane.findPaneOfTypeByID(LABEL_RESOURCE_NAME, Text.class).setText(Component.literal(text));
+                }
+                else
+                {
+                    final int startIndex = StringUtils.indexOfIgnoreCase(text, filter);
+                    final int endIndex = startIndex + filter.length();
+
+                    final MutableComponent first = Component.literal(text.substring(0, startIndex)).setStyle(Style.EMPTY.withColor(ChatFormatting.BLACK));
+                    final MutableComponent middle = Component.literal(text.substring(startIndex, endIndex)).setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
+                    final MutableComponent last = Component.literal(text.substring(endIndex)).setStyle(Style.EMPTY.withColor(ChatFormatting.BLACK));
+                    rowPane.findPaneOfTypeByID(LABEL_RESOURCE_NAME, Text.class).setText(first.append(middle).append(last));
+                }
+
+                final Text quantityText = rowPane.findPaneOfTypeByID(LABEL_RESOURCE_QUANTITY, Text.class);
+                if (Screen.hasShiftDown())
+                {
+                    quantityText.setText(Component.translatable(Integer.toString(resource.getAmount())));
+                }
+                else
+                {
+                    if (resource.getAmount() < 1000)
+                    {
+                        quantityText.setText(Component.literal(Long.toString(resource.getAmount())));
+                    }
+                    else
+                    {
+                        final Map.Entry<Integer, String> suffix = SUFFIXES.floorEntry(resource.getAmount());
+                        quantityText.setText(Component.literal(Math.floor((double) resource.getAmount() / suffix.getKey() * 10) / 10d + suffix.getValue()));
+                    }
                 }
             }
+        });
+
+        updateSwitchSortButton();
+
+        findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.translatable(controller.isSortUnlocked() ? TEXT_SORT : TEXT_SORT_UNLOCK));
+        findPaneOfTypeByID(BUTTON_INSERT, ButtonImage.class).setText(Component.translatable(controller.isInsertUnlocked() ? TEXT_INSERT : TEXT_INSERT_UNLOCK));
+
+        final ItemIcon sortIcon = findPaneOfTypeByID(ITEM_ICON_SORT_COST, ItemIcon.class);
+        sortIcon.setVisible(!controller.isSortUnlocked());
+        if (!controller.isSortUnlocked())
+        {
+            sortIcon.setItem(new ItemStack(Items.REDSTONE_BLOCK, 1));
+            final boolean hasItem = Minecraft.getInstance().player.getInventory().contains(sortIcon.getItem());
+            PaneBuilders.tooltipBuilder()
+                .hoverPane(sortIcon)
+                .paragraphBreak()
+                .append(Component.translatable(hasItem ? TEXT_ITEMS_AVAILABLE : TEXT_ITEMS_MISSING))
+                .color(hasItem ? GREEN : RED)
+                .build();
+        }
+
+        final ItemIcon insertIcon = findPaneOfTypeByID(ITEM_ICON_INSERT_COST, ItemIcon.class);
+        insertIcon.setVisible(!controller.isInsertUnlocked());
+        if (!controller.isInsertUnlocked())
+        {
+            insertIcon.setItem(new ItemStack(Items.HOPPER, 1));
+            final boolean hasItem = Minecraft.getInstance().player.getInventory().contains(insertIcon.getItem());
+            PaneBuilders.tooltipBuilder()
+                .hoverPane(insertIcon)
+                .paragraphBreak()
+                .append(Component.translatable(hasItem ? TEXT_ITEMS_AVAILABLE : TEXT_ITEMS_MISSING))
+                .color(hasItem ? GREEN : RED)
+                .build();
         }
     }
 
     /**
-     * Increments the sortDescriptor and sets the GUI Button accordingly Valid Stages 0 - 4 NO_SORT 0   No Sorting, like wysiwyg ASC_SORT 1   Name Ascending DESC_SORT 2   Name
-     * Descending COUNT_ASC_SORT 3   Itemcount Ascending COUNT_DESC_SORT 4   Itemcount Descending
-     **/
-    private void setSortFlag()
+     * Get the current filter text.
+     *
+     * @return the filter text.
+     */
+    private String getFilter()
     {
-        sortDescriptor++;
-        if (sortDescriptor > 4)
-        {
-            sortDescriptor = NO_SORT;
-        }
-        switch (sortDescriptor)
-        {
-            case NO_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("v^"));
-                break;
-            case ASC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("A^"));
-                break;
-            case DESC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("Av"));
-                break;
-            case COUNT_ASC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("1^"));
-                break;
-            case COUNT_DESC_SORT:
-                findPaneOfTypeByID(BUTTON_SORT, ButtonImage.class).setText(Component.literal("1v"));
-                break;
-            default:
-                break;
-        }
+        return findPaneOfTypeByID("names", TextField.class).getText();
+    }
 
+    /**
+     * Update the switch sort button.
+     */
+    private void updateSwitchSortButton()
+    {
+        final Button switchSortButton = findPaneOfTypeByID(BUTTON_SWITCH_SORT, Button.class);
+        switchSortButton.setText(Component.literal(sortDescriptor.symbol));
+        PaneBuilders.tooltipBuilder().hoverPane(switchSortButton).append(Component.translatable(sortDescriptor.hoverText)).build();
+    }
+
+    @Override
+    public boolean onKeyTyped(final char ch, final int key)
+    {
+        final boolean result = super.onKeyTyped(ch, key);
+        if (result)
+        {
+            updateResources();
+        }
+        return result;
+    }
+
+    @Override
+    public void onOpened()
+    {
         updateResources();
     }
 
@@ -236,9 +245,9 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         for (final BlockPos blockPos : containerList)
         {
             final BlockEntity rack = level.getBlockEntity(blockPos);
-            if (rack instanceof TileEntityRack)
+            if (rack instanceof TileEntityRack tileEntityRack)
             {
-                final Map<ItemStorage, Integer> rackStorage = ((TileEntityRack) rack).getAllContent();
+                final Map<ItemStorage, Integer> rackStorage = tileEntityRack.getAllContent();
 
                 for (final Map.Entry<ItemStorage, Integer> entry : rackStorage.entrySet())
                 {
@@ -259,155 +268,163 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
             storage.setAmount(amount);
             filterItems.add(storage);
         });
-        final Predicate<ItemStorage> filterPredicate = stack -> filter.isEmpty()
-                                                                  || stack.getItemStack().getDisplayName().toString().toLowerCase(Locale.US).contains(filter.toLowerCase(Locale.US))
-                                                                  || getString(stack.getItemStack())
-                                                                       .toLowerCase(Locale.US)
-                                                                       .contains(filter.toLowerCase(Locale.US));
+        final String filter = getFilter();
 
         allItems.clear();
-        if (filter.isEmpty())
+        if (filter.isBlank())
         {
             allItems.addAll(filterItems);
         }
         else
         {
-            allItems.addAll(filterItems.stream().filter(filterPredicate).toList());
+            allItems.addAll(filterItems.stream().filter(stack -> FILTER_DISPLAY_NAME.test(filter, stack)).filter(stack -> FILTER_TOOLTIP_LINES.test(filter, stack)).toList());
         }
 
-        if (!filter.isEmpty())
-        {
-            allItems.sort(Comparator.comparingInt(s1 -> StringUtils.getLevenshteinDistance(s1.getItemStack().getHoverName().getString(), filter)));
-        }
-        final Comparator<ItemStorage> compareByName = Comparator.comparing((ItemStorage o) -> o.getItemStack().getDisplayName().getString());
-        final Comparator<ItemStorage> compareByCount = Comparator.comparingInt(ItemStorage::getAmount);
-        switch (sortDescriptor)
-        {
-            case NO_SORT:
-                break;
-            case ASC_SORT:
-                allItems.sort(compareByName);
-                break;
-            case DESC_SORT:
-                allItems.sort(compareByName.reversed());
-                break;
-            case COUNT_ASC_SORT:
-                allItems.sort(compareByCount);
-                break;
-            case COUNT_DESC_SORT:
-                allItems.sort(compareByCount.reversed());
-                break;
-            default:
-                break;
-        }
+        allItems.sort(sortDescriptor.comparator);
 
-        updateResourceList();
-    }
-
-    /**
-     * Get identifying string from itemstack.
-     * @param stack the stack to gen the string from.
-     * @return a single string.
-     */
-    private static String getString(final ItemStack stack)
-    {
-        final StringBuilder output = new StringBuilder();
-        for (final Component comp : stack.getTooltipLines(Minecraft.getInstance().player, TooltipFlag.Default.NORMAL))
-        {
-            output.append(comp.getString()).append(" ");
-        }
-        return output.toString();
-    }
-
-    /**
-     * Updates the resource list in the GUI with the info we need.
-     */
-    private void updateResourceList()
-    {
-        stackList.enable();
-
-        //Creates a dataProvider for the unemployed stackList.
-        stackList.setDataProvider(new ScrollingList.DataProvider()
-        {
-            /**
-             * The number of rows of the list.
-             * @return the number.
-             */
-            @Override
-            public int getElementCount()
-            {
-                return allItems.size();
-            }
-
-            /**
-             * Inserts the elements into each row.
-             * @param index the index of the row/list element.
-             * @param rowPane the parent Pane for the row, containing the elements to update.
-             */
-            @Override
-            public void updateElement(final int index, @NotNull final Pane rowPane)
-            {
-                final ItemStorage resource = allItems.get(index);
-                final Text resourceLabel = rowPane.findPaneOfTypeByID("ressourceStackName", Text.class);
-                final String name = resource.getItemStack().getDisplayName().getString().replace("[", "").replace("]", "");
-                resourceLabel.setText(Component.translatable(name.substring(0, Math.min(17, name.length()))));
-                final Text qtys = rowPane.findPaneOfTypeByID("quantities", Text.class);
-                if (!Screen.hasShiftDown())
-                {
-                    qtys.setText(Component.translatable(format(resource.getAmount())));
-                }
-                else
-                {
-                    qtys.setText(Component.translatable(Integer.toString(resource.getAmount())));
-                }
-                final Item imagesrc = resource.getItemStack().getItem();
-                final ItemStack image = new ItemStack(imagesrc, 1);
-                image.setTag(resource.getItemStack().getTag());
-                rowPane.findPaneOfTypeByID(RESOURCE_ICON, ItemIcon.class).setItem(image);
-            }
-        });
-    }
-
-    /**
-     * Formats a long value into a abbreviated string, ie: 1000->1k, 1200->1.2k, 13000->13k
-     *
-     * @param value to format
-     * @return string version of the value
-     */
-    public static String format(long value)
-    {
-        //Long.MIN_VALUE == -Long.MIN_VALUE so we need an adjustment here
-        if (value == Long.MIN_VALUE)
-        {
-            return format(Long.MIN_VALUE + 1);
-        }
-        if (value < 0)
-        {
-            return "-" + format(-value);
-        }
-        if (value < 1000)
-        {
-            return Long.toString(value); //deal with easy case
-        }
-
-        Map.Entry<Long, String> e = suffixes.floorEntry(value);
-        Long divideBy = e.getKey();
-        String suffix = e.getValue();
-
-        long truncated = value / (divideBy / 10); //the number part of the output times 10
-        boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / 10d);
-        return hasDecimal ? (truncated / 10d) + suffix : (truncated / 10) + suffix;
+        stackList.refreshElementPanes();
     }
 
     @Override
-    public boolean onKeyTyped(final char ch, final int key)
+    public void onButtonClicked(final Button button)
     {
-        final boolean result = super.onKeyTyped(ch, key);
-        if (result)
+        switch (button.getID())
         {
-            filter = findPaneOfTypeByID("names", TextField.class).getText();
-            updateResources();
+            case BUTTON_SWITCH_SORT -> switchSort();
+            case BUTTON_LOCATE -> locate(button);
+            case BUTTON_SORT -> sort();
+            case BUTTON_INSERT -> insert();
         }
-        return result;
+    }
+
+    /**
+     * Switch the sort value for the next one.
+     */
+    private void switchSort()
+    {
+        sortDescriptor = sortDescriptor.getNext();
+        updateSwitchSortButton();
+        updateResources();
+    }
+
+    /**
+     * Locate all the racks given a specific item.
+     *
+     * @param button the button which was clicked.
+     */
+    private void locate(final Button button)
+    {
+        final int row = stackList.getListElementIndexByPane(button);
+        final ItemStorage storage = allItems.get(row);
+        final Set<BlockPos> containerList = new HashSet<>(controller.racks);
+        HighlightManager.clearCategory("inventoryHighlight");
+
+        Minecraft.getInstance().player.displayClientMessage(Component.translatable("gui.storageracks.locating"), false);
+        close();
+
+        for (BlockPos blockPos : containerList)
+        {
+            final BlockEntity rack = Minecraft.getInstance().level.getBlockEntity(blockPos);
+            if (rack instanceof TileEntityRack tileEntityRack)
+            {
+                int count = tileEntityRack.getCount(storage.getItemStack());
+                if (count > 0)
+                {
+                    // Varies the color between yellow(low count) to green(64+)
+                    final int color = 0x00FF00 + 0xFF0000 * Math.max(0, 1 - count / 64);
+                    HighlightManager.addRenderBox("inventoryHighlight",
+                        new HighlightManager.TimedBoxRenderData().setPos(blockPos)
+                            .setRemovalTimePoint(Minecraft.getInstance().level.getGameTime() + 60 * 20)
+                            .addText("" + count)
+                            .setColor(color));
+                }
+            }
+        }
+    }
+
+    /**
+     * If not yet unlocked, try to spend the player res and unlock. Else Sends a message to the server side to sort all the inventories.
+     */
+    private void sort()
+    {
+        if (controller.isSortUnlocked())
+        {
+            Network.getNetwork().sendToServer(new SortControllerMessage(this.controller.getBlockPos()));
+        }
+        else
+        {
+            Network.getNetwork().sendToServer(new UnlockSortMessage(this.controller.getBlockPos()));
+            close();
+        }
+    }
+
+    /**
+     * If not yet unlocked, try to spend the player res and unlock. Else Open the insert window.
+     */
+    private void insert()
+    {
+        if (controller.isInsertUnlocked())
+        {
+            Network.getNetwork().sendToServer(new OpenInventoryMessage(this.controller.getBlockPos()));
+        }
+        else
+        {
+            Network.getNetwork().sendToServer(new UnlockInsertMessage(this.controller.getBlockPos()));
+            close();
+        }
+    }
+
+    /**
+     * Sorting descriptor used in the item list.
+     */
+    private enum SortDescriptor
+    {
+        ALPHABETICAL_ASC(0, COMPARE_BY_NAME, "A↑", "gui.storageracks.sort.alphabetical.asc"),
+        ALPHABETICAL_DESC(1, COMPARE_BY_NAME.reversed(), "A↓", "gui.storageracks.sort.alphabetical.desc"),
+        COUNT_ASC(2, COMPARE_BY_COUNT.thenComparing(COMPARE_BY_NAME), "x↑", "gui.storageracks.sort.count.asc"),
+        COUNT_DESC(3, COMPARE_BY_COUNT.reversed().thenComparing(COMPARE_BY_NAME), "x↓", "gui.storageracks.sort.count.desc");
+
+        /**
+         * The index of the sort descriptor.
+         */
+        private final int index;
+
+        /**
+         * The comparator to use to sort the items.
+         */
+        private final Comparator<ItemStorage> comparator;
+
+        /**
+         * The symbol to display on the sort button for the current sorting descriptor.
+         */
+        private final String symbol;
+
+        /**
+         * The text shown in a tooltip when hovering over the sort button.
+         */
+        private final String hoverText;
+
+        /**
+         * Internal constructor.
+         */
+        SortDescriptor(final int index, final Comparator<ItemStorage> comparator, final String symbol, final String hoverText)
+        {
+            this.index = index;
+            this.comparator = comparator;
+            this.symbol = symbol;
+            this.hoverText = hoverText;
+        }
+
+        /**
+         * Get the next sort descriptor after the current one.
+         *
+         * @return the next enum value.
+         */
+        public SortDescriptor getNext()
+        {
+            final int max = SortDescriptor.values().length;
+            final int next = index + 1 == max ? 0 : index + 1;
+            return Arrays.stream(SortDescriptor.values()).filter(desc -> desc.index == next).findFirst().orElse(ALPHABETICAL_ASC);
+        }
     }
 }
